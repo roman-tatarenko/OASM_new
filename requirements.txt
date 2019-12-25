@@ -1,0 +1,4 @@
+pytest
+requests
+cassandra-driver
+pytest-testrail
