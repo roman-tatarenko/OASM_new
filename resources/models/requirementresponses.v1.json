@@ -1,0 +1,56 @@
+{
+  "title": "requirementResponses",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "value": {
+      "type": [
+        "string",
+        "boolean",
+        "number"
+      ]
+    },
+    "relatedTenderer": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "reqiurement": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "responder": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "value",
+    "relatedTenderer",
+    "reqiurement",
+    "responder"
+  ]
+}

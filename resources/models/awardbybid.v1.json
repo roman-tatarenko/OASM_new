@@ -1,0 +1,77 @@
+{
+  "title": "awardByBid",
+  "type": "object",
+  "description": "",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "bidDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "relatedBid": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "pending",
+        "unsuccessful"
+      ]
+    },
+    "statusDetails": {
+      "type": "string",
+      "enum": [
+        "active",
+        "empty",
+        "unsuccessful",
+        "consideration",
+        "awaiting",
+        "noOffersReceived",
+        "lotCancelled"
+      ]
+    },
+    "suppliers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "value": {
+      "$ref": "./money.v1.json"
+    },
+    "weightedValue": {
+      "$ref": "./money.v1.json"
+    },
+    "relatedLots": {
+      "type": "array",
+      "maxItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "token": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "id",
+    "date",
+    "bidDate",
+    "relatedBid",
+    "status",
+    "statusDetails",
+    "suppliers",
+    "value",
+    "relatedLots",
+    "token"
+  ]
+}
