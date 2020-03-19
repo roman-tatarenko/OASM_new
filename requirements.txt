@@ -1,4 +1,6 @@
-pytest
+pytest==5.3.5
 requests
 cassandra-driver
 pytest-testrail
+kafka-python
+psycopg2-binary

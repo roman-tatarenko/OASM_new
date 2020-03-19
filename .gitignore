@@ -91,7 +91,7 @@ ipython_config.py
 #   install all needed dependencies.
 #Pipfile.lock
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+# PEP 582; used by eDossier.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
 # Celery stuff
@@ -133,3 +133,4 @@ dmypy.json
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/vcs.xml
 /.idea/workspace.xml
+/.idea/
