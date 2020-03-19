@@ -1551,3 +1551,27 @@ def prepared_record(prepared_cpid, prepared_ac_ocid, prepared_request_id):
             ]},
         "version": "0.0.1"
     }
+
+
+@pytest.fixture(scope='function')
+def prepared_create_amendment():
+    return {
+        "amendment": {
+            "id": "AMENDMENT_ID",
+            "date": "2019-04-01T10:00:00Z",
+            "rationale": "Some_text",
+            "description": "Some_text_2",
+            "status": "pending",
+            "type": "cancellation",
+            "relatesTo": "RELATES_TO",
+            "relatedItem": "RELATED_ITEM",
+            "documents": [{
+                "documentType": "cancellationDetails",
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "title": "string",
+                "description": "string"
+            }],
+            "token": "ed8e86b9-82c9-4bcc-ac40-215317afa211",
+            "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        }
+    }
