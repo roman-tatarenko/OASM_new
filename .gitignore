@@ -136,3 +136,4 @@ dmypy.json
 /.idea/
 /credentials.py
 /testrail.cfg
+/tests/eEducation/
