@@ -513,3 +513,49 @@ def test_the_eRevisions_behavior_without_params_type_in_payload(port, host, prep
     }
 
     assert expectedresult == actualresult, actualresult
+
+
+@pytest.mark.parametrize("type,code,description",
+                         [
+                             pytest.param("activation", "DR-3/21",
+                                          "Attribute value mismatch of 'type' with one of enum expected values. "
+                                          "Expected values: 'cancellation, tenderChange', actual value: 'activation'.",
+                                          marks=pytestrail.case('C8437')),
+                             pytest.param(12.33, "DR-3/21",
+                                          "Attribute value mismatch of 'type' with one of enum expected values."
+                                          " Expected values: 'cancellation, tenderChange', actual value: '12.33'.",
+                                          marks=pytestrail.case('C8438')),
+                             pytest.param("", "DR-3/21",
+                                          "Attribute value mismatch of 'type' with one of enum expected values. "
+                                          "Expected values: 'cancellation, tenderChange', actual value: ''.",
+                                          marks=pytestrail.case('C8439')),
+                             pytest.param(False, "DR-3/21",
+                                          "Attribute value mismatch of 'type' with one of enum expected values. "
+                                          "Expected values: 'cancellation, tenderChange', actual value: 'false'.",
+                                          marks=pytestrail.case('C8441'))
+                         ])
+def test_the_eRevisions_behavior_with_invalid_params_type_in_payload(port, host, type, code, description,
+                                                                     prepared_payload_getAmendmentIds,
+                                                                     prepared_request_id):
+    payload = prepared_payload_getAmendmentIds(type=type)
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "error",
+        "result": [
+            {
+                "code": code,
+                "description": description,
+                "details": [
+                    {
+                        "name": "type"
+                    }
+                ]
+            }
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
