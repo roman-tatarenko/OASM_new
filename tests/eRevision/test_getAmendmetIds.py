@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import pytest
 import requests
 from pytest_testrail.plugin import pytestrail
@@ -491,12 +493,13 @@ def test_the_eRevisions_behavior_without_params_type_in_payload(port, host, prep
                                                                 prepared_create_amendment, prepared_request_id,
                                                                 clear_revision_amendments_by_cpid,
                                                                 prepared_payload_getAmendmentIds):
-    prepared_create_amendment['amendment']['id'] = f"{prepared_amendment_id}"
-    prepared_create_amendment['amendment']['relatesTo'] = 'tender'
-    prepared_create_amendment['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
+    data = prepared_create_amendment
+    data['amendment']['id'] = f"{prepared_amendment_id}"
+    data['amendment']['relatesTo'] = 'tender'
+    data['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
 
     execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=prepared_amendment_id,
-                                            data=prepared_create_amendment)
+                                            data=data)
 
     payload = prepared_payload_getAmendmentIds()
     del payload['params']['type']
@@ -555,6 +558,344 @@ def test_the_eRevisions_behavior_with_invalid_params_type_in_payload(port, host,
                     }
                 ]
             }
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytestrail.case('C8440')
+def test_the_eRevisions_behavior_with_null_as_params_type_in_payload(port, host, prepared_create_amendment,
+                                                                     prepared_cpid, prepared_ev_ocid,
+                                                                     prepared_amendment_id, prepared_request_id,
+                                                                     prepared_payload_getAmendmentIds,
+                                                                     execute_insert_into_revision_amendments,
+                                                                     clear_revision_amendments_by_cpid):
+    data = prepared_create_amendment
+    data['amendment']['id'] = f"{prepared_amendment_id}"
+    data['amendment']['relatesTo'] = 'tender'
+    data['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
+
+    execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=prepared_amendment_id,
+                                            data=data)
+
+    payload = prepared_payload_getAmendmentIds(type=None)
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "success",
+        "result": [
+            f"{prepared_amendment_id}"
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytest.mark.parametrize("relatedTo,code,description",
+                         [
+                             pytest.param("bid", "DR-3/21",
+                                          "Attribute value mismatch of 'relatesTo' with one of enum expected values."
+                                          " Expected values: 'lot, tender, can', actual value: 'bid'.",
+                                          marks=pytestrail.case('C8442')),
+                             pytest.param(6.25, "DR-3/21",
+                                          "Attribute value mismatch of 'relatesTo' with one of enum expected values."
+                                          " Expected values: 'lot, tender, can', actual value: '6.25'.",
+                                          marks=pytestrail.case('C8443')),
+                             pytest.param(False, "DR-3/21",
+                                          "Attribute value mismatch of 'relatesTo' with one of enum expected values."
+                                          " Expected values: 'lot, tender, can', actual value: 'false'.",
+                                          marks=pytestrail.case('C8444')),
+                             pytest.param("", "DR-3/21",
+                                          "Attribute value mismatch of 'relatesTo' with one of enum expected values."
+                                          " Expected values: 'lot, tender, can', actual value: ''.",
+                                          marks=pytestrail.case('C8446'))
+                         ])
+def test_the_eRevisions_behavior_with_invalid_params_relatesTo_in_payload(host, port, relatedTo, code, description,
+                                                                          prepared_payload_getAmendmentIds,
+                                                                          prepared_request_id):
+    payload = prepared_payload_getAmendmentIds(relatesTo=relatedTo)
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "error",
+        "result": [
+            {
+                "code": code,
+                "description": description,
+                "details": [
+                    {
+                        "name": "relatesTo"
+                    }
+                ]
+            }
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytestrail.case('C8445')
+def test_the_eRevisions_behavior_with_null_as_params_relatesTo_in_payload(port, host, prepared_create_amendment,
+                                                                          prepared_cpid, prepared_ev_ocid,
+                                                                          prepared_amendment_id,
+                                                                          prepared_request_id,
+                                                                          prepared_payload_getAmendmentIds,
+                                                                          execute_insert_into_revision_amendments,
+                                                                          clear_revision_amendments_by_cpid):
+    data = prepared_create_amendment
+    data['amendment']['id'] = f"{prepared_amendment_id}"
+    data['amendment']['relatesTo'] = 'tender'
+    data['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
+
+    execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=prepared_amendment_id,
+                                            data=data)
+
+    payload = prepared_payload_getAmendmentIds(relatesTo=None)
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "success",
+        "result": [
+            f"{prepared_amendment_id}"
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytest.mark.parametrize("param",
+                         [
+                             pytest.param("relatesTo", marks=pytestrail.case('C8076')),
+                             pytest.param("relatedItems", marks=pytestrail.case('C8077'))
+                         ])
+def test_the_eRevisions_behavior_without_optional_params_in_payload(port, host, param, prepared_create_amendment,
+                                                                    prepared_cpid, prepared_ev_ocid,
+                                                                    prepared_amendment_id,
+                                                                    prepared_request_id,
+                                                                    prepared_payload_getAmendmentIds,
+                                                                    execute_insert_into_revision_amendments,
+                                                                    clear_revision_amendments_by_cpid):
+    data = prepared_create_amendment
+    data['amendment']['id'] = f"{prepared_amendment_id}"
+    data['amendment']['relatesTo'] = 'tender'
+    data['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
+
+    execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=prepared_amendment_id,
+                                            data=data)
+
+    payload = prepared_payload_getAmendmentIds()
+    del payload['params'][param]
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "success",
+        "result": [
+            f"{prepared_amendment_id}"
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytest.mark.parametrize("param",
+                         [
+                             pytest.param("cpid", marks=pytestrail.case('C8078')),
+                             pytest.param("ocid", marks=pytestrail.case('C8457'))
+                         ])
+def test_the_eRevisions_behavior_without_required_params_in_payload(port, host, param,
+                                                                    prepared_request_id,
+                                                                    prepared_payload_getAmendmentIds):
+    payload = prepared_payload_getAmendmentIds()
+    del payload['params'][param]
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "error",
+        "result": [
+            {
+                "code": "RQ-1/21",
+                "description": "Error parsing 'params'"
+            }
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytestrail.case('C8452')
+def test_the_eRevisions_behavior_with_invalid_params_cpid_in_payload(port, host, prepared_create_amendment,
+                                                                     prepared_cpid, prepared_ev_ocid,
+                                                                     prepared_amendment_id,
+                                                                     prepared_request_id,
+                                                                     prepared_payload_getAmendmentIds,
+                                                                     execute_insert_into_revision_amendments,
+                                                                     clear_revision_amendments_by_cpid):
+    data = prepared_create_amendment
+    data['amendment']['id'] = f"{prepared_amendment_id}"
+    data['amendment']['relatesTo'] = 'tender'
+    data['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
+
+    execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=prepared_amendment_id,
+                                            data=data)
+
+    payload = prepared_payload_getAmendmentIds(cpid="ocds-t1s2t3-MD-0000000000000")
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "success"
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytest.mark.parametrize("param,value,code,description",
+                         [
+                             pytest.param("cpid", 3.66, "DR-5/21",
+                                          "Data mismatch of attribute 'cpid' to the pattern:"
+                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: '3.66'.",
+                                          marks=pytestrail.case('C8453')),
+                             pytest.param("cpid", True, "DR-5/21",
+                                          "Data mismatch of attribute 'cpid' to the pattern:"
+                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: 'true'.",
+                                          marks=pytestrail.case('C8455')),
+                             pytest.param("cpid", "", "DR-5/21",
+                                          "Data mismatch of attribute 'cpid' to the pattern:"
+                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: ''.",
+                                          marks=pytestrail.case('C8456')),
+                             pytest.param("ocid", 3.66, "DR-5/21",
+                                          "Data mismatch of attribute 'ocid' to the pattern:"
+                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'."
+                                          " Actual value: '3.66'.",
+                                          marks=pytestrail.case('C8459')),
+                             pytest.param("ocid", True, "DR-5/21",
+                                          "Data mismatch of attribute 'ocid' to the pattern:"
+                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'."
+                                          " Actual value: 'true'.",
+                                          marks=pytestrail.case('C8461')),
+                             pytest.param("ocid", "", "DR-5/21",
+                                          "Data mismatch of attribute 'ocid' to the pattern:"
+                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'."
+                                          " Actual value: ''.",
+                                          marks=pytestrail.case('C8462')),
+                             pytest.param("ocid", "ocds-t1s2t3-MD-1580306096784-EV-1582034422826ghfg", "DR-5/21",
+                                          "Data mismatch of attribute 'ocid' to the pattern: "
+                                          "'^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'. "
+                                          "Actual value: 'ocds-t1s2t3-MD-1580306096784-EV-1582034422826ghfg'.",
+                                          marks=pytestrail.case('C8458'))
+
+                         ])
+def test_on_eRevisions_behavior_with_number_as_params_cpid_in_payload(port, host, param, value, code, description,
+                                                                      prepared_payload_getAmendmentIds,
+                                                                      prepared_request_id):
+    payload = prepared_payload_getAmendmentIds()
+    payload['params'][f'{param}'] = value
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "error",
+        "result": [
+            {
+                "code": code,
+                "description": description,
+                "details": [
+                    {
+                        "name": param
+                    }
+                ]
+            }
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytest.mark.parametrize("param,value,code",
+                         [
+                             pytest.param("cpid", None, "RQ-1/21", marks=pytestrail.case('C8454')),
+                             pytest.param("ocid", None, "RQ-1/21", marks=pytestrail.case('C8460'))
+
+                         ])
+def test_on_eRevisions_behavior_with_null_as_params_cpid_in_payload(port, host, param, value, code,
+                                                                    prepared_payload_getAmendmentIds,
+                                                                    prepared_request_id):
+    payload = prepared_payload_getAmendmentIds()
+    payload['params'][f'{param}'] = value
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "error",
+        "result": [
+            {
+                "code": code,
+                "description": "Error parsing 'params'"
+            }
+        ]
+    }
+
+    assert expectedresult == actualresult, actualresult
+
+
+@pytestrail.case('C8615')
+def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_lot_item(host, port, prepared_create_amendment,
+                                                                           prepared_cpid, prepared_amendment_id,
+                                                                           prepared_ev_ocid, prepared_request_id,
+                                                                           prepared_payload_getAmendmentIds,
+                                                                           execute_insert_into_revision_amendments,
+                                                                           clear_revision_amendments_by_cpid):
+    data = prepared_create_amendment
+    data['amendment']['relatedItem'] = f"{prepared_ev_ocid}"
+
+    amendmentId1 = uuid4()
+    data['amendment']['id'] = f"{amendmentId1}"
+    data['amendment']['relatesTo'] = 'tender'
+
+    execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=amendmentId1,
+                                            data=data)
+
+    amendmentId2 = uuid4()
+    data['amendment']['id'] = f"{amendmentId2}"
+    data['amendment']['relatesTo'] = 'lot'
+    execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=amendmentId2,
+                                            data=data)
+
+    payload = prepared_payload_getAmendmentIds()
+    del payload['params']['relatesTo']
+    del payload['params']['relatedItems']
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expectedresult = {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "success",
+        "result": [
+            f"{amendmentId2}",
+            f"{amendmentId1}"
         ]
     }
 

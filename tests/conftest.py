@@ -292,7 +292,8 @@ def prepared_payload(payload_template, prepared_request_id, prepared_operation_i
 @pytest.fixture(scope='function')
 def prepared_payload_getAmendmentIds(prepared_request_id, prepared_cpid, prepared_ev_ocid):
     def with_values(version="2.0.0", id=f"{prepared_request_id}", action="getAmendmentIds",
-                    relatesTo="tender", status="pending", type="cancellation"):
+                    relatesTo="tender", status="pending", type="cancellation", cpid=prepared_cpid,
+                    ocid=prepared_ev_ocid):
         return {
             "version": version,
             "id": id,
@@ -302,8 +303,8 @@ def prepared_payload_getAmendmentIds(prepared_request_id, prepared_cpid, prepare
                 "type": type,
                 "relatesTo": relatesTo,
                 "relatedItems": [f"{prepared_ev_ocid}"],
-                "cpid": f"{prepared_cpid}",
-                "ocid": f"{prepared_ev_ocid}"
+                "cpid": cpid,
+                "ocid": ocid
             }
         }
 
