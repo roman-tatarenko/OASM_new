@@ -78,7 +78,7 @@ def test_the_eRevision_does_not_return_amendment_ids_without_version_in_payload(
 
     expectedresult = {
         "version": "1.0.0",
-        "id": "00000000-0000-0000-0000-000000000000",
+        "id": f"{prepared_request_id}",
         "status": "error",
         "result": [
             {
@@ -145,6 +145,7 @@ def test_the_eRevision_return_amendment_ids_if_there_is_amendments_in_pending_st
                           ])
 def test_the_eRevisions_does_not_returns_amendment_ids_with_incorrect_version_in_payload(host, port, version, code,
                                                                                          description,
+                                                                                         prepared_request_id,
                                                                                          prepared_payload_getAmendmentIds):
     payload = prepared_payload_getAmendmentIds(version=version)
 
@@ -152,7 +153,7 @@ def test_the_eRevisions_does_not_returns_amendment_ids_with_incorrect_version_in
 
     expectedresult = {
         "version": "1.0.0",
-        "id": "00000000-0000-0000-0000-000000000000",
+        "id": f"{prepared_request_id}",
         "status": "error",
         "result": [
             {
@@ -410,23 +411,19 @@ def test_the_eRevisions_behavior_without_params_status_in_payload(port, host, pr
                          [
                              pytest.param("activation", "DR-3/21",
                                           "Attribute value mismatch of 'status' with one of enum expected values."
-                                          " Expected values: 'pending, active, withdrawn, cancelled',"
-                                          " actual value: 'activation'.",
+                                          " Expected values: 'pending', actual value: 'activation'.",
                                           marks=pytestrail.case('C8408')),
                              pytest.param(12.33, "DR-3/21",
                                           "Attribute value mismatch of 'status' with one of enum expected values."
-                                          " Expected values: 'pending, active, withdrawn, cancelled',"
-                                          " actual value: '12.33'.",
+                                          " Expected values: 'pending', actual value: '12.33'.",
                                           marks=pytestrail.case('C8432')),
                              pytest.param("", "DR-3/21",
                                           "Attribute value mismatch of 'status' with one of enum expected values."
-                                          " Expected values: 'pending, active, withdrawn, cancelled',"
-                                          " actual value: ''.",
+                                          " Expected values: 'pending', actual value: ''.",
                                           marks=pytestrail.case('C8434')),
                              pytest.param(True, "DR-3/21",
                                           "Attribute value mismatch of 'status' with one of enum expected values."
-                                          " Expected values: 'pending, active, withdrawn, cancelled',"
-                                          " actual value: 'true'.",
+                                          " Expected values: 'pending', actual value: 'true'.",
                                           marks=pytestrail.case('C8436'))
                          ])
 def test_the_eRevisions_behavior_with_invalid_params_status_in_payload(port, host, prepared_request_id,
@@ -522,19 +519,19 @@ def test_the_eRevisions_behavior_without_params_type_in_payload(port, host, prep
                          [
                              pytest.param("activation", "DR-3/21",
                                           "Attribute value mismatch of 'type' with one of enum expected values. "
-                                          "Expected values: 'cancellation, tenderChange', actual value: 'activation'.",
+                                          "Expected values: 'cancellation', actual value: 'activation'.",
                                           marks=pytestrail.case('C8437')),
                              pytest.param(12.33, "DR-3/21",
                                           "Attribute value mismatch of 'type' with one of enum expected values."
-                                          " Expected values: 'cancellation, tenderChange', actual value: '12.33'.",
+                                          " Expected values: 'cancellation', actual value: '12.33'.",
                                           marks=pytestrail.case('C8438')),
                              pytest.param("", "DR-3/21",
                                           "Attribute value mismatch of 'type' with one of enum expected values. "
-                                          "Expected values: 'cancellation, tenderChange', actual value: ''.",
+                                          "Expected values: 'cancellation', actual value: ''.",
                                           marks=pytestrail.case('C8439')),
                              pytest.param(False, "DR-3/21",
                                           "Attribute value mismatch of 'type' with one of enum expected values. "
-                                          "Expected values: 'cancellation, tenderChange', actual value: 'false'.",
+                                          "Expected values: 'cancellation', actual value: 'false'.",
                                           marks=pytestrail.case('C8441'))
                          ])
 def test_the_eRevisions_behavior_with_invalid_params_type_in_payload(port, host, type, code, description,
@@ -599,19 +596,19 @@ def test_the_eRevisions_behavior_with_null_as_params_type_in_payload(port, host,
                          [
                              pytest.param("bid", "DR-3/21",
                                           "Attribute value mismatch of 'relatesTo' with one of enum expected values."
-                                          " Expected values: 'lot, tender, can', actual value: 'bid'.",
+                                          " Expected values: 'lot, tender', actual value: 'bid'.",
                                           marks=pytestrail.case('C8442')),
                              pytest.param(6.25, "DR-3/21",
                                           "Attribute value mismatch of 'relatesTo' with one of enum expected values."
-                                          " Expected values: 'lot, tender, can', actual value: '6.25'.",
+                                          " Expected values: 'lot, tender', actual value: '6.25'.",
                                           marks=pytestrail.case('C8443')),
                              pytest.param(False, "DR-3/21",
                                           "Attribute value mismatch of 'relatesTo' with one of enum expected values."
-                                          " Expected values: 'lot, tender, can', actual value: 'false'.",
+                                          " Expected values: 'lot, tender', actual value: 'false'.",
                                           marks=pytestrail.case('C8444')),
                              pytest.param("", "DR-3/21",
                                           "Attribute value mismatch of 'relatesTo' with one of enum expected values."
-                                          " Expected values: 'lot, tender, can', actual value: ''.",
+                                          " Expected values: 'lot, tender', actual value: ''.",
                                           marks=pytestrail.case('C8446'))
                          ])
 def test_the_eRevisions_behavior_with_invalid_params_relatesTo_in_payload(host, port, relatedTo, code, description,
@@ -771,34 +768,34 @@ def test_the_eRevisions_behavior_with_invalid_params_cpid_in_payload(port, host,
                          [
                              pytest.param("cpid", 3.66, "DR-5/21",
                                           "Data mismatch of attribute 'cpid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: '3.66'.",
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. Actual value: '3.66'.",
                                           marks=pytestrail.case('C8453')),
                              pytest.param("cpid", True, "DR-5/21",
                                           "Data mismatch of attribute 'cpid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: 'true'.",
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. Actual value: 'true'.",
                                           marks=pytestrail.case('C8455')),
                              pytest.param("cpid", "", "DR-5/21",
                                           "Data mismatch of attribute 'cpid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: ''.",
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. Actual value: ''.",
                                           marks=pytestrail.case('C8456')),
                              pytest.param("ocid", 3.66, "DR-5/21",
                                           "Data mismatch of attribute 'ocid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'."
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
                                           " Actual value: '3.66'.",
                                           marks=pytestrail.case('C8459')),
                              pytest.param("ocid", True, "DR-5/21",
                                           "Data mismatch of attribute 'ocid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'."
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
                                           " Actual value: 'true'.",
                                           marks=pytestrail.case('C8461')),
                              pytest.param("ocid", "", "DR-5/21",
                                           "Data mismatch of attribute 'ocid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'."
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
                                           " Actual value: ''.",
                                           marks=pytestrail.case('C8462')),
                              pytest.param("ocid", "ocds-t1s2t3-MD-1580306096784-EV-1582034422826ghfg", "DR-5/21",
                                           "Data mismatch of attribute 'ocid' to the pattern: "
-                                          "'^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-([0-9]{13})-([A-Z]{2})-([0-9]{13})$'. "
+                                          "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'. "
                                           "Actual value: 'ocds-t1s2t3-MD-1580306096784-EV-1582034422826ghfg'.",
                                           marks=pytestrail.case('C8458'))
 
