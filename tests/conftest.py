@@ -309,3 +309,33 @@ def prepared_payload_getAmendmentIds(prepared_request_id, prepared_cpid, prepare
         }
 
     return with_values
+
+
+@pytest.fixture(scope='function')
+def prepared_payload_dataValidation(prepared_request_id, prepared_amendment_id, prepared_cpid, prepared_ev_ocid):
+    def with_values():
+        return {
+            "version": "2.0.0",
+            "id": f"{prepared_request_id}",
+            "action": "dataValidation",
+            "params": {
+                "amendment": {
+                    "rationale": "Some_string_1",
+                    "description": "Some_string_2",
+                    "documents": [
+                        {
+                            "documentType": "cancellationDetails",
+                            "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+                            "title": "string",
+                            "description": "string"
+                        }
+                    ],
+                    "id": f"{prepared_amendment_id}"
+                },
+                "cpid": f"{prepared_cpid}",
+                "ocid": f"{prepared_ev_ocid}",
+                "operationType": "tenderCancellation"
+            }
+        }
+
+    return with_values
