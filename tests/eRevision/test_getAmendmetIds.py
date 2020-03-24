@@ -69,8 +69,8 @@ def test_the_eRevision_return_amendment_ids_if_there_is_amendments_in_pending_ca
                           pytest.param("lot", marks=pytestrail.case('C8067'))])
 def test_the_eRevision_does_not_return_amendment_ids_without_version_in_payload(port, host, relatesTo,
                                                                                 prepared_request_id,
-                                                                                prepared_payload_getAmendmentIds,
-                                                                                prepared_ev_ocid, prepared_cpid):
+                                                                                prepared_payload_getAmendmentIds
+                                                                                ):
     payload = prepared_payload_getAmendmentIds()
     del payload['version']
 
