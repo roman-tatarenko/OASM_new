@@ -313,10 +313,10 @@ def prepared_payload_getAmendmentIds(prepared_request_id, prepared_cpid, prepare
 
 @pytest.fixture(scope='function')
 def prepared_payload_dataValidation(prepared_request_id, prepared_amendment_id, prepared_cpid, prepared_ev_ocid):
-    def with_values():
+    def with_values(id=prepared_request_id):
         return {
             "version": "2.0.0",
-            "id": f"{prepared_request_id}",
+            "id": f"{id}",
             "action": "dataValidation",
             "params": {
                 "amendment": {
