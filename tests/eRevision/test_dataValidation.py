@@ -13,6 +13,7 @@ from pytest_testrail.plugin import pytestrail
 def test_on_dataValidation_with_a_valid_data(host, port, operationType, prepared_request_id,
                                              prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
+    payload['params']['operationType'] = operationType
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     expectedresult = {
