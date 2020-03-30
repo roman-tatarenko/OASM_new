@@ -55,3 +55,10 @@ def kafka_bootstrap_servers(request):
     if cli_value == '' or cli_value == 'dev':
         bs = bootstrap_servers['dev']
     return bs
+
+
+@pytest.fixture(scope='session')
+def cassandra_session(cluster):
+    session = cluster.connect()
+    yield session
+    session.shutdown()
