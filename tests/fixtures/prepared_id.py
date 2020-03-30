@@ -95,3 +95,8 @@ def prepared_amendment_id():
 @pytest.fixture(scope='function')
 def prepared_relatedItem_id():
     return uuid4()
+
+
+@pytest.fixture(scope='function')
+def prepared_entity_id():
+    return uuid4()
