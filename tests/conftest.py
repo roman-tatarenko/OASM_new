@@ -9,8 +9,9 @@ pytest_plugins = [
     "tests.fixtures.clear_table_by_cpid",
     "tests.fixtures.execute_insert_into_table",
     "tests.fixtures.prepared_insert_into_table",
-    "tests.fixtures.prepared_payload"
-
+    "tests.fixtures.prepared_payload",
+    "tests.fixtures.prepared_select",
+    "tests.fixtures.execute_select"
 ]
 
 
