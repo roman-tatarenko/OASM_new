@@ -838,7 +838,7 @@ def test_on_eRevisions_behavior_with_null_as_params_cpid_in_payload(port, host, 
                                                                     prepared_payload_getAmendmentIds,
                                                                     prepared_request_id):
     payload = prepared_payload_getAmendmentIds()
-    payload['params'][f'{param}'] = value
+    payload['params'][param] = value
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
