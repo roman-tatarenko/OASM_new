@@ -270,9 +270,10 @@ def test_the_eRevisions_behavior_without_action_in_payload(port, host, prepared_
 @pytest.mark.parametrize("action,code,description",
                          [
                              pytest.param("checkItems", "DR-3/21",
-                                          "Attribute value mismatch of 'action' with one of enum expected values. "
-                                          "Expected values: 'getAmendmentIds, dataValidation, createAmendment',"
-                                          " actual value: 'checkItems'.",
+                                          "Attribute value mismatch of 'action' with one of enum expected values."
+                                          " Expected values: 'getAmendmentIds, dataValidation,"
+                                          " createAmendment, CheckAccessToAmendment', "
+                                          "actual value: 'checkItems'.",
                                           marks=pytestrail.case('C8392')),
                              pytest.param(3.14, "DR-2/21",
                                           "Data type mismatch of attribute 'action'. Expected data type: 'STRING',"
@@ -283,9 +284,9 @@ def test_the_eRevisions_behavior_without_action_in_payload(port, host, prepared_
                                           " actual data type: 'null'.",
                                           marks=pytestrail.case('C8394')),
                              pytest.param("", "DR-3/21",
-                                          "Attribute value mismatch of 'action' with one of enum expected values."
-                                          " Expected values: 'getAmendmentIds, dataValidation, createAmendment',"
-                                          " actual value: ''.",
+                                          "Attribute value mismatch of 'action' with one of enum expected values. "
+                                          "Expected values: 'getAmendmentIds,"
+                                          " dataValidation, createAmendment, CheckAccessToAmendment', actual value: ''.",
                                           marks=pytestrail.case('C8395')),
                              pytest.param(True, "DR-2/21",
                                           "Data type mismatch of attribute 'action'. Expected data type: 'STRING',"

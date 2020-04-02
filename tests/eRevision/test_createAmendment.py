@@ -155,11 +155,13 @@ def test_on_impossibility_to_create_amendment_without_params_in_payload(port, ho
                              pytest.param("action", "", "DR-3/21",
                                           "Attribute value mismatch of 'action' with one of enum expected values."
                                           " Expected values:"
-                                          " 'getAmendmentIds, dataValidation, createAmendment', actual value: ''.",
+                                          " 'getAmendmentIds, dataValidation,"
+                                          " createAmendment, CheckAccessToAmendment', actual value: ''.",
                                           marks=pytestrail.case('C8247')),
                              pytest.param("action", "checkItems", "DR-3/21",
                                           "Attribute value mismatch of 'action' with one of enum expected values."
-                                          " Expected values: 'getAmendmentIds, dataValidation, createAmendment',"
+                                          " Expected values: 'getAmendmentIds,"
+                                          " dataValidation, createAmendment, CheckAccessToAmendment',"
                                           " actual value: 'checkItems'.",
                                           marks=pytestrail.case('C8249')),
                              pytest.param("action", True, "DR-2/21",
@@ -378,12 +380,13 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port,
                                           marks=pytestrail.case('C8245')),
                              pytest.param("action", "", "DR-3/21",
                                           "Attribute value mismatch of 'action' with one of enum expected values."
-                                          " Expected values:"
-                                          " 'getAmendmentIds, dataValidation, createAmendment', actual value: ''.",
+                                          " Expected values: 'getAmendmentIds,"
+                                          " dataValidation, createAmendment, CheckAccessToAmendment', actual value: ''.",
                                           marks=pytestrail.case('C8247')),
                              pytest.param("action", "checkItems", "DR-3/21",
                                           "Attribute value mismatch of 'action' with one of enum expected values."
-                                          " Expected values: 'getAmendmentIds, dataValidation, createAmendment',"
+                                          " Expected values: 'getAmendmentIds,"
+                                          " dataValidation, createAmendment, CheckAccessToAmendment',"
                                           " actual value: 'checkItems'.",
                                           marks=pytestrail.case('C8249')),
                              pytest.param("action", True, "DR-2/21",
