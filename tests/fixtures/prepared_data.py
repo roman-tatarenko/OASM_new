@@ -1574,3 +1574,564 @@ def prepared_create_amendment():
         "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
     }
+
+
+@pytest.fixture(scope='function')
+def prepared_data_access_tender():
+    return {
+        "ocid": "OCID",
+        "planning": {
+            "rationale": "reason for budget",
+            "budget": {
+                "description": "budgetBreakdown/description",
+                "amount": {
+                    "amount": 15.00,
+                    "currency": "EUR"
+                },
+                "isEuropeanUnionFunded": True,
+                "budgetBreakdown": [{
+                    "id": "ocds-t1s2t3-MD-1580832122842-FS-1581070108536",
+                    "description": "description",
+                    "amount": {
+                        "amount": 15.00,
+                        "currency": "EUR"
+                    },
+                    "period": {
+                        "startDate": "2020-02-01T11:07:00Z",
+                        "endDate": "2020-12-01T00:00:00Z"
+                    },
+                    "sourceParty": {
+                        "id": "MD-IDNO-1",
+                        "name": "name of buyerei"
+                    },
+                    "europeanUnionFunding": {
+                        "projectIdentifier": "projectIdentifier",
+                        "projectName": "Name of this project",
+                        "uri": "http://uriuri.th"
+                    }
+                }]
+            }
+        },
+        "tender": {
+            "id": "84bbb5ad-2da9-43d5-a0a3-9635c48c1bbc",
+            "status": "active",
+            "statusDetails": "clarification",
+            "title": "title of tender",
+            "description": "desription of tender",
+            "classification": {
+                "scheme": "CPV",
+                "description": "Produse lactate",
+                "id": "15500000-3"
+            },
+            "tenderPeriod": {
+                "startDate": "2020-02-20T13:45:07Z",
+                "endDate": "2020-02-20T13:50:07Z"
+            },
+            "enquiryPeriod": {
+                "startDate": "2020-02-20T13:40:07Z",
+                "endDate": "2020-02-20T13:45:07Z"
+            },
+            "acceleratedProcedure": {
+                "isAcceleratedProcedure": False
+            },
+            "designContest": {
+                "serviceContractAward": False
+            },
+            "electronicWorkflows": {
+                "useOrdering": False,
+                "usePayment": False,
+                "acceptInvoicing": False
+            },
+            "jointProcurement": {
+                "isJointProcurement": False
+            },
+            "procedureOutsourcing": {
+                "procedureOutsourced": False
+            },
+            "framework": {
+                "isAFramework": False
+            },
+            "dynamicPurchasingSystem": {
+                "hasDynamicPurchasingSystem": False
+            },
+            "legalBasis": "REGULATION_966_2012",
+            "procurementMethod": "open",
+            "procurementMethodDetails": "TEST_microValue",
+            "mainProcurementCategory": "goods",
+            "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+            "contractPeriod": {
+                "startDate": "2020-02-29T10:30:40Z",
+                "endDate": "2020-03-30T10:30:40Z"
+            },
+            "procuringEntity": {
+                "id": "MD-IDNO-12",
+                "name": "name of procuringEntity",
+                "identifier": {
+                    "scheme": "MD-IDNO",
+                    "id": "12",
+                    "legalName": "identifier/legal name2",
+                    "uri": "uri"
+                },
+                "additionalIdentifiers": [{
+                    "scheme": "md-idno",
+                    "id": "445521",
+                    "legalName": "legalName",
+                    "uri": "uri"
+                }],
+                "address": {
+                    "streetAddress": "street address",
+                    "addressDetails": {
+                        "country": {
+                            "scheme": "iso-alpha2",
+                            "id": "MD",
+                            "description": "MOLDOVA",
+                            "uri": "http://reference.iatistandard.org"
+                        },
+                        "region": {
+                            "scheme": "CUATM",
+                            "id": "0101000",
+                            "description": "mun.Chişinău",
+                            "uri": "http://statistica.md"
+                        },
+                        "locality": {
+                            "scheme": "other",
+                            "id": "localityid",
+                            "description": "locality/description"
+                        }
+                    }
+                },
+                "contactPoint": {
+                    "name": "contactPoint/name",
+                    "email": "contactPoint/email",
+                    "telephone": "contactPoint/456-95-96",
+                    "faxNumber": "fax-number",
+                    "url": "url"
+                },
+                "persones": [{
+                    "title": "persones.title",
+                    "name": "persones.name",
+                    "identifier": {
+                        "scheme": "MD-IDNO",
+                        "id": "88888000",
+                        "uri": "http://petrusenko.com/illia"
+                    },
+                    "businessFunctions": [{
+                        "id": "businessFunctions id",
+                        "type": "authority",
+                        "jobTitle": "Chief Executive Officer",
+                        "period": {
+                            "startDate": "2019-10-30T00:00:35Z"
+                        }
+                    }]
+                }]
+            },
+            "value": {
+                "amount": 10.00,
+                "currency": "EUR"
+            },
+            "lotGroups": [{
+                "optionToCombine": False
+            }],
+            "lots": [{
+                "id": "3ce7a92d-d504-4529-89c0-abab2e30bd6b",
+                "title": "lots title",
+                "description": "lots description",
+                "status": "STATUS",
+                "statusDetails": "STATUS_DETAILS",
+                "value": {
+                    "amount": 10.00,
+                    "currency": "EUR"
+                },
+                "options": [{
+                    "hasOptions": False
+                }],
+                "variants": [{
+                    "hasVariants": False
+                }],
+                "renewals": [{
+                    "hasRenewals": False
+                }],
+                "recurrentProcurement": [{
+                    "isRecurrent": False
+                }],
+                "contractPeriod": {
+                    "startDate": "2020-02-29T10:30:40Z",
+                    "endDate": "2020-03-30T10:30:40Z"
+                },
+                "placeOfPerformance": {
+                    "address": {
+                        "streetAddress": "placeOfPerformance streetAddress",
+                        "addressDetails": {
+                            "country": {
+                                "scheme": "iso-alpha2",
+                                "id": "MD",
+                                "description": "MOLDOVA",
+                                "uri": "http://reference.iatistandard.org"
+                            },
+                            "region": {
+                                "scheme": "CUATM",
+                                "id": "1000000",
+                                "description": "Anenii Noi",
+                                "uri": "http://statistica.md"
+                            },
+                            "locality": {
+                                "scheme": "locality scheme",
+                                "id": "locality id",
+                                "description": "locality description"
+                            }
+                        }
+                    }
+                }
+            }],
+            "items": [{
+                "id": "700b19b0-5756-4b25-b0c4-9e4522d1e12f",
+                "classification": {
+                    "scheme": "CPV",
+                    "description": "Produse lactate",
+                    "id": "15500000-3"
+                },
+                "additionalClassifications": [{
+                    "scheme": "CPVS",
+                    "description": "Plastic",
+                    "id": "AB06-7"
+                }],
+                "quantity": 1.000,
+                "unit": {
+                    "id": "121",
+                    "name": "Metru cub consistent"
+                },
+                "description": "items description",
+                "relatedLot": "3ce7a92d-d504-4529-89c0-abab2e30bd6b"
+            }],
+            "awardCriteria": "priceOnly",
+            "awardCriteriaDetails": "automated",
+            "requiresElectronicCatalogue": False,
+            "submissionMethod": ["electronicSubmission"],
+            "submissionMethodRationale": [
+                "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"],
+            "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+            "documents": [{
+                "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                "documentType": "billOfQuantity",
+                "title": "doc1т"
+            }]
+        }
+    }
+
+
+@pytest.fixture(scope='function')
+def prepared_data_access_tender_2_lots():
+    return {
+        "ocid": "OCID",
+        "planning": {
+            "rationale": "reason for budget",
+            "budget": {
+                "description": "budgetBreakdown/description",
+                "amount": {
+                    "amount": 15.00,
+                    "currency": "EUR"
+                },
+                "isEuropeanUnionFunded": True,
+                "budgetBreakdown": [{
+                    "id": "ocds-t1s2t3-MD-1580832122842-FS-1581070108536",
+                    "description": "description",
+                    "amount": {
+                        "amount": 15.00,
+                        "currency": "EUR"
+                    },
+                    "period": {
+                        "startDate": "2020-02-01T11:07:00Z",
+                        "endDate": "2020-12-01T00:00:00Z"
+                    },
+                    "sourceParty": {
+                        "id": "MD-IDNO-1",
+                        "name": "name of buyerei"
+                    },
+                    "europeanUnionFunding": {
+                        "projectIdentifier": "projectIdentifier",
+                        "projectName": "Name of this project",
+                        "uri": "http://uriuri.th"
+                    }
+                }]
+            }
+        },
+        "tender": {
+            "id": "84bbb5ad-2da9-43d5-a0a3-9635c48c1bbc",
+            "status": "active",
+            "statusDetails": "clarification",
+            "title": "title of tender",
+            "description": "desription of tender",
+            "classification": {
+                "scheme": "CPV",
+                "description": "Produse lactate",
+                "id": "15500000-3"
+            },
+            "tenderPeriod": {
+                "startDate": "2020-02-20T13:45:07Z",
+                "endDate": "2020-02-20T13:50:07Z"
+            },
+            "enquiryPeriod": {
+                "startDate": "2020-02-20T13:40:07Z",
+                "endDate": "2020-02-20T13:45:07Z"
+            },
+            "acceleratedProcedure": {
+                "isAcceleratedProcedure": False
+            },
+            "designContest": {
+                "serviceContractAward": False
+            },
+            "electronicWorkflows": {
+                "useOrdering": False,
+                "usePayment": False,
+                "acceptInvoicing": False
+            },
+            "jointProcurement": {
+                "isJointProcurement": False
+            },
+            "procedureOutsourcing": {
+                "procedureOutsourced": False
+            },
+            "framework": {
+                "isAFramework": False
+            },
+            "dynamicPurchasingSystem": {
+                "hasDynamicPurchasingSystem": False
+            },
+            "legalBasis": "REGULATION_966_2012",
+            "procurementMethod": "open",
+            "procurementMethodDetails": "TEST_microValue",
+            "mainProcurementCategory": "goods",
+            "eligibilityCriteria": "Regulile generale privind naționalitatea și originea, precum și alte criterii de eligibilitate sunt enumerate în Ghidul practic privind procedurile de contractare a acțiunilor externe ale UE (PRAG)",
+            "contractPeriod": {
+                "startDate": "2020-02-29T10:30:40Z",
+                "endDate": "2020-03-30T10:30:40Z"
+            },
+            "procuringEntity": {
+                "id": "MD-IDNO-12",
+                "name": "name of procuringEntity",
+                "identifier": {
+                    "scheme": "MD-IDNO",
+                    "id": "12",
+                    "legalName": "identifier/legal name2",
+                    "uri": "uri"
+                },
+                "additionalIdentifiers": [{
+                    "scheme": "md-idno",
+                    "id": "445521",
+                    "legalName": "legalName",
+                    "uri": "uri"
+                }],
+                "address": {
+                    "streetAddress": "street address",
+                    "addressDetails": {
+                        "country": {
+                            "scheme": "iso-alpha2",
+                            "id": "MD",
+                            "description": "MOLDOVA",
+                            "uri": "http://reference.iatistandard.org"
+                        },
+                        "region": {
+                            "scheme": "CUATM",
+                            "id": "0101000",
+                            "description": "mun.Chişinău",
+                            "uri": "http://statistica.md"
+                        },
+                        "locality": {
+                            "scheme": "other",
+                            "id": "localityid",
+                            "description": "locality/description"
+                        }
+                    }
+                },
+                "contactPoint": {
+                    "name": "contactPoint/name",
+                    "email": "contactPoint/email",
+                    "telephone": "contactPoint/456-95-96",
+                    "faxNumber": "fax-number",
+                    "url": "url"
+                },
+                "persones": [{
+                    "title": "persones.title",
+                    "name": "persones.name",
+                    "identifier": {
+                        "scheme": "MD-IDNO",
+                        "id": "88888000",
+                        "uri": "http://petrusenko.com/illia"
+                    },
+                    "businessFunctions": [{
+                        "id": "businessFunctions id",
+                        "type": "authority",
+                        "jobTitle": "Chief Executive Officer",
+                        "period": {
+                            "startDate": "2019-10-30T00:00:35Z"
+                        }
+                    }]
+                }]
+            },
+            "value": {
+                "amount": 10.00,
+                "currency": "EUR"
+            },
+            "lotGroups": [{
+                "optionToCombine": False
+            }],
+            "lots": [
+                {
+                    "id": "3ce7a92d-d504-4529-89c0-abab2e30bd6b",
+                    "title": "lots title",
+                    "description": "lots description",
+                    "status": "STATUS",
+                    "statusDetails": "STATUS_DETAILS",
+                    "value": {
+                        "amount": 10.00,
+                        "currency": "EUR"
+                    },
+                    "options": [{
+                        "hasOptions": False
+                    }],
+                    "variants": [{
+                        "hasVariants": False
+                    }],
+                    "renewals": [{
+                        "hasRenewals": False
+                    }],
+                    "recurrentProcurement": [{
+                        "isRecurrent": False
+                    }],
+                    "contractPeriod": {
+                        "startDate": "2020-02-29T10:30:40Z",
+                        "endDate": "2020-03-30T10:30:40Z"
+                    },
+                    "placeOfPerformance": {
+                        "address": {
+                            "streetAddress": "placeOfPerformance streetAddress",
+                            "addressDetails": {
+                                "country": {
+                                    "scheme": "iso-alpha2",
+                                    "id": "MD",
+                                    "description": "MOLDOVA",
+                                    "uri": "http://reference.iatistandard.org"
+                                },
+                                "region": {
+                                    "scheme": "CUATM",
+                                    "id": "1000000",
+                                    "description": "Anenii Noi",
+                                    "uri": "http://statistica.md"
+                                },
+                                "locality": {
+                                    "scheme": "locality scheme",
+                                    "id": "locality id",
+                                    "description": "locality description"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "1ce7a82d-d504-4529-89c0-abab2e30bd6b",
+                    "title": "lots title",
+                    "description": "lots description",
+                    "status": "STATUS",
+                    "statusDetails": "STATUS_DETAILS",
+                    "value": {
+                        "amount": 1.00,
+                        "currency": "EUR"
+                    },
+                    "options": [{
+                        "hasOptions": False
+                    }],
+                    "variants": [{
+                        "hasVariants": False
+                    }],
+                    "renewals": [{
+                        "hasRenewals": False
+                    }],
+                    "recurrentProcurement": [{
+                        "isRecurrent": False
+                    }],
+                    "contractPeriod": {
+                        "startDate": "2020-02-29T10:30:40Z",
+                        "endDate": "2020-03-30T10:30:40Z"
+                    },
+                    "placeOfPerformance": {
+                        "address": {
+                            "streetAddress": "placeOfPerformance streetAddress",
+                            "addressDetails": {
+                                "country": {
+                                    "scheme": "iso-alpha2",
+                                    "id": "MD",
+                                    "description": "MOLDOVA",
+                                    "uri": "http://reference.iatistandard.org"
+                                },
+                                "region": {
+                                    "scheme": "CUATM",
+                                    "id": "1000000",
+                                    "description": "Anenii Noi",
+                                    "uri": "http://statistica.md"
+                                },
+                                "locality": {
+                                    "scheme": "locality scheme",
+                                    "id": "locality id",
+                                    "description": "locality description"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "items": [
+                {
+                    "id": "700b19b0-5756-4b25-b0c4-9e4522d1e12f",
+                    "classification": {
+                        "scheme": "CPV",
+                        "description": "Produse lactate",
+                        "id": "15500000-3"
+                    },
+                    "additionalClassifications": [{
+                        "scheme": "CPVS",
+                        "description": "Plastic",
+                        "id": "AB06-7"
+                    }],
+                    "quantity": 1.000,
+                    "unit": {
+                        "id": "121",
+                        "name": "Metru cub consistent"
+                    },
+                    "description": "items description",
+                    "relatedLot": "3ce7a92d-d504-4529-89c0-abab2e30bd6b"
+                },
+                {
+                    "id": "2ce7a82d-d504-4529-89c0-abab2e30bd6b",
+                    "classification": {
+                        "scheme": "CPV",
+                        "description": "Produse lactate",
+                        "id": "15500000-3"
+                    },
+                    "additionalClassifications": [{
+                        "scheme": "CPVS",
+                        "description": "Plastic",
+                        "id": "AB06-7"
+                    }],
+                    "quantity": 1.000,
+                    "unit": {
+                        "id": "121",
+                        "name": "Metru cub consistent"
+                    },
+                    "description": "items description",
+                    "relatedLot": "1ce7a82d-d504-4529-89c0-abab2e30bd6b"
+                }
+            ],
+            "awardCriteria": "priceOnly",
+            "awardCriteriaDetails": "automated",
+            "requiresElectronicCatalogue": False,
+            "submissionMethod": ["electronicSubmission"],
+            "submissionMethodRationale": [
+                "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"],
+            "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+            "documents": [{
+                "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                "documentType": "billOfQuantity",
+                "title": "doc1т"
+            }]
+        }
+    }

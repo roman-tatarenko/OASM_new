@@ -134,3 +134,22 @@ def prepared_payload_createAmendment(prepared_request_id, prepared_amendment_id,
             "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
         }
     }
+
+
+@pytest.fixture(scope='function')
+def prepared_payload_getLotIds(prepared_request_id, prepared_cpid, prepared_ev_ocid):
+    return {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "action": "getLotIds",
+        "params": {
+            "states": [
+                {
+                    "status": "active",
+                    "statusDetails": "empty"
+                }
+            ],
+            "cpid": f"{prepared_cpid}",
+            "ocid": f"{prepared_ev_ocid}"
+        }
+    }
