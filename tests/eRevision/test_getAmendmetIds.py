@@ -9,7 +9,7 @@ from pytest_testrail.plugin import pytestrail
 @pytest.mark.parametrize("relatesTo",
                          [pytest.param("tender", marks=pytestrail.case('C8061')),
                           pytest.param("lot", marks=pytestrail.case('C8066'))])
-def test_the_eRevision_does_not_return_amendment_ids_if_there_is_no_amendments_in_pending_status_for_(
+def test_the_eRevision_does_not_return_amendment_ids_if_there_is_no_amendments_in_pending_status_for(
         host, port, relatesTo,
         prepared_request_id,
         prepared_cpid, prepared_payload_getAmendmentIds,
@@ -62,38 +62,6 @@ def test_the_eRevision_return_amendment_ids_if_there_is_amendments_in_pending_ca
     }
 
     assert expectedresult == actualresult, prepared_cpid
-
-
-@pytest.mark.parametrize("relatesTo",
-                         [pytest.param("tender", marks=pytestrail.case('C8067')),
-                          pytest.param("lot", marks=pytestrail.case('C8067'))])
-def test_the_eRevision_does_not_return_amendment_ids_without_version_in_payload(port, host, relatesTo,
-                                                                                prepared_request_id,
-                                                                                prepared_payload_getAmendmentIds
-                                                                                ):
-    payload = prepared_payload_getAmendmentIds()
-    del payload['version']
-
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    expectedresult = {
-        "version": "1.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": "DR-1/21",
-                "description": "Missing required attribute 'version'.",
-                "details": [
-                    {
-                        "name": "version"
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert expectedresult == actualresult, actualresult
 
 
 @pytestrail.case('C8391')
@@ -171,30 +139,41 @@ def test_the_eRevisions_does_not_returns_amendment_ids_with_incorrect_version_in
     assert expectedresult == actualresult, actualresult
 
 
-@pytestrail.case('C8384')
-def test_the_eRevisions_behavior_without_id_in_payload(host, port,
-                                                       prepared_payload_getAmendmentIds):
+@pytest.mark.parametrize("param",
+                         [pytest.param("id", marks=pytestrail.case('C8384')),
+                          pytest.param("action", marks=pytestrail.case('C8390')),
+                          pytest.param("params", marks=pytestrail.case('C8397')),
+                          pytest.param("version", marks=pytestrail.case('C8067'))
+
+                          ])
+def test_getAmendmentIds_behavior_without_param(host, port, param, prepared_request_id,
+                                                prepared_payload_getAmendmentIds):
     payload = prepared_payload_getAmendmentIds()
-    del payload['id']
+
+    del payload[param]
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     expectedresult = {
         "version": "2.0.0",
-        "id": "00000000-0000-0000-0000-000000000000",
+        "id": f"{prepared_request_id}",
         "status": "error",
         "result": [
             {
                 "code": "DR-1/21",
-                "description": "Missing required attribute 'id'.",
+                "description": f"Missing required attribute '{param}'.",
                 "details": [
                     {
-                        "name": "id"
+                        "name": param
                     }
                 ]
             }
         ]
     }
+    if param == "id":
+        expectedresult['id'] = "00000000-0000-0000-0000-000000000000"
+    if param == "version":
+        expectedresult['version'] = "1.0.0"
 
     assert expectedresult == actualresult, actualresult
 
@@ -230,34 +209,6 @@ def test_the_eRevisions_behavior_with_incorrect_id_in_payload(host, port, prepar
                 "details": [
                     {
                         "name": "id"
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert expectedresult == actualresult, actualresult
-
-
-@pytestrail.case('C8390')
-def test_the_eRevisions_behavior_without_action_in_payload(port, host, prepared_payload_getAmendmentIds,
-                                                           prepared_request_id):
-    payload = prepared_payload_getAmendmentIds()
-    del payload['action']
-
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": "DR-1/21",
-                "description": "Missing required attribute 'action'.",
-                "details": [
-                    {
-                        "name": "action"
                     }
                 ]
             }
@@ -310,35 +261,6 @@ def test_the_eRevisions_behavior_with_invalid_action_in_payload(host, port, prep
                 "details": [
                     {
                         "name": "action"
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert expectedresult == actualresult, actualresult
-
-
-@pytestrail.case('C8397')
-def test_the_eRevision_does_not_returns_amendment_ids_without_params_in_payload(port, host,
-                                                                                prepared_payload_getAmendmentIds,
-                                                                                prepared_request_id):
-    payload = prepared_payload_getAmendmentIds()
-    del payload['params']
-
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": "DR-1/21",
-                "description": "Missing required attribute 'params'.",
-                "details": [
-                    {
-                        "name": "params"
                     }
                 ]
             }
