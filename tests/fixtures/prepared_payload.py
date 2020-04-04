@@ -153,3 +153,18 @@ def prepared_payload_getLotIds(prepared_request_id, prepared_cpid, prepared_ev_o
             "ocid": f"{prepared_ev_ocid}"
         }
     }
+
+
+@pytest.fixture(scope='function')
+def prepared_payload_checkAccessToTender(prepared_request_id, prepared_cpid, prepared_ev_ocid):
+    return {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "action": "checkAccessToTender",
+        "params": {
+            "cpid": f"{prepared_cpid}",
+            "ocid": f"{prepared_ev_ocid}",
+            "token": "UUID_1",
+            "owner": "UUID_2"
+        }
+    }

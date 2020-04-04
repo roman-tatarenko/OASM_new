@@ -350,12 +350,12 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
     expectedresult = {
-        "version": "1.0.0",
+        "version": "2.0.0",
         "id": f"{prepared_request_id}",
         "status": "error",
         "result": [
             {
-                "code": "RQ-1/3",
+                "code": "RQ-02/3",
                 "description": "Error parsing 'params'",
                 "details": [
                     {
@@ -378,41 +378,37 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
 @pytest.mark.parametrize("param,value,code,description",
                          [
                              pytest.param("version", "", "DR-4/3",
-                                          "Data format mismatch of attribute 'version'."
-                                          " Expected data format: '00.00.00', actual value: ''.",
+                                          "Data format mismatch. Expected data format: '00.00.00', actual value: ''.",
                                           marks=pytestrail.case('C8466')),
                              pytest.param("id", "", "DR-4/3",
-                                          "Data format mismatch of attribute 'id'."
-                                          " Expected data format: 'uuid', actual value: ''.",
+                                          "Data format mismatch. Expected data format: 'uuid', actual value: ''.",
                                           marks=pytestrail.case('C8467')),
                              pytest.param("action", "", "DR-3/3",
-                                          "Attribute value mismatch of 'action' with one of enum expected values.",
+                                          "Attribute value mismatch with one of enum expected values."
+                                          " Expected values: 'getLotIds, checkAccessToTender, getLotStateByIds,"
+                                          " responderProcessing, checkPersonesStructure', actual value: ''.",
                                           marks=pytestrail.case('C8468')),
                              pytest.param("version", 3.14, "DR-2/3",
-                                          "Data type mismatch of attribute 'version'."
+                                          "Data type mismatch."
                                           " Expected data type: 'STRING', actual data type: 'NUMBER'.",
                                           marks=pytestrail.case('C8642')),
                              pytest.param("id", 3.14, "DR-2/3",
-                                          "Data type mismatch of attribute 'id'."
+                                          "Data type mismatch."
                                           " Expected data type: 'STRING', actual data type: 'NUMBER'.",
                                           marks=pytestrail.case('C8643')),
                              pytest.param("action", 3.14, "DR-2/3",
-                                          "Data type mismatch of attribute 'action'."
-                                          " Expected data type: 'STRING', actual data type: 'NUMBER'.",
-                                          marks=pytestrail.case('C8643')),
-                             pytest.param("action", 3.14, "DR-2/3",
-                                          "Data type mismatch of attribute 'action'."
+                                          "Data type mismatch."
                                           " Expected data type: 'STRING', actual data type: 'NUMBER'.",
                                           marks=pytestrail.case('C8644')),
-                             pytest.param("version", True, "DR-2/3", "Data type mismatch of attribute 'version'."
-                                                                     " Expected data type:"
-                                                                     " 'STRING', actual data type: 'BOOLEAN'.",
+                             pytest.param("version", True, "DR-2/3", "Data type mismatch."
+                                                                     " Expected data type: 'STRING',"
+                                                                     " actual data type: 'BOOLEAN'.",
                                           marks=pytestrail.case('C8645')),
-                             pytest.param("id", True, "DR-2/3", "Data type mismatch of attribute 'id'."
+                             pytest.param("id", True, "DR-2/3", "Data type mismatch."
                                                                 " Expected data type: 'STRING',"
                                                                 " actual data type: 'BOOLEAN'.",
                                           marks=pytestrail.case('C8646')),
-                             pytest.param("action", True, "DR-2/3", "Data type mismatch of attribute 'action'."
+                             pytest.param("action", True, "DR-2/3", "Data type mismatch."
                                                                     " Expected data type: 'STRING',"
                                                                     " actual data type: 'BOOLEAN'.",
                                           marks=pytestrail.case('C8647')),
@@ -457,16 +453,22 @@ def test_eAccess_returns_response_with_status_error_if_request_contains(port, ho
 @pytest.mark.parametrize("param,value,code,description",
                          [
                              pytest.param("status", [{"status": "", "statusDetails": "empty"}], "DR-3/3",
-                                          "Attribute value mismatch with one of enum expected values.",
+                                          "Attribute value mismatch with one of enum expected values. "
+                                          "Expected values: 'planning, active, cancelled, unsuccessful,"
+                                          " complete', actual value: ''.",
                                           marks=pytestrail.case('C8470')),
                              pytest.param("statusDetails", [{"status": "active", "statusDetails": ""}], "DR-3/3",
-                                          "Attribute value mismatch with one of enum expected values.",
+                                          "Attribute value mismatch with one of enum expected values."
+                                          " Expected values: 'awarded, empty', actual value: ''.",
                                           marks=pytestrail.case('C8471')),
                              pytest.param("status", [{"status": ""}], "DR-3/3",
-                                          "Attribute value mismatch with one of enum expected values.",
+                                          "Attribute value mismatch with one of enum expected values."
+                                          " Expected values: 'planning, active, cancelled, unsuccessful,"
+                                          " complete', actual value: ''.",
                                           marks=pytestrail.case('C8472')),
-                             pytest.param("statusDetails", [{"statusDetails": " "}], "DR-3/3",
-                                          "Attribute value mismatch with one of enum expected values.",
+                             pytest.param("statusDetails", [{"statusDetails": ""}], "DR-3/3",
+                                          "Attribute value mismatch with one of enum expected values."
+                                          " Expected values: 'awarded, empty', actual value: ''.",
                                           marks=pytestrail.case('C8473')),
                              pytest.param("statusDetails", [{"statusDetails": "withdrawn"}], "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
@@ -516,12 +518,13 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_status(p
 @pytest.mark.parametrize("param,value,code,description",
                          [
                              pytest.param('cpid', "", "DR-5/3",
-                                          "Data mismatch of attribute 'cpid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: ''.",
+                                          "Data mismatch to pattern:"
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. Actual value: ''.",
                                           marks=pytestrail.case('C8474')),
                              pytest.param("ocid", "", "DR-5/3",
-                                          "Data mismatch of attribute 'cpid' to the pattern:"
-                                          " '^([a-z]{4})-([a-z0-9]{6})-([A-Z]{2})-[0-9]{13}$'. Actual value: ''.",
+                                          "Data mismatch to pattern: "
+                                          "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
+                                          " Actual value: ''.",
                                           marks=pytestrail.case('C8475')),
 
                          ])
@@ -677,8 +680,8 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_status_o
         "status": "error",
         "result": [
             {
-                "code": "RQ-1/3",
-                "description": "Error parsing 'params'"
+                "code": "RQ-02/3",
+                "description": "Can not parse 'params'."
             }
         ]
     }
