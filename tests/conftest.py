@@ -29,3 +29,21 @@ def port():
         eRevision: int = 9351
 
     return Port
+
+
+@pytest.fixture(scope='function')
+def response_success(prepared_request_id):
+    return {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "success"
+    }
+
+
+@pytest.fixture(scope='function')
+def response_error(prepared_request_id):
+    return {
+        "version": "2.0.0",
+        "id": f"{prepared_request_id}",
+        "status": "error"
+    }

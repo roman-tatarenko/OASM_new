@@ -18,9 +18,10 @@ from pytest_testrail.plugin import pytestrail
 def test_on_eRevision_is_assign_pending_value_for_result_status(port, host, param, value, operationType,
                                                                 prepared_entity_id,
                                                                 prepared_payload_createAmendment):
+    related_entity_id = prepared_entity_id
     payload = prepared_payload_createAmendment
     payload['params']['operationType'] = operationType
-    payload['params']['relatedEntityId'] = f"{prepared_entity_id}"
+    payload['params']['relatedEntityId'] = f"{related_entity_id}"
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
@@ -38,21 +39,20 @@ def test_on_eRevision_is_assign_pending_value_for_result_status(port, host, para
 def test_the_eRevision_correctly_sets_value_for_result_relatedItem(port, host, operationType,
                                                                    prepared_entity_id,
                                                                    prepared_payload_createAmendment):
+    related_entity_id = prepared_entity_id
     payload = prepared_payload_createAmendment
     payload['params']['operationType'] = operationType
-    payload['params']['relatedEntityId'] = f"{prepared_entity_id}"
+    payload['params']['relatedEntityId'] = f"{related_entity_id}"
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = f"{prepared_entity_id}"
+    expectedresult = f"{related_entity_id}"
 
     assert actualresult['result']['relatedItem'] == expectedresult, actualresult
 
 
 @pytestrail.case('C8344')
-def test_the_eRevision_sets_result_token(port, host,
-                                         prepared_entity_id,
-                                         prepared_payload_createAmendment):
+def test_the_eRevision_sets_result_token(port, host, prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
@@ -685,29 +685,31 @@ def test_on_possibility_to_create_amendment_for_tender_without_params_amendment_
                          ])
 def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port, host, param, value, prepared_entity_id,
                                                                            prepared_request_id, prepared_ev_ocid,
-                                                                           prepared_cpid, prepared_amendment_id,
+                                                                           prepared_cpid,
                                                                            prepared_payload_createAmendment,
                                                                            execute_select_revision_amendments_by_id):
+    related_entity_id = prepared_entity_id
+    amendment_id = prepared_entity_id
     payload = prepared_payload_createAmendment
-    payload['params']['relatedEntityId'] = f"{prepared_entity_id}"
+    payload['params']['relatedEntityId'] = f"{related_entity_id}"
     payload['params']['operationType'] = value
 
     requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     actual_result = execute_select_revision_amendments_by_id(cpid=prepared_cpid, ocid=prepared_ev_ocid,
-                                                             id=prepared_amendment_id).one()
+                                                             id=amendment_id).one()
 
     actual_data = json.loads(actual_result.data)
 
     expected_data = {
-        "id": f"{prepared_amendment_id}",
+        "id": f"{amendment_id}",
         "date": "2020-02-28T16:14:54Z",
         "rationale": "Some_string_1",
         "description": "Some_string_2",
         "status": "pending",
         "type": "cancellation",
         "relatesTo": f"{param}",
-        "relatedItem": f"{prepared_entity_id}",
+        "relatedItem": f"{related_entity_id}",
         "token": f"{actual_data['token']}",
         "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "documents": [{
@@ -720,7 +722,7 @@ def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port,
 
     check.equal(actual_result.cpid, prepared_cpid)
     check.equal(actual_result.ocid, prepared_ev_ocid)
-    check.equal(actual_result.id, prepared_amendment_id)
+    check.equal(actual_result.id, amendment_id)
     check.equal(actual_data, expected_data)
 
 
@@ -739,9 +741,10 @@ def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port,
 def test_on_impossibility_to_create_amendment_with_invalid_param_rationale_in_amendment(port, host, param, value, code,
                                                                                         description,
                                                                                         prepared_request_id,
-                                                                                        prepared_amendment_id,
+                                                                                        prepared_entity_id,
                                                                                         prepared_payload_createAmendment,
                                                                                         prepared_ev_ocid):
+    amendment_id = prepared_entity_id
     payload = prepared_payload_createAmendment
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -763,7 +766,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_rationale_in_am
                     "description": "amendments documents description"
                 }
             ],
-            "id": f"{prepared_amendment_id}",
+            "id": f"{amendment_id}",
             "date": "2020-02-28T16:14:54Z",
             "status": "pending",
             "type": "cancellation",

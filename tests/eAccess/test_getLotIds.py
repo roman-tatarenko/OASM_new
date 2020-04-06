@@ -50,9 +50,10 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
                                         prepared_payload_getLotIds, prepared_data_access_tender,
                                         clear_access_tender_by_cpid):
     data = prepared_data_access_tender
+    lot_id = prepared_entity_id
 
     data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{prepared_entity_id}"
+    data['tender']['lots'][0]['id'] = f"{lot_id}"
     data['tender']['lots'][0]['status'] = status
     data['tender']['lots'][0]['statusDetails'] = statusDetails
 
@@ -69,7 +70,7 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
         "version": "2.0.0",
         "id": f"{prepared_request_id}",
         "result": [
-            f"{prepared_entity_id}"
+            f"{lot_id}"
         ],
         "status": "success"
     }
@@ -113,12 +114,13 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
                          ])
 def test_eAccess_without_result(host, states, port, status, statusDetails, execute_insert_into_access_tender,
                                 prepared_cpid,
-                                prepared_entity_id, prepared_token_entity, prepared_request_id,
+                                prepared_entity_id, prepared_token_entity, response_success,
                                 prepared_payload_getLotIds, prepared_data_access_tender, clear_access_tender_by_cpid):
     data = prepared_data_access_tender
+    lotId = prepared_entity_id
 
     data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{prepared_entity_id}"
+    data['tender']['lots'][0]['id'] = f"{lotId}"
     data['tender']['lots'][0]['status'] = status
     data['tender']['lots'][0]['statusDetails'] = statusDetails
 
@@ -129,15 +131,11 @@ def test_eAccess_without_result(host, states, port, status, statusDetails, execu
     payload = prepared_payload_getLotIds
     payload['params']['states'] = states
 
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expectedresult = response_success
 
-    assert actual_result == expected_result
+    assert actualresult == expectedresult
 
 
 @pytest.mark.parametrize("states,status,statusDetails",
@@ -203,7 +201,7 @@ def test_eAccess_returns_successful_response_without_result_array(host, states, 
                                                                   execute_insert_into_access_tender,
                                                                   prepared_cpid,
                                                                   prepared_entity_id, prepared_token_entity,
-                                                                  prepared_request_id,
+                                                                  response_success,
                                                                   prepared_payload_getLotIds,
                                                                   prepared_data_access_tender_2_lots,
                                                                   clear_access_tender_by_cpid):
@@ -228,15 +226,11 @@ def test_eAccess_returns_successful_response_without_result_array(host, states, 
     payload = prepared_payload_getLotIds
     payload['params']['states'] = states
 
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expectedresult = response_success
 
-    assert actual_result == expected_result
+    assert actualresult == expectedresult
 
 
 @pytest.mark.parametrize("param,states,status,statusDetails,description",
@@ -261,9 +255,10 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_an_inval
                                                                                                    prepared_data_access_tender,
                                                                                                    clear_access_tender_by_cpid):
     data = prepared_data_access_tender
+    lot_id = prepared_entity_id
 
     data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{prepared_entity_id}"
+    data['tender']['lots'][0]['id'] = f"{lot_id}"
     data['tender']['lots'][0]['status'] = status
     data['tender']['lots'][0]['statusDetails'] = statusDetails
 
@@ -365,12 +360,6 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
             }
         ]
     }
-
-    if param == "id":
-        expectedresult['id'] = "00000000-0000-0000-0000-000000000000"
-
-    if param in {"action", "params", "id"}:
-        expectedresult['version'] = '2.0.0'
 
     assert actualresult == expectedresult
 
@@ -578,10 +567,11 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_request_does_not_c
                                                                                                     prepared_payload_getLotIds,
                                                                                                     prepared_data_access_tender,
                                                                                                     clear_access_tender_by_cpid):
+    lot_id = prepared_entity_id
     data = prepared_data_access_tender
 
     data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{prepared_entity_id}"
+    data['tender']['lots'][0]['id'] = f"{lot_id}"
     data['tender']['lots'][0]['status'] = status
     data['tender']['lots'][0]['statusDetails'] = statusDetails
 
@@ -598,7 +588,7 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_request_does_not_c
         "version": "2.0.0",
         "id": f"{prepared_request_id}",
         "result": [
-            f"{prepared_entity_id}"
+            f"{lot_id}"
         ],
         "status": "success"
     }
@@ -701,14 +691,15 @@ def test_eAccess_returns_successful_response_without_result_if_request_contain_e
                                                                                                              prepared_cpid,
                                                                                                              prepared_entity_id,
                                                                                                              prepared_token_entity,
-                                                                                                             prepared_request_id,
+                                                                                                             response_success,
                                                                                                              prepared_payload_getLotIds,
                                                                                                              prepared_data_access_tender,
                                                                                                              clear_access_tender_by_cpid):
     data = prepared_data_access_tender
+    lot_id = prepared_entity_id
 
     data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{prepared_entity_id}"
+    data['tender']['lots'][0]['id'] = f"{lot_id}"
     data['tender']['lots'][0]['status'] = status
     data['tender']['lots'][0]['statusDetails'] = statusDetails
 
@@ -721,10 +712,6 @@ def test_eAccess_returns_successful_response_without_result_if_request_contain_e
 
     actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expected_result = response_success
 
     assert actual_result == expected_result

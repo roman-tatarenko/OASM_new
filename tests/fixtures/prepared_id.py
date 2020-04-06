@@ -48,26 +48,6 @@ def prepared_release_id(prepared_ocid):
 
 
 @pytest.fixture(scope='function')
-def prepared_lotid():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
-def prepared_acid():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
-def prepared_canid():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
-def prepared_bidid():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
 def prepared_request_id():
     return uuid4()
 
@@ -83,20 +63,13 @@ def prepared_token_entity():
 
 
 @pytest.fixture(scope='function')
-def prepared_award_id():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
-def prepared_amendment_id():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
-def prepared_relatedItem_id():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
 def prepared_entity_id():
-    return uuid4()
+    def _prepared_entity_id():
+        return uuid4()
+
+    return _prepared_entity_id
+
+
+@pytest.fixture(scope='function')
+def prepared_owner():
+    return '3fa85f64-5717-4562-b3fc-2c963f66afa6'

@@ -4,3 +4,6 @@ cassandra-driver
 pytest-testrail
 kafka-python
 psycopg2-binary
+hypothesis
+rstr
+

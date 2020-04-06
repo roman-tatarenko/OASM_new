@@ -79,7 +79,7 @@ def prepared_payload_getAmendmentIds(prepared_request_id, prepared_cpid, prepare
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_dataValidation(prepared_request_id, prepared_amendment_id, prepared_cpid, prepared_ev_ocid):
+def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id, prepared_cpid, prepared_ev_ocid):
     def with_values(id=prepared_request_id):
         return {
             "version": "2.0.0",
@@ -97,7 +97,7 @@ def prepared_payload_dataValidation(prepared_request_id, prepared_amendment_id, 
                             "description": "string"
                         }
                     ],
-                    "id": f"{prepared_amendment_id}"
+                    "id": f"{prepared_entity_id}"
                 },
                 "cpid": f"{prepared_cpid}",
                 "ocid": f"{prepared_ev_ocid}",
@@ -109,7 +109,7 @@ def prepared_payload_dataValidation(prepared_request_id, prepared_amendment_id, 
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_createAmendment(prepared_request_id, prepared_amendment_id, prepared_cpid, prepared_ev_ocid):
+def prepared_payload_createAmendment(prepared_request_id, prepared_entity_id, prepared_cpid, prepared_ev_ocid):
     return {
         "version": "2.0.0",
         "id": f"{prepared_request_id}",
@@ -124,7 +124,7 @@ def prepared_payload_createAmendment(prepared_request_id, prepared_amendment_id,
                     "title": "amendments documents title",
                     "description": "amendments documents description"
                 }],
-                "id": f"{prepared_amendment_id}"
+                "id": f"{prepared_entity_id}"
             },
             "relatedEntityId": f"{prepared_ev_ocid}",
             "operationType": "tenderCancellation",
@@ -156,7 +156,8 @@ def prepared_payload_getLotIds(prepared_request_id, prepared_cpid, prepared_ev_o
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_checkAccessToTender(prepared_request_id, prepared_cpid, prepared_ev_ocid):
+def prepared_payload_checkAccessToTender(prepared_request_id, prepared_cpid, prepared_ev_ocid, prepared_token_entity,
+                                         prepared_owner):
     return {
         "version": "2.0.0",
         "id": f"{prepared_request_id}",
@@ -164,7 +165,7 @@ def prepared_payload_checkAccessToTender(prepared_request_id, prepared_cpid, pre
         "params": {
             "cpid": f"{prepared_cpid}",
             "ocid": f"{prepared_ev_ocid}",
-            "token": "UUID_1",
-            "owner": "UUID_2"
+            "token": f"{prepared_token_entity}",
+            "owner": f"{prepared_owner}"
         }
     }

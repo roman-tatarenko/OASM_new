@@ -10,39 +10,34 @@ from pytest_testrail.plugin import pytestrail
                              pytest.param("tenderCancellation", marks=pytestrail.case('C8111')),
                              pytest.param("lotCancellation", marks=pytestrail.case('C8112'))
                          ])
-def test_on_dataValidation_with_a_valid_data(host, port, operationType, prepared_request_id,
+def test_on_dataValidation_with_a_valid_data(host, port, operationType, response_success,
                                              prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
     payload['params']['operationType'] = operationType
+    actual_result = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+
+    expected_result = response_success
+
+    assert actual_result == expected_result, actual_result
+
+
+@pytest.mark.parametrize("param",
+                         [
+                             pytest.param("version", marks=pytestrail.case('C8113')),
+                             pytest.param("id", marks=pytestrail.case('C8114')),
+                             pytest.param("action", marks=pytestrail.case('C8115')),
+                             pytest.param("params", marks=pytestrail.case('C8116'))
+                         ])
+def test_on_dataValidation_without_attribute_in_payload(host, port, param, prepared_request_id,
+                                                        prepared_payload_dataValidation):
+    payload = prepared_payload_dataValidation()
+
+    del payload[param]
+
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     expectedresult = {
         "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
-
-    assert actualresult == expectedresult, actualresult
-
-
-@pytest.mark.parametrize("param,version",
-                         [
-                             pytest.param("version", "1.0.0", marks=pytestrail.case('C8113')),
-                             pytest.param("id", "2.0.0", marks=pytestrail.case('C8114')),
-                             pytest.param("action", "2.0.0", marks=pytestrail.case('C8115')),
-                             pytest.param("params", "2.0.0", marks=pytestrail.case('C8116'))
-                         ])
-def test_on_dataValidation_without_attribute_in_payload(host, port, param, version, prepared_request_id,
-                                                        prepared_payload_dataValidation):
-    payload = prepared_payload_dataValidation()
-    del payload[param]
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    if param == "id":
-        prepared_request_id = '00000000-0000-0000-0000-000000000000'
-
-    expectedresult = {
-        "version": version,
         "id": f"{prepared_request_id}",
         "status": "error",
         "result": [
@@ -58,6 +53,11 @@ def test_on_dataValidation_without_attribute_in_payload(host, port, param, versi
         ]
     }
 
+    if param == "id":
+        expectedresult['id'] = '00000000-0000-0000-0000-000000000000'
+    if param == "version":
+        expectedresult['version'] = '1.0.0'
+
     assert actualresult == expectedresult, actualresult
 
 
@@ -68,8 +68,8 @@ def test_on_dataValidation_without_attribute_in_payload(host, port, param, versi
                              pytest.param("ocid", marks=pytestrail.case('C8127')),
                              pytest.param("operationType", marks=pytestrail.case('C8128'))
                          ])
-def test_on_dataValidation_without_params_in_payload(host, port, param, prepared_request_id,
-                                                     prepared_payload_dataValidation):
+def test_on_dataValidation_without_param_in_params(host, port, param, prepared_request_id,
+                                                   prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
     del payload['params'][param]
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -95,10 +95,12 @@ def test_on_dataValidation_without_params_in_payload(host, port, param, prepared
                              pytest.param("id", marks=pytestrail.case('C8625')),
 
                          ])
-def test_on_dataValidation_without_required_params_in_amendment_in_payload(host, port, param, prepared_request_id,
-                                                                           prepared_payload_dataValidation):
+def test_on_dataValidation_without_required_attribute_in_amendment(host, port, param, prepared_request_id,
+                                                                   prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
+
     del payload['params']['amendment'][param]
+
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     expectedresult = {
@@ -121,40 +123,16 @@ def test_on_dataValidation_without_required_params_in_amendment_in_payload(host,
                              pytest.param("description", marks=pytestrail.case('C8119')),
                              pytest.param("documents", marks=pytestrail.case('C8120'))
                          ])
-def test_on_dataValidation_without_optional_params_in_amendment_in_payload(host, port, param, prepared_request_id,
-                                                                           prepared_amendment_id,
-                                                                           prepared_cpid, prepared_ev_ocid):
-    payload = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "action": "dataValidation",
-        "params": {
-            "amendment": {
-                "rationale": "Some_string_1",
-                "description": "Some_string_2",
-                "documents": [
-                    {
-                        "documentType": "cancellationDetails",
-                        "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
-                        "title": "string",
-                        "description": "string"
-                    }
-                ],
-                "id": f"{prepared_amendment_id}"
-            },
-            "cpid": f"{prepared_cpid}",
-            "ocid": f"{prepared_ev_ocid}",
-            "operationType": "tenderCancellation"
-        }
-    }
+def test_on_dataValidation_without_optional_attribute_in_amendment(host, port, param,
+                                                                   prepared_payload_dataValidation, response_success,
+                                                                   prepared_cpid, prepared_ev_ocid):
+    payload = prepared_payload_dataValidation()
+
     del payload['params']['amendment'][param]
+
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expectedresult = response_success
 
     assert actualresult == expectedresult, actualresult
 
@@ -165,12 +143,14 @@ def test_on_dataValidation_without_optional_params_in_amendment_in_payload(host,
                              pytest.param("id", marks=pytestrail.case('C8123')),
                              pytest.param("title", marks=pytestrail.case('C8124'))
                          ])
-def test_on_dataValidation_without_optional_params_in_amendment_documents_in_payload(host, port, param,
-                                                                                     prepared_request_id,
-                                                                                     prepared_payload_dataValidation,
-                                                                                     ):
+def test_on_dataValidation_without_optional_attribute_in_amendment_documents(host, port, param,
+                                                                             prepared_request_id,
+                                                                             prepared_payload_dataValidation,
+                                                                             ):
     payload = prepared_payload_dataValidation()
+
     del payload['params']['amendment']['documents'][0][param]
+
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     expectedresult = {
@@ -193,21 +173,17 @@ def test_on_dataValidation_without_optional_params_in_amendment_documents_in_pay
                              pytest.param("description", marks=pytestrail.case('C8125'))
                          ])
 def test_on_dataValidation_without_optional_params_in_amendment_documents_in_payload(host, port, param,
-                                                                                     prepared_request_id,
+                                                                                     response_success,
                                                                                      prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
 
     del payload['params']['amendment']['documents'][0][param]
 
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    actual_result = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expected_result = response_success
 
-    assert actualresult == expectedresult, actualresult
+    assert actual_result == expected_result, actual_result
 
 
 @pytest.mark.parametrize("param,value",
@@ -249,21 +225,18 @@ def test_on_dataValidation_with_incorrect_params_amendment_documents_documentTyp
                              pytest.param("version", "99.0.0", marks=pytestrail.case('C8129'))
                          ])
 def test_on_dataValidation_with_incorrect_version_in_payload(host, port, param, value,
-                                                             prepared_request_id,
+                                                             response_success,
                                                              prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
 
-    payload['version'] = value
+    payload[param] = value
 
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    actual_result = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = {
-        "version": "99.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expected_result = response_success
+    expected_result[param] = value
 
-    assert actualresult == expectedresult, actualresult
+    assert actual_result == expected_result, actual_result
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -405,17 +378,13 @@ def test_on_dataValidation_with_inccorect_params_in_payload(host, port, param, v
                              pytest.param("description", 3.14, marks=pytestrail.case('C8147')),
                              pytest.param("description", True, marks=pytestrail.case('C8148'))
                          ])
-def test_on_dataValidation_with_inccorect_type_param_in_amendment_payload(host, port, param, value, prepared_request_id,
+def test_on_dataValidation_with_inccorect_type_param_in_amendment_payload(host, port, param, value, response_success,
                                                                           prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expectedresult = response_success
 
     assert actualresult == expectedresult, payload
 
@@ -535,21 +504,17 @@ def test_on_dataValidation_with_inccorect_params_amendment_documents_documentTyp
 
                          ])
 def test_on_dataValidation_with_params_amendment_documents_in_payload(host, port, param, value,
-                                                                      prepared_request_id,
+                                                                      response_success,
                                                                       prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
 
     payload['params']['amendment']['documents'][0][param] = value
 
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    actual_result = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success"
-    }
+    expected_result = response_success
 
-    assert actualresult == expectedresult, payload
+    assert actual_result == expected_result, payload
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -581,7 +546,6 @@ def test_on_dataValidation_with_params_amendment_documents_in_payload(host, port
                                           " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
                                           " Actual value: ''.",
                                           marks=pytestrail.case('C8169')),
-
                              pytest.param("operationType", True, "DR-3/21",
                                           "Attribute value mismatch of 'operationType' with one of enum expected values."
                                           " Expected values: 'tenderCancellation, lotCancellation', actual value: 'true'.",
