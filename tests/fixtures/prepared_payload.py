@@ -109,31 +109,34 @@ def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id, pre
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_createAmendment(prepared_request_id, prepared_entity_id, prepared_cpid, prepared_ev_ocid):
-    return {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "action": "createAmendment",
-        "params": {
-            "amendment": {
-                "rationale": "Some_string_1",
-                "description": "Some_string_2",
-                "documents": [{
-                    "documentType": "cancellationDetails",
-                    "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
-                    "title": "amendments documents title",
-                    "description": "amendments documents description"
-                }],
-                "id": f"{prepared_entity_id}"
-            },
-            "relatedEntityId": f"{prepared_ev_ocid}",
-            "operationType": "tenderCancellation",
-            "startDate": "2020-02-28T16:14:54Z",
-            "cpid": f"{prepared_cpid}",
-            "ocid": f"{prepared_ev_ocid}",
-            "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+def prepared_payload_createAmendment(prepared_request_id, prepared_cpid, prepared_ev_ocid, prepared_entity_id):
+    def _prepared_payload_createAmendment(amendment_id=prepared_entity_id()):
+        return {
+            "version": "2.0.0",
+            "id": f"{prepared_request_id}",
+            "action": "createAmendment",
+            "params": {
+                "amendment": {
+                    "rationale": "Some_string_1",
+                    "description": "Some_string_2",
+                    "documents": [{
+                        "documentType": "cancellationDetails",
+                        "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+                        "title": "amendments documents title",
+                        "description": "amendments documents description"
+                    }],
+                    "id": f"{amendment_id}"
+                },
+                "relatedEntityId": f"{prepared_ev_ocid}",
+                "operationType": "tenderCancellation",
+                "startDate": "2020-02-28T16:14:54Z",
+                "cpid": f"{prepared_cpid}",
+                "ocid": f"{prepared_ev_ocid}",
+                "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
         }
-    }
+
+    return _prepared_payload_createAmendment
 
 
 @pytest.fixture(scope='function')

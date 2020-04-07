@@ -18,8 +18,8 @@ from pytest_testrail.plugin import pytestrail
 def test_on_eRevision_is_assign_pending_value_for_result_status(port, host, param, value, operationType,
                                                                 prepared_entity_id,
                                                                 prepared_payload_createAmendment):
-    related_entity_id = prepared_entity_id
-    payload = prepared_payload_createAmendment
+    related_entity_id = prepared_entity_id()
+    payload = prepared_payload_createAmendment(amendment_id=related_entity_id)
     payload['params']['operationType'] = operationType
     payload['params']['relatedEntityId'] = f"{related_entity_id}"
 
@@ -27,7 +27,7 @@ def test_on_eRevision_is_assign_pending_value_for_result_status(port, host, para
 
     expectedresult = value
 
-    assert actualresult['result'][param] == expectedresult, actualresult
+    assert actualresult['result'][param] == expectedresult, print(actualresult)
 
 
 @pytest.mark.parametrize("operationType",
@@ -39,8 +39,8 @@ def test_on_eRevision_is_assign_pending_value_for_result_status(port, host, para
 def test_the_eRevision_correctly_sets_value_for_result_relatedItem(port, host, operationType,
                                                                    prepared_entity_id,
                                                                    prepared_payload_createAmendment):
-    related_entity_id = prepared_entity_id
-    payload = prepared_payload_createAmendment
+    related_entity_id = prepared_entity_id()
+    payload = prepared_payload_createAmendment(amendment_id=related_entity_id)
     payload['params']['operationType'] = operationType
     payload['params']['relatedEntityId'] = f"{related_entity_id}"
 
@@ -53,7 +53,7 @@ def test_the_eRevision_correctly_sets_value_for_result_relatedItem(port, host, o
 
 @pytestrail.case('C8344')
 def test_the_eRevision_sets_result_token(port, host, prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     assert uuid.UUID(actualresult['result']['token']), actualresult
@@ -62,7 +62,7 @@ def test_the_eRevision_sets_result_token(port, host, prepared_payload_createAmen
 @pytestrail.case('C8343')
 def test_the_eRevision_correctly_sets_value_for_result_date(port, host,
                                                             prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
     assert actualresult['result']['date'] == payload['params']['startDate'], actualresult
@@ -87,7 +87,7 @@ def test_the_eRevision_correctly_sets_value_for_result_date(port, host,
 def test_on_impossibility_to_create_amendment_without_params_in_payload(port, host, param, code, description,
                                                                         prepared_request_id,
                                                                         prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload[param]
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -224,7 +224,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_payload(port
 def test_on_impossibility_to_create_amendment_without_param_in_params(port, host, param, code, description,
                                                                       prepared_request_id,
                                                                       prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload['params'][param]
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -311,7 +311,7 @@ def test_on_impossibility_to_create_amendment_without_param_in_params(port, host
 def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port, host, param, value, code,
                                                                            description, prepared_request_id,
                                                                            prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     payload['params'][param] = value
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -398,7 +398,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port,
 def test_on_impossibility_to_create_amendment_with_invalid_param_in_payload(port, host, param, value, code,
                                                                             description, prepared_request_id,
                                                                             prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     payload[param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
@@ -446,7 +446,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_payload(port
 def test_on_impossibility_to_create_amendment_with_invalid_param_in_amendment(port, host, param, value, code,
                                                                               description, prepared_request_id,
                                                                               prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
@@ -489,7 +489,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_amendment(po
 def test_on_impossibility_to_create_amendment_without_param_in_amendment(port, host, param, code, description,
                                                                          prepared_request_id,
                                                                          prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload['params']['amendment'][param]
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -529,7 +529,7 @@ def test_on_impossibility_to_create_amendment_without_param_in_amendment(port, h
 def test_on_impossibility_to_create_amendment_with_invalid_param_in_document(port, host, param, value, code,
                                                                              description, prepared_request_id,
                                                                              prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     payload['params']['amendment']['documents'][0][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
@@ -573,7 +573,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_document(por
 def test_on_impossibility_to_create_amendment_without_param_in_amendment_document(port, host, param, code, description,
                                                                                   prepared_request_id,
                                                                                   prepared_payload_createAmendment):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['documents'][0][param]
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -597,7 +597,7 @@ def test_on_impossibility_to_create_amendment_without_param_in_amendment_documen
 def test_on_possibility_to_create_amendment_without_params_amendment_documents_description(port, host,
                                                                                            prepared_payload_createAmendment,
                                                                                            prepared_request_id):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['documents'][0]['description']
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -616,7 +616,7 @@ def test_on_possibility_to_create_amendment_for_tender_without_params_amendment_
                                                                                           prepared_request_id,
                                                                                           prepared_payload_createAmendment
                                                                                           ):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['documents']
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -646,7 +646,7 @@ def test_on_possibility_to_create_amendment_for_tender_without_params_amendment_
                                                                                             prepared_request_id,
                                                                                             prepared_payload_createAmendment
                                                                                             ):
-    payload = prepared_payload_createAmendment
+    payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['description']
 
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -688,9 +688,9 @@ def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port,
                                                                            prepared_cpid,
                                                                            prepared_payload_createAmendment,
                                                                            execute_select_revision_amendments_by_id):
-    related_entity_id = prepared_entity_id
-    amendment_id = prepared_entity_id
-    payload = prepared_payload_createAmendment
+    related_entity_id = prepared_entity_id()
+    amendment_id = prepared_entity_id()
+    payload = prepared_payload_createAmendment(amendment_id=amendment_id)
     payload['params']['relatedEntityId'] = f"{related_entity_id}"
     payload['params']['operationType'] = value
 
@@ -744,8 +744,8 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_rationale_in_am
                                                                                         prepared_entity_id,
                                                                                         prepared_payload_createAmendment,
                                                                                         prepared_ev_ocid):
-    amendment_id = prepared_entity_id
-    payload = prepared_payload_createAmendment
+    amendment_id = prepared_entity_id()
+    payload = prepared_payload_createAmendment(amendment_id=amendment_id)
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
