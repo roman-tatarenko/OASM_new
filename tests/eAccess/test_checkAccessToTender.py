@@ -14,8 +14,8 @@ def test_eAccess_returns_successful_response_when_token_and_owner_are_present_in
                                                                                         response_success,
                                                                                         prepared_data_access_tender,
                                                                                         prepared_payload_checkAccessToTender,
-                                                                                        execute_insert_into_access_tender,
-                                                                                        clear_access_tender_by_cpid):
+                                                                                        execute_insert_into_access_tender
+                                                                                        ):
     data = prepared_data_access_tender
     data['ocid'] = prepared_cpid
 
@@ -29,7 +29,7 @@ def test_eAccess_returns_successful_response_when_token_and_owner_are_present_in
 
     expected_result = response_success
 
-    assert actual_result == expected_result
+    assert actual_result == expected_result, print(json.dumps(payload))
 
 
 @pytest.mark.parametrize("param,value,code",
@@ -123,6 +123,7 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
     assert actualresult == expectedresult
 
 
+@pytest.mark.skip(reason="deprecated")
 @pytest.mark.parametrize("param,value,code,description",
                          [
                              pytest.param("version", "", "DR-4/3",
@@ -138,7 +139,7 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
                                           "Data type mismatch. Expected data type: 'STRING', actual data type: 'NUMBER'.",
                                           marks=pytestrail.case('C8419')),
                              pytest.param("id", True, "DR-2/3",
-                                          "Data format mismatch. Expected data format: 'uuid', actual value: 'true'.",
+                                          "Data type mismatch. Expected data type: 'STRING', actual data type: 'BOOLEAN'.",
                                           marks=pytestrail.case('C8420')),
                              pytest.param("id", "", "DR-4/3",
                                           "Data format mismatch. Expected data format: 'uuid', actual value: ''.",
@@ -226,7 +227,9 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
 @pytest.mark.parametrize("param",
                          [
                              pytest.param("version", marks=pytestrail.case('C8410')),
-                             pytest.param("params", marks=pytestrail.case('C8422'))
+                             pytest.param("params",
+                                          marks=[pytestrail.case('C8422'),
+                                                 pytest.mark.skip(reason="deprecated")])
 
                          ])
 def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_param(port, host, param,
