@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import datetime
 from uuid import uuid4
@@ -50,7 +51,7 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
                                         prepared_payload_getLotIds, prepared_data_access_tender,
                                         clear_access_tender_by_cpid):
     data = prepared_data_access_tender
-    lot_id = prepared_entity_id
+    lot_id = prepared_entity_id()
 
     data['ocid'] = prepared_cpid
     data['tender']['lots'][0]['id'] = f"{lot_id}"
@@ -117,7 +118,7 @@ def test_eAccess_without_result(host, states, port, status, statusDetails, execu
                                 prepared_entity_id, prepared_token_entity, response_success,
                                 prepared_payload_getLotIds, prepared_data_access_tender, clear_access_tender_by_cpid):
     data = prepared_data_access_tender
-    lotId = prepared_entity_id
+    lotId = prepared_entity_id()
 
     data['ocid'] = prepared_cpid
     data['tender']['lots'][0]['id'] = f"{lotId}"
@@ -255,7 +256,7 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_an_inval
                                                                                                    prepared_data_access_tender,
                                                                                                    clear_access_tender_by_cpid):
     data = prepared_data_access_tender
-    lot_id = prepared_entity_id
+    lot_id = prepared_entity_id()
 
     data['ocid'] = prepared_cpid
     data['tender']['lots'][0]['id'] = f"{lot_id}"
@@ -351,12 +352,7 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
         "result": [
             {
                 "code": "RQ-02/3",
-                "description": "Error parsing 'params'",
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
+                "description": "Can not parse 'params'."
             }
         ]
     }
@@ -567,7 +563,7 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_request_does_not_c
                                                                                                     prepared_payload_getLotIds,
                                                                                                     prepared_data_access_tender,
                                                                                                     clear_access_tender_by_cpid):
-    lot_id = prepared_entity_id
+    lot_id = prepared_entity_id()
     data = prepared_data_access_tender
 
     data['ocid'] = prepared_cpid
@@ -691,12 +687,12 @@ def test_eAccess_returns_successful_response_without_result_if_request_contain_e
                                                                                                              prepared_cpid,
                                                                                                              prepared_entity_id,
                                                                                                              prepared_token_entity,
-                                                                                                             response_success,
+                                                                                                             response_error,
                                                                                                              prepared_payload_getLotIds,
-                                                                                                             prepared_data_access_tender,
-                                                                                                             clear_access_tender_by_cpid):
+                                                                                                             prepared_data_access_tender
+                                                                                                             ):
     data = prepared_data_access_tender
-    lot_id = prepared_entity_id
+    lot_id = prepared_entity_id()
 
     data['ocid'] = prepared_cpid
     data['tender']['lots'][0]['id'] = f"{lot_id}"
@@ -710,8 +706,19 @@ def test_eAccess_returns_successful_response_without_result_if_request_contain_e
     payload = prepared_payload_getLotIds
     payload['params']['states'] = states
 
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
-    expected_result = response_success
+    expectedresult = response_error
+    expectedresult['result'] = [
+        {
+            "code": "DR-9/3",
+            "description": "Object is empty.",
+            "details": [
+                {
+                    "name": "states"
+                }
+            ]
+        }
+    ]
 
-    assert actual_result == expected_result
+    assert actualresult == expectedresult, print(json.dumps(actualresult))
