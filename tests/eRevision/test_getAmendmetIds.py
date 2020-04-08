@@ -5,24 +5,6 @@ import requests
 from pytest_testrail.plugin import pytestrail
 
 
-@pytest.mark.skip
-@pytest.mark.parametrize('relatesTo',
-                         [pytest.param('tender', marks=pytestrail.case('C8061')),
-                          pytest.param('lot', marks=pytestrail.case('C8066'))])
-def test_the_eRevision_does_not_return_amendment_ids_if_there_is_no_amendments_in_pending_status_for(
-        host, port, relatesTo,
-        response_success,
-        prepared_cpid, prepared_payload_getAmendmentIds,
-        prepared_ev_ocid):
-    payload = prepared_payload_getAmendmentIds(relatesTo=relatesTo)
-
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    expectedresult = response_success
-
-    assert expectedresult == actualresult
-
-
 @pytest.mark.parametrize('relatesTo',
                          [pytest.param('tender', marks=pytestrail.case('C8104')),
                           pytest.param('lot', marks=pytestrail.case('C8378'))])
@@ -37,7 +19,7 @@ def test_the_eRevision_return_amendment_ids_if_there_is_amendments_in_pending_ca
                                                                                                        prepared_payload_getAmendmentIds,
                                                                                                        clear_revision_amendments_by_cpid
                                                                                                        ):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     prepared_create_amendment['id'] = f"{amendment_id}"
     prepared_create_amendment['relatesTo'] = relatesTo
     prepared_create_amendment['relatedItem'] = f"{prepared_ev_ocid}"
@@ -71,7 +53,7 @@ def test_the_eRevision_return_amendment_ids_if_there_is_amendments_in_pending_st
                                                                                              prepared_entity_id,
                                                                                              prepared_request_id,
                                                                                              prepared_payload_getAmendmentIds):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     prepared_create_amendment['id'] = f"{amendment_id}"
     prepared_create_amendment['relatesTo'] = 'Lot'
     prepared_create_amendment['relatedItem'] = f"{prepared_ev_ocid}"
@@ -304,7 +286,7 @@ def test_the_eRevisions_behavior_without_params_status_in_payload(port, host, pr
                                                                   prepared_payload_getAmendmentIds,
                                                                   execute_insert_into_revision_amendments,
                                                                   clear_revision_amendments_by_cpid):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     prepared_create_amendment['id'] = f"{amendment_id}"
     prepared_create_amendment['relatesTo'] = 'tender'
     prepared_create_amendment['relatedItem'] = f"{prepared_ev_ocid}"
@@ -383,7 +365,7 @@ def test_the_eRevisions_behavior_with_null_as_params_status_in_payload(port, hos
                                                                        execute_insert_into_revision_amendments,
                                                                        clear_revision_amendments_by_cpid,
                                                                        prepared_payload_getAmendmentIds):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     prepared_create_amendment['id'] = f"{amendment_id}"
     prepared_create_amendment['relatesTo'] = 'tender'
     prepared_create_amendment['relatedItem'] = f"{prepared_ev_ocid}"
@@ -413,7 +395,7 @@ def test_the_eRevisions_behavior_without_params_type_in_payload(port, host, prep
                                                                 prepared_create_amendment, prepared_request_id,
                                                                 clear_revision_amendments_by_cpid,
                                                                 prepared_payload_getAmendmentIds):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['id'] = f"{amendment_id}"
     data['relatesTo'] = 'tender'
@@ -492,7 +474,7 @@ def test_the_eRevisions_behavior_with_null_as_params_type_in_payload(port, host,
                                                                      prepared_payload_getAmendmentIds,
                                                                      execute_insert_into_revision_amendments,
                                                                      clear_revision_amendments_by_cpid):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['id'] = f"{amendment_id}"
     data['relatesTo'] = 'tender'
@@ -571,7 +553,7 @@ def test_the_eRevisions_behavior_with_null_as_params_relatesTo_in_payload(port, 
                                                                           prepared_payload_getAmendmentIds,
                                                                           execute_insert_into_revision_amendments,
                                                                           clear_revision_amendments_by_cpid):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['id'] = f"{amendment_id}"
     data['relatesTo'] = 'tender'
@@ -608,7 +590,7 @@ def test_the_eRevisions_behavior_without_optional_params_in_payload(port, host, 
                                                                     prepared_payload_getAmendmentIds,
                                                                     execute_insert_into_revision_amendments,
                                                                     clear_revision_amendments_by_cpid):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['id'] = f"{amendment_id}"
     data['relatesTo'] = 'tender'
@@ -670,7 +652,7 @@ def test_the_eRevisions_behavior_with_invalid_params_cpid_in_payload(port, host,
                                                                      prepared_payload_getAmendmentIds,
                                                                      execute_insert_into_revision_amendments,
                                                                      clear_revision_amendments_by_cpid):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['id'] = f"{amendment_id}"
     data['relatesTo'] = 'tender'
@@ -802,14 +784,14 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender(host, port, pa
     data = prepared_create_amendment
     data['relatedItem'] = f"{prepared_ev_ocid}"
 
-    amendment_id_1 = prepared_entity_id
+    amendment_id_1 = prepared_entity_id()
     data['id'] = f"{amendment_id_1}"
     data['relatesTo'] = 'tender'
 
     execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=amendment_id_1,
                                             data=data)
 
-    amendment_id_2 = prepared_entity_id
+    amendment_id_2 = prepared_entity_id()
     data['id'] = f"{amendment_id_2}"
     data['relatesTo'] = 'lot'
     execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=amendment_id_2,
@@ -842,14 +824,14 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_tender_in
     data = prepared_create_amendment
     data['relatedItem'] = f"{prepared_ev_ocid}"
 
-    amendment_id_1 = prepared_entity_id
+    amendment_id_1 = prepared_entity_id()
     data['id'] = f"{amendment_id_1}"
     data['relatesTo'] = 'tender'
 
     execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=amendment_id_1,
                                             data=data)
 
-    amendment_id_2 = prepared_entity_id
+    amendment_id_2 = prepared_entity_id()
     data['id'] = f"{amendment_id_2}"
     data['relatesTo'] = 'lot'
     execute_insert_into_revision_amendments(cpid=prepared_cpid, ocid=prepared_ev_ocid, id=amendment_id_2,
@@ -913,7 +895,7 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_lot_in_pa
         prepared_payload_getAmendmentIds,
         execute_insert_into_revision_amendments,
 ):
-    data = prepared_create_amendment
+    data = prepared_create_amendment()
     data['relatedItem'] = f"{tenderId}"
 
     data['id'] = f"{tenderId}"
@@ -948,7 +930,7 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_lot_in_pa
         prepared_payload_getAmendmentIds,
         execute_insert_into_revision_amendments,
 ):
-    amendment_id = prepared_entity_id
+    amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['relatedItem'] = f"{lotId}"
 
