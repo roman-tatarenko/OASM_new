@@ -1736,8 +1736,8 @@ def prepared_data_access_tender():
                 "id": "3ce7a92d-d504-4529-89c0-abab2e30bd6b",
                 "title": "lots title",
                 "description": "lots description",
-                "status": "STATUS",
-                "statusDetails": "STATUS_DETAILS",
+                "status": "active",
+                "statusDetails": "empty",
                 "value": {
                     "amount": 10.00,
                     "currency": "EUR"

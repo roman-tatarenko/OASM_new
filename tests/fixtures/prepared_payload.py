@@ -80,7 +80,7 @@ def prepared_payload_getAmendmentIds(prepared_request_id, prepared_cpid, prepare
 
 @pytest.fixture(scope='function')
 def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id, prepared_cpid, prepared_ev_ocid):
-    def with_values(id=prepared_request_id):
+    def with_values(id=prepared_request_id, amendment_id=prepared_entity_id()):
         return {
             "version": "2.0.0",
             "id": f"{id}",
@@ -97,7 +97,7 @@ def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id, pre
                             "description": "string"
                         }
                     ],
-                    "id": f"{prepared_entity_id}"
+                    "id": f"{amendment_id}"
                 },
                 "cpid": f"{prepared_cpid}",
                 "ocid": f"{prepared_ev_ocid}",
@@ -172,3 +172,23 @@ def prepared_payload_checkAccessToTender(prepared_request_id, prepared_cpid, pre
             "owner": f"{prepared_owner}"
         }
     }
+
+
+@pytest.fixture(scope='function')
+def prepared_payload_getLotStateByIds(prepared_request_id, prepared_cpid, prepared_ev_ocid, prepared_token_entity,
+                                      prepared_owner):
+    def _prepared_payload_getLotStateByIds(lot_id=prepared_token_entity):
+        return {
+            "version": "2.0.0",
+            "id": f"{prepared_request_id}",
+            "action": "getLotStateByIds",
+            "params": {
+                "lotIds": [
+                    f"{lot_id}"
+                ],
+                "cpid": f"{prepared_cpid}",
+                "ocid": f"{prepared_ev_ocid}"
+            }
+        }
+
+    return _prepared_payload_getLotStateByIds
