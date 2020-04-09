@@ -192,3 +192,30 @@ def prepared_payload_getLotStateByIds(prepared_request_id, prepared_cpid, prepar
         }
 
     return _prepared_payload_getLotStateByIds
+
+
+@pytest.fixture(scope='session')
+def payload_registered_document():
+    def _payload_registered_document(file_name, hash, weight):
+        return {
+            "fileName": file_name,
+            "hash": f"{hash}",
+            "weight": weight
+        }
+
+    return _payload_registered_document
+
+
+@pytest.fixture(scope='function')
+def payload_check_registration(prepared_request_id):
+    def _payload_check_registration(ids):
+        return {
+            "version": "2.0.0",
+            "id": f"{prepared_request_id}",
+            "action": "checkRegistration",
+            "params": {
+                "documentIds": ids
+            }
+        }
+
+    return _payload_check_registration
