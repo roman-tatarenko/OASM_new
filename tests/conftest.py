@@ -31,6 +31,7 @@ def port():
         eSubmission: int = 9061
         eRevision: int = 9351
         iStorage: int = 9131
+        eNotice: int = 9041
 
     return Port
 
