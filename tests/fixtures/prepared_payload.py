@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 
 import pytest
@@ -219,3 +220,21 @@ def payload_check_registration(prepared_request_id):
         }
 
     return _payload_check_registration
+
+
+@pytest.fixture(scope='function')
+def payload_notice_compiled_release(prepared_request_id, prepared_cpid, prepared_ev_ocid,
+                                    data_for_test_notice_compiled_release):
+    def _payload_notice_compiled_release(data=data_for_test_notice_compiled_release
+                                         , startDate="2020-04-02T09:14:25Z"):
+        return {
+            "id": f"{prepared_request_id}",
+            "version": "2.0.0",
+            "action": "updateRecord",
+            "params": {
+                "date": startDate,
+                "data": json.dumps(data)
+            }
+        }
+
+    return _payload_notice_compiled_release
