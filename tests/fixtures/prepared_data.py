@@ -2135,3 +2135,989 @@ def prepared_data_access_tender_2_lots():
             }]
         }
     }
+
+
+@pytest.fixture(scope='function')
+def prepared_data_add_EV_before_SendAcForVerification(prepared_cpid, prepared_ev_ocid):
+    return {
+        "ocid": prepared_ev_ocid,
+        "id": prepared_cpid,
+        "date": "2020-02-07T10:22:27Z",
+        "tag": [
+            "awardUpdate"
+        ],
+        "initiationType": "tender",
+        "parties": [
+            {
+                "id": "MD-IDNO-tenderers id5",
+                "name": "nam2",
+                "identifier": {
+                    "scheme": "MD-IDNO",
+                    "id": "tenderers id5",
+                    "legalName": "tenderers legalname",
+                    "uri": "http://tenderers.com"
+                },
+                "address": {
+                    "streetAddress": "tenderers adress",
+                    "postalCode": "tenderers postalcode",
+                    "addressDetails": {
+                        "country": {
+                            "scheme": "iso-alpha2",
+                            "id": "MD",
+                            "description": "MOLDOVA",
+                            "uri": "http://reference.iatistandard.org"
+                        },
+                        "region": {
+                            "scheme": "CUATM",
+                            "id": "1000000",
+                            "description": "Anenii Noi",
+                            "uri": "http://statistica.md"
+                        },
+                        "locality": {
+                            "scheme": "CUATM",
+                            "id": "1001000",
+                            "description": "or.Anenii Noi",
+                            "uri": "http://statistica.md"
+                        }
+                    }
+                },
+                "additionalIdentifiers": [
+                    {
+                        "scheme": "MD-IDNO",
+                        "id": "additionalIdentifiers id",
+                        "legalName": "additionalIdentifiers legalName",
+                        "uri": "http://additionalIdentifier.com"
+                    }
+                ],
+                "contactPoint": {
+                    "name": "Illia Petrusenko",
+                    "email": "illya.petrusenko@gmail.com",
+                    "telephone": "+380632074071",
+                    "faxNumber": "+380445450099",
+                    "url": "http://petrusenko.com/illia"
+                },
+                "details": {
+                    "typeOfSupplier": "company",
+                    "mainEconomicActivities": [
+                        "456-00"
+                    ],
+                    "permits": [
+                        {
+                            "id": "2",
+                            "scheme": "SRLE",
+                            "url": "5",
+                            "permitDetails": {
+                                "issuedBy": {
+                                    "id": "changed",
+                                    "name": "changed1"
+                                },
+                                "issuedThought": {
+                                    "id": "kjhgh",
+                                    "name": "rey"
+                                },
+                                "validityPeriod": {
+                                    "startDate": "2019-10-29T16:35:00Z",
+                                    "endDate": "2019-10-29T16:36:00Z"
+                                }
+                            }
+                        }
+                    ],
+                    "bankAccounts": [
+                        {
+                            "description": "description",
+                            "bankName": "bankName",
+                            "address": {
+                                "streetAddress": "Steet",
+                                "postalCode": "5",
+                                "addressDetails": {
+                                    "country": {
+                                        "scheme": "iso-alpha2",
+                                        "id": "MD",
+                                        "description": "description of country",
+                                        "uri": "URI*"
+                                    },
+                                    "region": {
+                                        "scheme": "CUATM",
+                                        "id": "0301000",
+                                        "description": "descr",
+                                        "uri": "URI*"
+                                    },
+                                    "locality": {
+                                        "scheme": "CUATM",
+                                        "id": "0301000",
+                                        "description": ""
+                                    }
+                                }
+                            },
+                            "identifier": {
+                                "id": "300711",
+                                "scheme": "UA-MFO"
+                            },
+                            "accountIdentification": {
+                                "id": "2600000625637",
+                                "scheme": "IBAN"
+                            },
+                            "additionalAccountIdentifiers": [
+                                {
+                                    "id": "458-9652",
+                                    "scheme": "settlement"
+                                }
+                            ]
+                        }
+                    ],
+                    "legalForm": {
+                        "id": "260000",
+                        "scheme": "MD-IDNO",
+                        "description": "description",
+                        "uri": "uri"
+                    },
+                    "scale": "sme"
+                },
+                "persones": [
+                    {
+                        "title": "persones.title",
+                        "name": "persones.name",
+                        "identifier": {
+                            "scheme": "MD-IDNO",
+                            "id": "88888000",
+                            "uri": "http://petrusenko.com/illia"
+                        },
+                        "businessFunctions": [
+                            {
+                                "id": "businessFunctions id",
+                                "type": "authority",
+                                "jobTitle": "Chief Executive Officer",
+                                "period": {
+                                    "startDate": "2019-10-30T00:00:35Z"
+                                },
+                                "documents": [
+                                    {
+                                        "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                                        "documentType": "regulatoryDocument",
+                                        "title": "doc title",
+                                        "description": "doc description",
+                                        "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                                        "datePublished": "2019-11-27T13:48:23Z"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "roles": [
+                    "tenderer",
+                    "supplier"
+                ]
+            }
+        ],
+        "tender": {
+            "id": "ocds-t1s2t3-MD-1581070591188",
+            "title": "Evaluation",
+            "description": "Evaluation stage of contracting process",
+            "status": "active",
+            "statusDetails": "awarding",
+            "criteria": [
+                {
+                    "id": "852d3adc-a245-4b86-9e43-e694e1bf2740",
+                    "title": "",
+                    "source": "procuringEntity",
+                    "description": "",
+                    "requirementGroups": [
+                        {
+                            "id": "68f8a408-e15f-4271-83c4-58d20d57dfe5",
+                            "requirements": [
+                                {
+                                    "id": "004e1ed2-2d7c-4ed7-b671-d324f41cca03",
+                                    "title": "",
+                                    "dataType": "boolean"
+                                }
+                            ]
+                        }
+                    ],
+                    "relatesTo": "award"
+                }
+            ],
+            "items": [
+                {
+                    "id": "6733055d-9a88-4b90-8eee-c99a03ce3acd",
+                    "description": "items description",
+                    "classification": {
+                        "scheme": "CPV",
+                        "id": "15500000-3",
+                        "description": "Produse lactate"
+                    },
+                    "additionalClassifications": [
+                        {
+                            "scheme": "CPVS",
+                            "id": "AB06-7",
+                            "description": "Plastic"
+                        }
+                    ],
+                    "quantity": 1,
+                    "unit": {
+                        "name": "Metru cub consistent",
+                        "id": "121"
+                    },
+                    "relatedLot": "36133175-8f63-4763-a1dd-b1d16b551453"
+                }
+            ],
+            "lots": [
+                {
+                    "id": "36133175-8f63-4763-a1dd-b1d16b551453",
+                    "title": "lots title",
+                    "description": "lots description",
+                    "status": "active",
+                    "statusDetails": "awarded",
+                    "value": {
+                        "amount": 10,
+                        "currency": "EUR"
+                    },
+                    "options": [
+                        {
+                            "hasOptions": False
+                        }
+                    ],
+                    "recurrentProcurement": [
+                        {
+                            "isRecurrent": False
+                        }
+                    ],
+                    "renewals": [
+                        {
+                            "hasRenewals": False
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "hasVariants": False
+                        }
+                    ],
+                    "contractPeriod": {
+                        "startDate": "2020-02-10T10:30:40Z",
+                        "endDate": "2020-03-30T10:30:40Z"
+                    },
+                    "placeOfPerformance": {
+                        "address": {
+                            "streetAddress": "placeOfPerformance streetAddress",
+                            "addressDetails": {
+                                "country": {
+                                    "scheme": "iso-alpha2",
+                                    "id": "MD",
+                                    "description": "MOLDOVA",
+                                    "uri": "http://reference.iatistandard.org"
+                                },
+                                "region": {
+                                    "scheme": "CUATM",
+                                    "id": "1000000",
+                                    "description": "Anenii Noi",
+                                    "uri": "http://statistica.md"
+                                },
+                                "locality": {
+                                    "scheme": "locality scheme",
+                                    "id": "locality id",
+                                    "description": "locality description"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "lotGroups": [
+                {
+                    "optionToCombine": False
+                }
+            ],
+            "tenderPeriod": {
+                "startDate": "2020-02-07T10:19:23Z",
+                "endDate": "2020-02-07T10:20:23Z"
+            },
+            "enquiryPeriod": {
+                "startDate": "2020-02-07T10:17:23Z",
+                "endDate": "2020-02-07T10:19:23Z"
+            },
+            "awardPeriod": {
+                "startDate": "2020-02-07T10:20:23Z"
+            },
+            "hasEnquiries": False,
+            "documents": [
+                {
+                    "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                    "documentType": "billOfQuantity",
+                    "title": "doc1т",
+                    "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                    "datePublished": "2019-11-27T13:48:23Z"
+                }
+            ],
+            "awardCriteria": "priceOnly",
+            "awardCriteriaDetails": "automated",
+            "submissionMethod": [
+                "electronicSubmission"
+            ],
+            "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+            "submissionMethodRationale": [
+                "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+            ],
+            "requiresElectronicCatalogue": False
+        },
+        "awards": [
+            {
+                "id": "3c7faff8-6123-4862-a7ff-04875ca4b767",
+                "description": "description",
+                "status": "pending",
+                "statusDetails": "active",
+                "date": "2020-02-07T10:21:04Z",
+                "value": {
+                    "amount": 0.65,
+                    "currency": "EUR"
+                },
+                "suppliers": [
+                    {
+                        "id": "MD-IDNO-tenderers id5",
+                        "name": "nam2"
+                    }
+                ],
+                "documents": [
+                    {
+                        "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                        "documentType": "evaluationReports",
+                        "title": "doctitle",
+                        "description": "description",
+                        "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                        "datePublished": "2019-11-27T13:48:23Z"
+                    }
+                ],
+                "relatedLots": [
+                    "36133175-8f63-4763-a1dd-b1d16b551453"
+                ],
+                "relatedBid": "40d2b509-bff5-4d54-a98e-1c952d5adecd"
+            }
+        ],
+        "bids": {
+            "details": [
+                {
+                    "id": "40d2b509-bff5-4d54-a98e-1c952d5adecd",
+                    "date": "2020-02-07T10:19:26Z",
+                    "status": "pending",
+                    "statusDetails": "valid",
+                    "tenderers": [
+                        {
+                            "id": "MD-IDNO-tenderers id5",
+                            "name": "nam2"
+                        }
+                    ],
+                    "value": {
+                        "amount": 0.65,
+                        "currency": "EUR"
+                    },
+                    "documents": [
+                        {
+                            "id": "b5494aa9-578a-4f3b-a21d-cf4546374cef-1578921285987",
+                            "documentType": "submissionDocuments",
+                            "title": "doc title",
+                            "description": "doc description",
+                            "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/b5494aa9-578a-4f3b-a21d-cf4546374cef-1578921285987",
+                            "datePublished": "2020-01-13T13:51:49Z"
+                        }
+                    ],
+                    "relatedLots": [
+                        "36133175-8f63-4763-a1dd-b1d16b551453"
+                    ]
+                }
+            ]
+        },
+        "contracts": [
+            {
+                "id": "848a5f27-2159-46af-aff1-82728af1ced4",
+                "date": "2020-02-07T10:21:50Z",
+                "awardId": "3c7faff8-6123-4862-a7ff-04875ca4b767",
+                "relatedLots": [
+                    "36133175-8f63-4763-a1dd-b1d16b551453"
+                ],
+                "status": "pending",
+                "statusDetails": "active",
+                "relatedProcesses": [
+                    {
+                        "id": "bd45f483-4993-11ea-85b3-f5103b0c4234",
+                        "relationship": [
+                            "x_contracting"
+                        ],
+                        "scheme": "ocid",
+                        "identifier": "ocds-t1s2t3-MD-1581070591188-AC-1581816477249",
+                        "uri": "http://dev.public.eprocurement.systems/tenders/ocds-t1s2t3-MD-1581070591188/ocds-t1s2t3-MD-1581070591188-AC-1581816477249"
+                    }
+                ]
+            }
+        ],
+        "hasPreviousNotice": True,
+        "purposeOfNotice": {
+            "isACallForCompetition": True
+        },
+        "relatedProcesses": [
+            {
+                "id": "08af2e61-4993-11ea-85b3-f5103b0c4234",
+                "relationship": [
+                    "planning"
+                ],
+                "scheme": "ocid",
+                "identifier": "ocds-t1s2t3-MD-1581070591188-PN-1581070591216",
+                "uri": "http://dev.public.eprocurement.systems/tenders/ocds-t1s2t3-MD-1581070591188/ocds-t1s2t3-MD-1581070591188-PN-1581070591216"
+            },
+            {
+                "id": "e90c1f03-4992-11ea-85b3-f5103b0c4234",
+                "relationship": [
+                    "parent"
+                ],
+                "scheme": "ocid",
+                "identifier": "ocds-t1s2t3-MD-1581070591188",
+                "uri": "http://dev.public.eprocurement.systems/tenders/ocds-t1s2t3-MD-1581070591188/ocds-t1s2t3-MD-1581070591188"
+            }
+        ]
+    }
+
+
+@pytest.fixture(scope='function')
+def data_for_test_notice_compiled_release(prepared_cpid, prepared_ev_ocid):
+    return {"cpid": prepared_cpid, "ocid": prepared_ev_ocid,
+            "tender": {"token": "85baeb0a-5cc5-42bc-9516-45e341f666d0", "owner": "445f6851-c908-407d-9b45-14b92f3e964b",
+                       "lots": [{"id": "a681ce60-0f95-4bc1-987c-96b7e1bdd5d1", "status": "active",
+                                 "statusDetails": "empty"}], "hasEnquiries": False, "amendments": [
+                    {"id": "561d0928-bd54-4255-bf42-5f33d3a044a0", "token": "e07aa4b3-d806-4f09-9daf-bf5c03955b27",
+                     "type": "cancellation", "status": "pending", "relatesTo": "lot",
+                     "relatedItem": "a681ce60-0f95-4bc1-987c-96b7e1bdd5d1", "date": "2020-04-02T09:14:25Z",
+                     "description": "amendment.description", "rationale": "amendment.rationale", "documents": [
+                        {"id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+                         "documentType": "cancellationDetails", "title": "doc.title", "description": "12",
+                         "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+                         "datePublished": "2019-11-08T11:31:51Z"}]}]}}
+
+
+@pytest.fixture(scope='function')
+def data_ev_with_amendment(prepared_ev_ocid, prepared_ev_id):
+    return {
+        "ocid": prepared_ev_ocid,
+        "id": prepared_ev_id,
+        "date": "2020-02-07T10:22:27Z",
+        "tag": [
+            "awardUpdate"
+        ],
+        "initiationType": "tender",
+        "parties": [
+            {
+                "id": "MD-IDNO-tenderers id5",
+                "name": "nam2",
+                "identifier": {
+                    "scheme": "MD-IDNO",
+                    "id": "tenderers id5",
+                    "legalName": "tenderers legalname",
+                    "uri": "http://tenderers.com"
+                },
+                "address": {
+                    "streetAddress": "tenderers adress",
+                    "postalCode": "tenderers postalcode",
+                    "addressDetails": {
+                        "country": {
+                            "scheme": "iso-alpha2",
+                            "id": "MD",
+                            "description": "MOLDOVA",
+                            "uri": "http://reference.iatistandard.org"
+                        },
+                        "region": {
+                            "scheme": "CUATM",
+                            "id": "1000000",
+                            "description": "Anenii Noi",
+                            "uri": "http://statistica.md"
+                        },
+                        "locality": {
+                            "scheme": "CUATM",
+                            "id": "1001000",
+                            "description": "or.Anenii Noi",
+                            "uri": "http://statistica.md"
+                        }
+                    }
+                },
+                "additionalIdentifiers": [
+                    {
+                        "scheme": "MD-IDNO",
+                        "id": "additionalIdentifiers id",
+                        "legalName": "additionalIdentifiers legalName",
+                        "uri": "http://additionalIdentifier.com"
+                    }
+                ],
+                "contactPoint": {
+                    "name": "Illia Petrusenko",
+                    "email": "illya.petrusenko@gmail.com",
+                    "telephone": "+380632074071",
+                    "faxNumber": "+380445450099",
+                    "url": "http://petrusenko.com/illia"
+                },
+                "details": {
+                    "typeOfSupplier": "company",
+                    "mainEconomicActivities": [
+                        "456-00"
+                    ],
+                    "permits": [
+                        {
+                            "id": "2",
+                            "scheme": "SRLE",
+                            "url": "5",
+                            "permitDetails": {
+                                "issuedBy": {
+                                    "id": "changed",
+                                    "name": "changed1"
+                                },
+                                "issuedThought": {
+                                    "id": "kjhgh",
+                                    "name": "rey"
+                                },
+                                "validityPeriod": {
+                                    "startDate": "2019-10-29T16:35:00Z",
+                                    "endDate": "2019-10-29T16:36:00Z"
+                                }
+                            }
+                        }
+                    ],
+                    "bankAccounts": [
+                        {
+                            "description": "description",
+                            "bankName": "bankName",
+                            "address": {
+                                "streetAddress": "Steet",
+                                "postalCode": "5",
+                                "addressDetails": {
+                                    "country": {
+                                        "scheme": "iso-alpha2",
+                                        "id": "MD",
+                                        "description": "description of country",
+                                        "uri": "URI*"
+                                    },
+                                    "region": {
+                                        "scheme": "CUATM",
+                                        "id": "0301000",
+                                        "description": "descr",
+                                        "uri": "URI*"
+                                    },
+                                    "locality": {
+                                        "scheme": "CUATM",
+                                        "id": "0301000",
+                                        "description": ""
+                                    }
+                                }
+                            },
+                            "identifier": {
+                                "id": "300711",
+                                "scheme": "UA-MFO"
+                            },
+                            "accountIdentification": {
+                                "id": "2600000625637",
+                                "scheme": "IBAN"
+                            },
+                            "additionalAccountIdentifiers": [
+                                {
+                                    "id": "458-9652",
+                                    "scheme": "settlement"
+                                }
+                            ]
+                        }
+                    ],
+                    "legalForm": {
+                        "id": "260000",
+                        "scheme": "MD-IDNO",
+                        "description": "description",
+                        "uri": "uri"
+                    },
+                    "scale": "sme"
+                },
+                "persones": [
+                    {
+                        "title": "persones.title",
+                        "name": "persones.name",
+                        "identifier": {
+                            "scheme": "MD-IDNO",
+                            "id": "88888000",
+                            "uri": "http://petrusenko.com/illia"
+                        },
+                        "businessFunctions": [
+                            {
+                                "id": "businessFunctions id",
+                                "type": "authority",
+                                "jobTitle": "Chief Executive Officer",
+                                "period": {
+                                    "startDate": "2019-10-30T00:00:35Z"
+                                },
+                                "documents": [
+                                    {
+                                        "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                                        "documentType": "regulatoryDocument",
+                                        "title": "doc title",
+                                        "description": "doc description",
+                                        "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                                        "datePublished": "2019-11-27T13:48:23Z"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "roles": [
+                    "tenderer",
+                    "supplier"
+                ]
+            }
+        ],
+        "tender": {
+            "id": "ocds-t1s2t3-MD-1581070591188",
+            "title": "Evaluation",
+            "description": "Evaluation stage of contracting process",
+            "status": "active",
+            "statusDetails": "awarding",
+            "amendments":
+                [
+                    {
+                        "rationale": "string",
+                        "description": "string",
+                        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "date": "2020-02-22T11:25:44Z",
+                        "status": "pending",
+                        "type": "cancellation",
+                        "relatesTo": "lot",
+                        "relatedItem": "36133175-8f63-4763-a1dd-b1d16b551453"
+
+                    }],
+            "criteria": [
+                {
+                    "id": "852d3adc-a245-4b86-9e43-e694e1bf2740",
+                    "title": "",
+                    "source": "procuringEntity",
+                    "description": "",
+                    "requirementGroups": [
+                        {
+                            "id": "68f8a408-e15f-4271-83c4-58d20d57dfe5",
+                            "requirements": [
+                                {
+                                    "id": "004e1ed2-2d7c-4ed7-b671-d324f41cca03",
+                                    "title": "",
+                                    "dataType": "boolean"
+                                }
+                            ]
+                        }
+                    ],
+                    "relatesTo": "award"
+                }
+            ],
+            "items": [
+                {
+                    "id": "6733055d-9a88-4b90-8eee-c99a03ce3acd",
+                    "description": "items description",
+                    "classification": {
+                        "scheme": "CPV",
+                        "id": "15500000-3",
+                        "description": "Produse lactate"
+                    },
+                    "additionalClassifications": [
+                        {
+                            "scheme": "CPVS",
+                            "id": "AB06-7",
+                            "description": "Plastic"
+                        }
+                    ],
+                    "quantity": 1,
+                    "unit": {
+                        "name": "Metru cub consistent",
+                        "id": "121"
+                    },
+                    "relatedLot": "36133175-8f63-4763-a1dd-b1d16b551453"
+                },
+                {
+                    "id": "6733055d-9a88-4b90-8eee-c99a03ce4acd",
+                    "description": "items description",
+                    "classification": {
+                        "scheme": "CPV",
+                        "id": "15500000-3",
+                        "description": "Produse lactate"
+                    },
+                    "additionalClassifications": [
+                        {
+                            "scheme": "CPVS",
+                            "id": "AB06-7",
+                            "description": "Plastic"
+                        }
+                    ],
+                    "quantity": 1,
+                    "unit": {
+                        "name": "Metru cub consistent",
+                        "id": "121"
+                    },
+                    "relatedLot": "36133175-8f63-4763-a1dd-b1d16b551454"
+                }
+            ],
+            "lots": [
+                {
+                    "id": "36133175-8f63-4763-a1dd-b1d16b551453",
+                    "title": "lots title",
+                    "description": "lots description",
+                    "status": "active",
+                    "statusDetails": "awarded",
+                    "value": {
+                        "amount": 10,
+                        "currency": "EUR"
+                    },
+                    "options": [
+                        {
+                            "hasOptions": False
+                        }
+                    ],
+                    "recurrentProcurement": [
+                        {
+                            "isRecurrent": False
+                        }
+                    ],
+                    "renewals": [
+                        {
+                            "hasRenewals": False
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "hasVariants": False
+                        }
+                    ],
+                    "contractPeriod": {
+                        "startDate": "2020-02-10T10:30:40Z",
+                        "endDate": "2020-03-30T10:30:40Z"
+                    },
+                    "placeOfPerformance": {
+                        "address": {
+                            "streetAddress": "placeOfPerformance streetAddress",
+                            "addressDetails": {
+                                "country": {
+                                    "scheme": "iso-alpha2",
+                                    "id": "MD",
+                                    "description": "MOLDOVA",
+                                    "uri": "http://reference.iatistandard.org"
+                                },
+                                "region": {
+                                    "scheme": "CUATM",
+                                    "id": "1000000",
+                                    "description": "Anenii Noi",
+                                    "uri": "http://statistica.md"
+                                },
+                                "locality": {
+                                    "scheme": "locality scheme",
+                                    "id": "locality id",
+                                    "description": "locality description"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "36133175-8f63-4763-a1dd-b1d16b551454",
+                    "title": "lots title",
+                    "description": "lots description",
+                    "status": "active",
+                    "statusDetails": "awarded",
+                    "value": {
+                        "amount": 10,
+                        "currency": "EUR"
+                    },
+                    "options": [
+                        {
+                            "hasOptions": False
+                        }
+                    ],
+                    "recurrentProcurement": [
+                        {
+                            "isRecurrent": False
+                        }
+                    ],
+                    "renewals": [
+                        {
+                            "hasRenewals": False
+                        }
+                    ],
+                    "variants": [
+                        {
+                            "hasVariants": False
+                        }
+                    ],
+                    "contractPeriod": {
+                        "startDate": "2020-02-10T10:30:40Z",
+                        "endDate": "2020-03-30T10:30:40Z"
+                    },
+                    "placeOfPerformance": {
+                        "address": {
+                            "streetAddress": "placeOfPerformance streetAddress",
+                            "addressDetails": {
+                                "country": {
+                                    "scheme": "iso-alpha2",
+                                    "id": "MD",
+                                    "description": "MOLDOVA",
+                                    "uri": "http://reference.iatistandard.org"
+                                },
+                                "region": {
+                                    "scheme": "CUATM",
+                                    "id": "1000000",
+                                    "description": "Anenii Noi",
+                                    "uri": "http://statistica.md"
+                                },
+                                "locality": {
+                                    "scheme": "locality scheme",
+                                    "id": "locality id",
+                                    "description": "locality description"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "lotGroups": [
+                {
+                    "optionToCombine": False
+                }
+            ],
+            "tenderPeriod": {
+                "startDate": "2020-02-07T10:19:23Z",
+                "endDate": "2020-02-07T10:20:23Z"
+            },
+            "enquiryPeriod": {
+                "startDate": "2020-02-07T10:17:23Z",
+                "endDate": "2020-02-07T10:19:23Z"
+            },
+            "awardPeriod": {
+                "startDate": "2020-02-07T10:20:23Z"
+            },
+            "hasEnquiries": False,
+            "documents": [
+                {
+                    "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                    "documentType": "billOfQuantity",
+                    "title": "doc1т",
+                    "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                    "datePublished": "2019-11-27T13:48:23Z"
+                }
+            ],
+            "awardCriteria": "priceOnly",
+            "awardCriteriaDetails": "automated",
+            "submissionMethod": [
+                "electronicSubmission"
+            ],
+            "submissionMethodDetails": "Lista platformelor: achizitii, ebs, licitatie, yptender",
+            "submissionMethodRationale": [
+                "Ofertele vor fi primite prin intermediul unei platforme electronice de achiziții publice"
+            ],
+            "requiresElectronicCatalogue": False
+        },
+        "awards": [
+            {
+                "id": "3c7faff8-6123-4862-a7ff-04875ca4b767",
+                "description": "description",
+                "status": "pending",
+                "statusDetails": "active",
+                "date": "2020-02-07T10:21:04Z",
+                "value": {
+                    "amount": 0.65,
+                    "currency": "EUR"
+                },
+                "suppliers": [
+                    {
+                        "id": "MD-IDNO-tenderers id5",
+                        "name": "nam2"
+                    }
+                ],
+                "documents": [
+                    {
+                        "id": "9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                        "documentType": "evaluationReports",
+                        "title": "doctitle",
+                        "description": "description",
+                        "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/9004ab09-ca9b-4cb7-95f4-525a3bf64734-1574862409148",
+                        "datePublished": "2019-11-27T13:48:23Z"
+                    }
+                ],
+                "relatedLots": [
+                    "36133175-8f63-4763-a1dd-b1d16b551453"
+                ],
+                "relatedBid": "40d2b509-bff5-4d54-a98e-1c952d5adecd"
+            }
+        ],
+        "bids": {
+            "details": [
+                {
+                    "id": "40d2b509-bff5-4d54-a98e-1c952d5adecd",
+                    "date": "2020-02-07T10:19:26Z",
+                    "status": "pending",
+                    "statusDetails": "valid",
+                    "tenderers": [
+                        {
+                            "id": "MD-IDNO-tenderers id5",
+                            "name": "nam2"
+                        }
+                    ],
+                    "value": {
+                        "amount": 0.65,
+                        "currency": "EUR"
+                    },
+                    "documents": [
+                        {
+                            "id": "b5494aa9-578a-4f3b-a21d-cf4546374cef-1578921285987",
+                            "documentType": "submissionDocuments",
+                            "title": "doc title",
+                            "description": "doc description",
+                            "url": "http://dev.bpe.eprocurement.systems/api/v1/storage/get/b5494aa9-578a-4f3b-a21d-cf4546374cef-1578921285987",
+                            "datePublished": "2020-01-13T13:51:49Z"
+                        }
+                    ],
+                    "relatedLots": [
+                        "36133175-8f63-4763-a1dd-b1d16b551453"
+                    ]
+                }
+            ]
+        },
+        "contracts": [
+            {
+                "id": "848a5f27-2159-46af-aff1-82728af1ced4",
+                "date": "2020-02-07T10:21:50Z",
+                "awardId": "3c7faff8-6123-4862-a7ff-04875ca4b767",
+                "relatedLots": [
+                    "36133175-8f63-4763-a1dd-b1d16b551453"
+                ],
+                "status": "pending",
+                "statusDetails": "active",
+                "relatedProcesses": [
+                    {
+                        "id": "bd45f483-4993-11ea-85b3-f5103b0c4234",
+                        "relationship": [
+                            "x_contracting"
+                        ],
+                        "scheme": "ocid",
+                        "identifier": "ocds-t1s2t3-MD-1581070591188-AC-1581816477249",
+                        "uri": "http://dev.public.eprocurement.systems/tenders/ocds-t1s2t3-MD-1581070591188/ocds-t1s2t3-MD-1581070591188-AC-1581816477249"
+                    }
+                ]
+            }
+        ],
+        "hasPreviousNotice": True,
+        "purposeOfNotice": {
+            "isACallForCompetition": True
+        },
+        "relatedProcesses": [
+            {
+                "id": "08af2e61-4993-11ea-85b3-f5103b0c4234",
+                "relationship": [
+                    "planning"
+                ],
+                "scheme": "ocid",
+                "identifier": "ocds-t1s2t3-MD-1581070591188-PN-1581070591216",
+                "uri": "http://dev.public.eprocurement.systems/tenders/ocds-t1s2t3-MD-1581070591188/ocds-t1s2t3-MD-1581070591188-PN-1581070591216"
+            },
+            {
+                "id": "e90c1f03-4992-11ea-85b3-f5103b0c4234",
+                "relationship": [
+                    "parent"
+                ],
+                "scheme": "ocid",
+                "identifier": "ocds-t1s2t3-MD-1581070591188",
+                "uri": "http://dev.public.eprocurement.systems/tenders/ocds-t1s2t3-MD-1581070591188/ocds-t1s2t3-MD-1581070591188"
+            }
+        ]
+    }
