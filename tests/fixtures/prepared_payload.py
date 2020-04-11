@@ -16,43 +16,35 @@ def responses(prepared_request_id):
 
 
 @pytest.fixture(scope='function')
-def payload_template(prepared_request_id):
-    return {
-        "id": "",
-        "command": "",
-        "context": {},
-        "data": {},
-        "version": "0.0.1"
-    }
-
-
-@pytest.fixture(scope='function')
-def prepared_payload(payload_template, prepared_request_id, prepared_operation_id):
+def prepared_payload(prepared_request_id, prepared_operation_id):
     def with_values(command, cpid=None, stage="EV", operationid=prepared_operation_id, id=None, token=None,
                     owner='445f6851-c908-407d-9b45-14b92f3e964b'):
-        payload_template['id'] = f"{prepared_request_id}"
-        payload_template['command'] = command
-        payload_template['context'] = {
-            "operationId": f"{operationid}",
-            "requestId": "7eb32550-2335-11ea-7a78-e9a0e1c3d51d",
-            "cpid": cpid,
-            "ocid": "ocds-t1s2t3-MD-1576850865434-EV-1576850873109",
-            "stage": stage,
-            "prevStage": "EV",
-            "processType": "startConsiderByAward",
-            "operationType": "doAwardConsideration",
-            "phase": "awarding",
-            "owner": f"{owner}",
-            "country": "MD",
-            "language": "ro",
-            "pmd": "TEST_OT",
-            "token": f'{token}',
-            "startDate": "2019-12-20T14:32:05Z",
-            "id": f"{id}",
-            "timeStamp": 1576852325413,
-            "isAuction": False
+        return {
+            "id": f"{prepared_request_id}",
+            "command": command,
+            "context": {
+                "operationId": f"{operationid}",
+                "requestId": "7eb32550-2335-11ea-7a78-e9a0e1c3d51d",
+                "cpid": cpid,
+                "ocid": "ocds-t1s2t3-MD-1576850865434-EV-1576850873109",
+                "stage": stage,
+                "prevStage": "EV",
+                "processType": "startConsiderByAward",
+                "operationType": "doAwardConsideration",
+                "phase": "awarding",
+                "owner": f"{owner}",
+                "country": "MD",
+                "language": "ro",
+                "pmd": "TEST_OT",
+                "token": f'{token}',
+                "startDate": "2019-12-20T14:32:05Z",
+                "id": f"{id}",
+                "timeStamp": 1576852325413,
+                "isAuction": False
+            },
+            "data": {},
+            "version": "0.0.1"
         }
-        return payload_template
 
     return with_values
 
