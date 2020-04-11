@@ -215,18 +215,15 @@ def payload_check_registration(prepared_request_id):
 
 
 @pytest.fixture(scope='function')
-def payload_notice_compiled_release(prepared_request_id, prepared_cpid, prepared_ev_ocid,
-                                    data_for_test_notice_compiled_release):
-    def _payload_notice_compiled_release(data=data_for_test_notice_compiled_release
-                                         , startDate="2020-04-02T09:14:25Z"):
-        return {
-            "id": f"{prepared_request_id}",
-            "version": "2.0.0",
-            "action": "updateRecord",
-            "params": {
-                "date": startDate,
-                "data": json.dumps(data)
-            }
+def payload_notice_compiled_release(request_template, data_for_test_notice_compiled_release):
+    payload = request_template(acton="updateRecord")
+
+    def _payload_notice_compiled_release(data=data_for_test_notice_compiled_release, startDate="2020-04-02T09:14:25Z"):
+        payload['params'] = {
+            "date": startDate,
+            "data": json.dumps(data)
         }
+
+        return payload
 
     return _payload_notice_compiled_release

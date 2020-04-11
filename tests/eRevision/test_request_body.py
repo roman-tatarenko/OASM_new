@@ -69,7 +69,7 @@ action_enum = ("findAmendmentIds", "dataValidation", "createAmendment", "CheckAc
 
                          ])
 def test_on_eRevision_with_invalid_param(port, host, param, value, code, description, request_template, response):
-    payload = request_template
+    payload = request_template()
     payload[param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
     response.error['result'] = [{"code": code,
@@ -93,7 +93,7 @@ def test_on_eRevision_with_invalid_param(port, host, param, value, code, descrip
                              pytest.param("params", marks=pytestrail.case('C8205', 'C8116', 'C8397'))
                          ])
 def test_on_eRevision_without_param(port, host, param, request_template, response):
-    payload = request_template
+    payload = request_template()
     if param == 'params':
         payload['action'] = random.choice(action_enum)
     del payload[param]
@@ -119,7 +119,7 @@ def test_on_eRevision_without_param(port, host, param, request_template, respons
 def test_the_eRevisions_behavior_with_params_as_array_of_objects_in_payload(host, port, code, description, params,
                                                                             request_template, response
                                                                             ):
-    payload = request_template
+    payload = request_template()
     payload['action'] = random.choice(action_enum)
     payload['params'] = params
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()

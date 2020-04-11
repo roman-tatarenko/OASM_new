@@ -5,12 +5,15 @@ import pytest
 
 @pytest.fixture(scope='function')
 def request_template(prepared_request_id):
-    return {
-        "id": f"{prepared_request_id}",
-        "version": "2.0.0",
-        "action": "str",
-        "params": {}
-    }
+    def _with_value(acton: str = None):
+        return {
+            "id": f"{prepared_request_id}",
+            "version": "2.0.0",
+            "action": acton,
+            "params": {}
+        }
+
+    return _with_value
 
 
 @pytest.fixture(scope='session')
