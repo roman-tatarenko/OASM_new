@@ -164,3 +164,38 @@ def test_on_there_is_response_with_status_error_if_request_does_not_contain(
     ]
 
     assert actualresult == response.error
+
+
+@pytest.mark.parametrize("param,value,code,description",
+                         [
+                             pytest.param("date", 3.14, "DR-4/2", "Data format mismatch of attribute 'date'. "
+                                                                  "Expected data format: 'uuuu-MM-dd'T'HH:mm:ss'Z'',"
+                                                                  " actual value: '3.14'.",
+                                          marks=pytestrail.case('C13246')),
+                             pytest.param("date", True, "DR-4/2", "Data format mismatch of attribute 'date'. "
+                                                                  "Expected data format: 'uuuu-MM-dd'T'HH:mm:ss'Z'',"
+                                                                  " actual value: 'true'.",
+                                          marks=pytestrail.case('C13247')),
+                             pytest.param("date", "", "DR-4/2", "Data format mismatch of attribute 'date'. "
+                                                                "Expected data format: 'uuuu-MM-dd'T'HH:mm:ss'Z'',"
+                                                                " actual value: ''.", marks=pytestrail.case('C13245'))
+                         ])
+def test_on_there_is_response_with_status_error_if_request_contains(
+        host, port, param, value, code, description, payload_notice_compiled_release,
+        data_for_test_notice_compiled_release, response):
+    payload = payload_notice_compiled_release(data=data_for_test_notice_compiled_release)
+    payload['params'][param] = value
+    actualresult = requests.post(f'{host}:{port.eNotice}/command2', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description,
+            "details": [
+                {
+                    "name": param
+                }
+            ]
+        }
+    ]
+
+    assert actualresult == response.error
