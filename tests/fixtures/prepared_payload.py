@@ -227,3 +227,17 @@ def payload_notice_compiled_release(request_template, data_for_test_notice_compi
         return payload
 
     return _payload_notice_compiled_release
+
+
+@pytest.fixture(scope='function')
+def payload_openAccess(request_template):
+    payload = request_template(acton="openAccess")
+
+    def _payload_openAccess(ids, datePublished):
+        payload['params'] = {
+            "documentIds": ids,
+            "datePublished": datePublished
+        }
+        return payload
+
+    return _payload_openAccess
