@@ -22,12 +22,9 @@ def test_on_eRevision_is_assign_pending_value_for_result_status(port, host, para
     payload = prepared_payload_createAmendment(amendment_id=related_entity_id)
     payload['params']['operationType'] = operationType
     payload['params']['relatedEntityId'] = f"{related_entity_id}"
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = value
-
-    assert actualresult['result'][param] == expectedresult, print(actualresult)
+    assert actualresult['result'][param] == value
 
 
 @pytest.mark.parametrize("operationType",
@@ -43,12 +40,9 @@ def test_the_eRevision_correctly_sets_value_for_result_relatedItem(port, host, o
     payload = prepared_payload_createAmendment(amendment_id=related_entity_id)
     payload['params']['operationType'] = operationType
     payload['params']['relatedEntityId'] = f"{related_entity_id}"
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    expectedresult = f"{related_entity_id}"
-
-    assert actualresult['result']['relatedItem'] == expectedresult, actualresult
+    assert actualresult['result']['relatedItem'] == f"{related_entity_id}"
 
 
 @pytestrail.case('C8344')
@@ -65,7 +59,7 @@ def test_the_eRevision_correctly_sets_value_for_result_date(port, host,
     payload = prepared_payload_createAmendment()
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
 
-    assert actualresult['result']['date'] == payload['params']['startDate'], actualresult
+    assert actualresult['result']['date'] == payload['params']['date'], actualresult
 
 
 @pytest.mark.parametrize("param,code,description",
@@ -80,33 +74,26 @@ def test_the_eRevision_correctly_sets_value_for_result_date(port, host,
                                           marks=pytestrail.case('C8227')),
                              pytest.param("cpid", "RQ-1/21", "Error parsing 'params'",
                                           marks=pytestrail.case('C8222')),
-                             pytest.param("startDate", "RQ-1/21", "Error parsing 'params'",
+                             pytest.param("date", "RQ-1/21", "Error parsing 'params'",
                                           marks=pytestrail.case('C8221')),
                              pytest.param("operationType", "RQ-1/21", "Error parsing 'params'",
                                           marks=pytestrail.case('C8220')),
 
                          ])
 def test_on_impossibility_to_create_amendment_without_param_in_params(port, host, param, code, description,
-                                                                      prepared_request_id,
+                                                                      prepared_request_id, response,
                                                                       prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment()
     del payload['params'][param]
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    response.error["result"] = [
+        {
+            "code": code,
+            "description": description
+        }
+    ]
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description
-            }
-        ]
-    }
-
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -142,15 +129,15 @@ def test_on_impossibility_to_create_amendment_without_param_in_params(port, host
                              pytest.param("cpid", None, "RQ-1/21",
                                           "Error parsing 'params'",
                                           marks=pytestrail.case('C8330')),
-                             pytest.param("startDate", None, "RQ-1/21",
+                             pytest.param("date", None, "RQ-1/21",
                                           "Error parsing 'params'",
                                           marks=pytestrail.case('C8328')),
-                             pytest.param("startDate", "", "DR-4/21",
-                                          "Data format mismatch of attribute 'startDate'."
+                             pytest.param("date", "", "DR-4/21",
+                                          "Data format mismatch of attribute 'date'."
                                           " Expected data format: 'uuuu-MM-dd'T'HH:mm:ss'Z'', actual value: ''.",
                                           marks=pytestrail.case('C8327')),
-                             pytest.param("startDate", 32, "DR-4/21",
-                                          "Data format mismatch of attribute 'startDate'."
+                             pytest.param("date", 32, "DR-4/21",
+                                          "Data format mismatch of attribute 'date'."
                                           " Expected data format: 'uuuu-MM-dd'T'HH:mm:ss'Z'', actual value: '32'.",
                                           marks=pytestrail.case('C8326')),
                              pytest.param("operationType", None, "RQ-1/21",
@@ -173,28 +160,20 @@ def test_on_impossibility_to_create_amendment_without_param_in_params(port, host
                                           marks=pytestrail.case('C8320'))
 
                          ])
-def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port, host, param, value, code,
+def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port, host, param, value, code, response,
                                                                            description, prepared_request_id,
                                                                            prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment()
     payload['params'][param] = value
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description
-            }
-        ]
-    }
-
-    if param in {"ocid", "cpid", "operationType", "startDate"} and value is not None:
-        expectedresult['result'] = [
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description
+        }
+    ]
+    if param in {"ocid", "cpid", "operationType", "date"} and value is not None:
+        response.error['result'] = [
             {
                 "code": code,
                 "description": description,
@@ -206,7 +185,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port,
             }
         ]
 
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -225,26 +204,22 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_params(port,
 
                          ])
 def test_on_impossibility_to_create_amendment_with_invalid_param_in_amendment(port, host, param, value, code,
+                                                                              response,
                                                                               description, prepared_request_id,
                                                                               prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment()
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description
+        }
+    ]
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description
-            }
-        ]
-    }
     if param == "id":
         param = "amendment.id"
-        expectedresult['result'] = [
+        response.error['result'] = [
             {
                 "code": code,
                 "description": description,
@@ -256,7 +231,7 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_amendment(po
             }
         ]
 
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,code,description",
@@ -268,26 +243,19 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_amendment(po
 
                          ])
 def test_on_impossibility_to_create_amendment_without_param_in_amendment(port, host, param, code, description,
-                                                                         prepared_request_id,
+                                                                         prepared_request_id, response,
                                                                          prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment()
     del payload['params']['amendment'][param]
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description
+        }
+    ]
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description
-            }
-        ]
-    }
-
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -307,39 +275,33 @@ def test_on_impossibility_to_create_amendment_without_param_in_amendment(port, h
                              pytest.param("documentType", None, "RQ-1/21", "Error parsing 'params'",
                                           marks=pytestrail.case('C8210'))
                          ])
-def test_on_impossibility_to_create_amendment_with_invalid_param_in_document(port, host, param, value, code,
+def test_on_impossibility_to_create_amendment_with_invalid_param_in_document(port, host, param, value, code, response,
                                                                              description, prepared_request_id,
                                                                              prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment()
     payload['params']['amendment']['documents'][0][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description,
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
-            }
-        ]
-    }
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description,
+            "details": [
+                {
+                    "name": param
+                }
+            ]
+        }
+    ]
 
     if value is None:
-        expectedresult['result'] = [
+        response.error['result'] = [
             {
                 "code": code,
                 "description": description
             }
         ]
 
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,code,description",
@@ -352,26 +314,19 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_in_document(por
 
                          ])
 def test_on_impossibility_to_create_amendment_without_param_in_amendment_document(port, host, param, code, description,
-                                                                                  prepared_request_id,
+                                                                                  prepared_request_id, response,
                                                                                   prepared_payload_createAmendment):
     payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['documents'][0][param]
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description
+        }
+    ]
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description
-            }
-        ]
-    }
-
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
 @pytestrail.case('C8308')
@@ -380,7 +335,6 @@ def test_on_possibility_to_create_amendment_without_params_amendment_documents_d
                                                                                            prepared_request_id):
     payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['documents'][0]['description']
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
     expectedresult = [{
         "documentType": "cancellationDetails",
@@ -389,82 +343,73 @@ def test_on_possibility_to_create_amendment_without_params_amendment_documents_d
 
     }]
     check.equal(actualresult['status'], "success")
+
     assert all(item in expectedresult for item in actualresult['result']['documents']), actualresult
 
 
 @pytestrail.case('C8209')
 def test_on_possibility_to_create_amendment_for_tender_without_params_amendment_documents(port, host, prepared_ev_ocid,
-                                                                                          prepared_request_id,
+                                                                                          prepared_request_id, response,
                                                                                           prepared_payload_createAmendment
                                                                                           ):
     payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['documents']
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success",
-        "result": {
-            "rationale": "Some_string_1",
-            "description": "Some_string_2",
-            "date": "2020-02-28T16:14:54Z",
-            "status": "pending",
-            "type": "cancellation",
-            "relatesTo": "tender",
-            "relatedItem": f"{prepared_ev_ocid}"
-        }
+    response.success['result'] = {
+        "rationale": "Some_string_1",
+        "description": "Some_string_2",
+        "date": "2020-02-28T16:14:54Z",
+        "status": "pending",
+        "type": "cancellation",
+        "relatesTo": "tender",
+        "relatedItem": f"{prepared_ev_ocid}"
     }
-    check.equal(expectedresult['status'], "success")
-    check.equal(expectedresult['id'], f"{prepared_request_id}")
+    check.equal(response.success['status'], "success")
+    check.equal(response.success['id'], f"{prepared_request_id}")
 
-    assert all(item in actualresult['result'] for item in expectedresult['result']), actualresult
+    assert all(item in actualresult['result'] for item in response.success['result']), actualresult
 
 
 @pytestrail.case('C8208')
-def test_on_possibility_to_create_amendment_for_tender_without_params_amendment_description(port, host,
+def test_on_possibility_to_create_amendment_for_tender_without_params_amendment_description(port, host, response,
                                                                                             prepared_ev_ocid,
                                                                                             prepared_request_id,
                                                                                             prepared_payload_createAmendment
                                                                                             ):
     payload = prepared_payload_createAmendment()
     del payload['params']['amendment']['description']
-
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success",
-        "result": {
-            "rationale": "Some_string_1",
-            "documents": [
-                {
-                    "documentType": "cancellationDetails",
-                    "id": "845b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
-                    "title": "amendments documents title",
-                    "description": "amendments documents description"
-                }
-            ],
-            "date": "2020-02-28T16:14:54Z",
-            "status": "pending",
-            "type": "cancellation",
-            "relatesTo": "lot/tender",
-            "relatedItem": "lot_id/tender_ocid"
-        }
+    response.success['result'] = {
+        "rationale": "Some_string_1",
+        "documents": [
+            {
+                "documentType": "cancellationDetails",
+                "id": "845b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+                "title": "amendments documents title",
+                "description": "amendments documents description"
+            }
+        ],
+        "date": "2020-02-28T16:14:54Z",
+        "status": "pending",
+        "type": "cancellation",
+        "relatesTo": "lot/tender",
+        "relatedItem": "lot_id/tender_ocid"
     }
-    check.equal(expectedresult['status'], "success")
-    check.equal(expectedresult['id'], f"{prepared_request_id}")
+    check.equal(response.success['status'], "success")
+    check.equal(response.success['id'], f"{prepared_request_id}")
 
-    assert all(item in actualresult['result'] for item in expectedresult['result']), actualresult
+    assert all(item in actualresult['result'] for item in response.success['result']), actualresult
 
 
-@pytest.mark.parametrize("param,value",
-                         [
-                             pytest.param("tender", "tenderCancellation", marks=pytestrail.case('C8649')),
-                             pytest.param("lot", "lotCancellation", marks=pytestrail.case('C8650')),
+@pytest.mark.parametrize(
+    "param,value",
+    [
+        pytest.param("tender", "tenderCancellation", marks=pytestrail.case('C8649')),
+        pytest.param("lot", "lotCancellation", marks=pytestrail.case('C8650')),
 
-                         ])
-def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port, host, param, value, prepared_entity_id,
+    ])
+def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port, host, param, value,
+                                                                           prepared_entity_id,
                                                                            prepared_request_id, prepared_ev_ocid,
                                                                            prepared_cpid,
                                                                            prepared_payload_createAmendment,
@@ -474,14 +419,11 @@ def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port,
     payload = prepared_payload_createAmendment(amendment_id=amendment_id)
     payload['params']['relatedEntityId'] = f"{related_entity_id}"
     payload['params']['operationType'] = value
-
     requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    actualresult = execute_select_revision_amendments_by_id(cpid=prepared_cpid, ocid=prepared_ev_ocid,
+                                                            id=amendment_id).one()
 
-    actual_result = execute_select_revision_amendments_by_id(cpid=prepared_cpid, ocid=prepared_ev_ocid,
-                                                             id=amendment_id).one()
-
-    actual_data = json.loads(actual_result.data)
-
+    actual_data = json.loads(actualresult.data)
     expected_data = {
         "id": f"{amendment_id}",
         "date": "2020-02-28T16:14:54Z",
@@ -501,9 +443,9 @@ def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port,
         }]
     }
 
-    check.equal(actual_result.cpid, prepared_cpid)
-    check.equal(actual_result.ocid, prepared_ev_ocid)
-    check.equal(actual_result.id, amendment_id)
+    check.equal(actualresult.cpid, prepared_cpid)
+    check.equal(actualresult.ocid, prepared_ev_ocid)
+    check.equal(actualresult.id, amendment_id)
     check.equal(actual_data, expected_data)
 
 
@@ -520,7 +462,7 @@ def test_the_eRevision_correctly_inserts_DB_record_for_tender_cancellation(port,
                                           marks=pytestrail.case('C8286'))
                          ])
 def test_on_impossibility_to_create_amendment_with_invalid_param_rationale_in_amendment(port, host, param, value, code,
-                                                                                        description,
+                                                                                        description, response,
                                                                                         prepared_request_id,
                                                                                         prepared_entity_id,
                                                                                         prepared_payload_createAmendment,
@@ -529,34 +471,26 @@ def test_on_impossibility_to_create_amendment_with_invalid_param_rationale_in_am
     payload = prepared_payload_createAmendment(amendment_id=amendment_id)
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-
     del actualresult['result']['token']
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success",
-        "result": {
-            "rationale": f"{value}",
-            "description": "Some_string_2",
-            "documents": [
-                {
-                    "documentType": "cancellationDetails",
-                    "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
-                    "title": "amendments documents title",
-                    "description": "amendments documents description"
-                }
-            ],
-            "id": f"{amendment_id}",
-            "date": "2020-02-28T16:14:54Z",
-            "status": "pending",
-            "type": "cancellation",
-            "relatesTo": "tender",
-            "relatedItem": f"{prepared_ev_ocid}",
-        }
+    response.success['result'] = {
+        "rationale": f"{value}",
+        "description": "Some_string_2",
+        "documents": [
+            {
+                "documentType": "cancellationDetails",
+                "id": "835b8d03-80dc-4d1b-8b1c-fe2b1a23366c-1573211196021",
+                "title": "amendments documents title",
+                "description": "amendments documents description"
+            }
+        ],
+        "id": f"{amendment_id}",
+        "date": "2020-02-28T16:14:54Z",
+        "status": "pending",
+        "type": "cancellation",
+        "relatesTo": "tender",
+        "relatedItem": f"{prepared_ev_ocid}",
     }
-
     if f"{value}" == "True":
-        expectedresult['result']['rationale'] = "true"
+        response.success['result']['rationale'] = "true"
 
-    assert actualresult == expectedresult
+    assert actualresult == response.success
