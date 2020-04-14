@@ -126,7 +126,7 @@ def test_the_eRevisions_behavior_with_params_as_array_of_objects_in_payload(host
     response.error['result'] = [{"code": code,
                                  "description": description}]
 
-    assert actualresult == response.error, actualresult
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,value",
@@ -134,12 +134,12 @@ def test_the_eRevisions_behavior_with_params_as_array_of_objects_in_payload(host
                              pytest.param("version", "99.0.0", marks=pytestrail.case('C8129'))
                          ])
 def test_on_dataValidation_with_incorrect_version_in_payload(host, port, param, value,
-                                                             response_success,
+                                                             response,
                                                              prepared_payload_dataValidation):
     payload = prepared_payload_dataValidation()
     payload[param] = value
     actual_result = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-    expected_result = response_success
-    expected_result[param] = value
 
-    assert actual_result == expected_result, actual_result
+    response.success[param] = value
+
+    assert actual_result == response.success
