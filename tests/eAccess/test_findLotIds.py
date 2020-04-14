@@ -48,7 +48,7 @@ from pytest_testrail.plugin import pytestrail
 def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetails, execute_insert_into_access_tender,
                                         prepared_cpid,
                                         prepared_entity_id, prepared_token_entity, prepared_request_id,
-                                        prepared_payload_getLotIds, prepared_data_access_tender,
+                                        prepared_payload_findLotIds, prepared_data_access_tender,
                                         clear_access_tender_by_cpid):
     data = prepared_data_access_tender
     lot_id = prepared_entity_id()
@@ -62,7 +62,7 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -116,7 +116,7 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
 def test_eAccess_without_result(host, states, port, status, statusDetails, execute_insert_into_access_tender,
                                 prepared_cpid,
                                 prepared_entity_id, prepared_token_entity, response_success,
-                                prepared_payload_getLotIds, prepared_data_access_tender, clear_access_tender_by_cpid):
+                                prepared_payload_findLotIds, prepared_data_access_tender, clear_access_tender_by_cpid):
     data = prepared_data_access_tender
     lotId = prepared_entity_id()
 
@@ -129,7 +129,7 @@ def test_eAccess_without_result(host, states, port, status, statusDetails, execu
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -152,7 +152,7 @@ def test_eAccess_returns_lots_in_if_there_two_states_objects(host, states, port,
                                                              prepared_cpid,
                                                              prepared_entity_id, prepared_token_entity,
                                                              prepared_request_id,
-                                                             prepared_payload_getLotIds,
+                                                             prepared_payload_findLotIds,
                                                              prepared_data_access_tender_2_lots,
                                                              clear_access_tender_by_cpid):
     data = prepared_data_access_tender_2_lots
@@ -173,7 +173,7 @@ def test_eAccess_returns_lots_in_if_there_two_states_objects(host, states, port,
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -203,7 +203,7 @@ def test_eAccess_returns_successful_response_without_result_array(host, states, 
                                                                   prepared_cpid,
                                                                   prepared_entity_id, prepared_token_entity,
                                                                   response_success,
-                                                                  prepared_payload_getLotIds,
+                                                                  prepared_payload_findLotIds,
                                                                   prepared_data_access_tender_2_lots,
                                                                   clear_access_tender_by_cpid):
     data = prepared_data_access_tender_2_lots
@@ -224,7 +224,7 @@ def test_eAccess_returns_successful_response_without_result_array(host, states, 
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -252,7 +252,7 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_an_inval
                                                                                                    prepared_entity_id,
                                                                                                    prepared_token_entity,
                                                                                                    prepared_request_id,
-                                                                                                   prepared_payload_getLotIds,
+                                                                                                   prepared_payload_findLotIds,
                                                                                                    prepared_data_access_tender,
                                                                                                    clear_access_tender_by_cpid):
     data = prepared_data_access_tender
@@ -267,7 +267,7 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_an_inval
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -299,8 +299,8 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_an_inval
                          ])
 def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_(port, host, param,
                                                                                  prepared_request_id,
-                                                                                 prepared_payload_getLotIds):
-    payload = prepared_payload_getLotIds
+                                                                                 prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds
     del payload[param]
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -339,8 +339,8 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
                          ])
 def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_param_in_params(port, host, param,
                                                                                                 prepared_request_id,
-                                                                                                prepared_payload_getLotIds):
-    payload = prepared_payload_getLotIds
+                                                                                                prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds
     del payload['params'][param]
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -370,7 +370,7 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
                                           marks=pytestrail.case('C8467')),
                              pytest.param("action", "", "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
-                                          " Expected values: 'getLotIds, checkAccessToTender, getLotStateByIds,"
+                                          " Expected values: 'findLotIds, checkAccessToTender, getLotStateByIds,"
                                           " responderProcessing, checkPersonesStructure', actual value: ''.",
                                           marks=pytestrail.case('C8468')),
                              pytest.param("version", 3.14, "DR-2/3",
@@ -403,8 +403,8 @@ def test_eAccess_returns_response_with_status_error_if_request_contains(port, ho
                                                                         value, code,
                                                                         description,
                                                                         prepared_request_id,
-                                                                        prepared_payload_getLotIds):
-    payload = prepared_payload_getLotIds
+                                                                        prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds
     payload[param] = value
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -474,8 +474,8 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_status(p
                                                                                value, code,
                                                                                description,
                                                                                prepared_request_id,
-                                                                               prepared_payload_getLotIds):
-    payload = prepared_payload_getLotIds
+                                                                               prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = value
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -517,8 +517,8 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_param(po
                                                                               value, code,
                                                                               description,
                                                                               prepared_request_id,
-                                                                              prepared_payload_getLotIds):
-    payload = prepared_payload_getLotIds
+                                                                              prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds
     payload['params'][param] = value
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -560,7 +560,7 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_request_does_not_c
                                                                                                     prepared_entity_id,
                                                                                                     prepared_token_entity,
                                                                                                     prepared_request_id,
-                                                                                                    prepared_payload_getLotIds,
+                                                                                                    prepared_payload_findLotIds,
                                                                                                     prepared_data_access_tender,
                                                                                                     clear_access_tender_by_cpid):
     lot_id = prepared_entity_id()
@@ -575,7 +575,7 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_request_does_not_c
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     del payload['params']['states']
 
     actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -607,7 +607,7 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_there_two_states_o
                                                                                                   prepared_entity_id,
                                                                                                   prepared_token_entity,
                                                                                                   prepared_request_id,
-                                                                                                  prepared_payload_getLotIds,
+                                                                                                  prepared_payload_findLotIds,
                                                                                                   prepared_data_access_tender_2_lots,
                                                                                                   clear_access_tender_by_cpid):
     data = prepared_data_access_tender_2_lots
@@ -628,7 +628,7 @@ def test_eAccess_returns_successful_response_with_lots_ids_if_there_two_states_o
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -654,8 +654,8 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_status_o
                                                                                                                   host,
                                                                                                                   value,
                                                                                                                   prepared_request_id,
-                                                                                                                  prepared_payload_getLotIds):
-    payload = prepared_payload_getLotIds
+                                                                                                                  prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = value
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -688,7 +688,7 @@ def test_eAccess_returns_successful_response_without_result_if_request_contain_e
                                                                                                              prepared_entity_id,
                                                                                                              prepared_token_entity,
                                                                                                              response_error,
-                                                                                                             prepared_payload_getLotIds,
+                                                                                                             prepared_payload_findLotIds,
                                                                                                              prepared_data_access_tender
                                                                                                              ):
     data = prepared_data_access_tender
@@ -703,7 +703,7 @@ def test_eAccess_returns_successful_response_without_result_if_request_contain_e
                                       created_date=datetime.now(), json_data=data,
                                       owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
 
-    payload = prepared_payload_getLotIds
+    payload = prepared_payload_findLotIds
     payload['params']['states'] = states
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
