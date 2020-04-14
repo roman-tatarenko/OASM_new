@@ -122,7 +122,7 @@ def prepared_payload_createAmendment(prepared_request_id, prepared_cpid, prepare
                 },
                 "relatedEntityId": f"{prepared_ev_ocid}",
                 "operationType": "tenderCancellation",
-                "startDate": "2020-02-28T16:14:54Z",
+                "date": "2020-02-28T16:14:54Z",
                 "cpid": f"{prepared_cpid}",
                 "ocid": f"{prepared_ev_ocid}",
                 "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -133,11 +133,11 @@ def prepared_payload_createAmendment(prepared_request_id, prepared_cpid, prepare
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_getLotIds(prepared_request_id, prepared_cpid, prepared_ev_ocid):
+def prepared_payload_findLotIds(prepared_request_id, prepared_cpid, prepared_ev_ocid):
     return {
         "version": "2.0.0",
         "id": f"{prepared_request_id}",
-        "action": "getLotIds",
+        "action": "findLotIds",
         "params": {
             "states": [
                 {
