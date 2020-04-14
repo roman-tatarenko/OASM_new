@@ -37,6 +37,10 @@ action_enum = ("checkRegistration", "openAccess")
                                           "Data type mismatch."
                                           " Expected data type: 'STRING', actual data type: 'BOOLEAN'.",
                                           marks=pytestrail.case('C8634'), id="id as boolean."),
+                             pytest.param("id", 3.14, "DR-2/14",
+                                          "Data type mismatch."
+                                          " Expected data type: 'STRING', actual data type: 'NUMBER'.",
+                                          marks=pytestrail.case('C8631'), id="id as number."),
                              pytest.param("id", "", "DR-4/14",
                                           "Data format mismatch."
                                           " Expected data format: 'uuid', actual value: ''.",
