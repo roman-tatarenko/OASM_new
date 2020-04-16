@@ -264,8 +264,8 @@ def payload_checkRelatedTenderer(request_template):
 def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_ocid):
     payload = request_template(acton='checkPersonesStructure')
 
-    def _payload_checkPersonesStructure(persones, cpid=prepared_cpid, ocid=prepared_ev_ocid,
-                                        locationOfPersones="award"):
+    def _payload_checkPersonesStructure(persones, locationOfPersones, cpid=prepared_cpid, ocid=prepared_ev_ocid,
+                                        ):
         payload['params'] = {
             "persones": persones,
             "cpid": cpid,
