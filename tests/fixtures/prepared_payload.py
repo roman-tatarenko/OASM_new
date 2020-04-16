@@ -275,3 +275,21 @@ def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_
         return payload
 
     return _payload_checkPersonesStructure
+
+
+@pytest.fixture(scope='function')
+def payload_checkAccessToAmendment(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(acton='checkAccessToAmendment')
+
+    def _payload_checkAccessToAmendment(token, owner, amendmentId, cpid=prepared_cpid, ocid=prepared_ev_ocid,
+                                        ):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "token": token,
+            "owner": owner,
+            "amendmentId": amendmentId
+        }
+        return payload
+
+    return _payload_checkAccessToAmendment
