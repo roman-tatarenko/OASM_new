@@ -99,7 +99,6 @@ def test_on_possibility_to_update_record_without_params_tender_amendments_docume
         data_for_test_notice_compiled_release,
         prepared_data_add_EV_before_SendAcForVerification, response):
     data = prepared_data_add_EV_before_SendAcForVerification
-
     execute_insert_into_notice_compiled_release(cp_id=prepared_cpid, oc_id=prepared_ev_ocid, json_data=data,
                                                 publish_date=datetime.now(), release_date=datetime.now(),
                                                 release_id=prepared_release_id, stage='EV', status='active')
@@ -158,7 +157,7 @@ def test_on_there_is_response_with_status_error_if_request_does_not_contain(
     actualresult = requests.post(f'{host}:{port.eNotice}/command2', json=payload).json()
     response.error['result'] = [
         {
-            "code": "RQ-1/2",
+            "code": "SCR-7/2",
             "description": "Can not parse 'data'."
         }
     ]
