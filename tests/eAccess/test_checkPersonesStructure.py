@@ -41,7 +41,7 @@ def test_checkPersonesStructure_if_a_request_does_not_contain_documents_descript
                                                                                     payload_checkPersonesStructure
                                                                                     ):
     person_1 = data_person
-    del data_person['businessFunctions'][0]['documents']['description']
+    del data_person['businessFunctions'][0]['documents'][0]['description']
     payload = payload_checkPersonesStructure(persones=[person_1], locationOfPersones='award')
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
