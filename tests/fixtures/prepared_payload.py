@@ -278,10 +278,12 @@ def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_
 
 
 @pytest.fixture(scope='function')
-def payload_checkAccessToAmendment(request_template, prepared_cpid, prepared_ev_ocid):
+def payload_checkAccessToAmendment(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner,
+                                   prepared_entity_id, prepared_token_entity):
     payload = request_template(acton='checkAccessToAmendment')
 
-    def _payload_checkAccessToAmendment(token, owner, amendmentId, cpid=prepared_cpid, ocid=prepared_ev_ocid,
+    def _payload_checkAccessToAmendment(token=str(prepared_token_entity), amendmentId=str(prepared_entity_id()),
+                                        owner=prepared_owner, cpid=prepared_cpid, ocid=prepared_ev_ocid,
                                         ):
         payload['params'] = {
             "cpid": cpid,
