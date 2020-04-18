@@ -105,4 +105,4 @@ def test_on_eNotice_without_param(port, host, param, request_template, response)
     if param == "version":
         response.error['version'] = '1.0.0'
 
-    assert actualresult == response.error, print(actualresult, response.error)
+    assert actualresult == response.error
