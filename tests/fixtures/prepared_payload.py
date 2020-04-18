@@ -244,23 +244,6 @@ def payload_openAccess(request_template):
 
 
 @pytest.fixture(scope='function')
-def payload_checkRelatedTenderer(request_template):
-    payload = request_template(acton='checkRelatedTenderer')
-
-    def _payload_checkRelatedTenderer(cpid, ocid, awadId, requirmentId, relatedTendererId):
-        payload['params'] = {
-            "cpid": cpid,
-            "ocid": ocid,
-            "awardId": awadId,
-            "requirementId": requirmentId,
-            "relatedTendererId": relatedTendererId
-        }
-        return payload
-
-    return _payload_checkRelatedTenderer
-
-
-@pytest.fixture(scope='function')
 def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_ocid):
     payload = request_template(acton='checkPersonesStructure')
 
