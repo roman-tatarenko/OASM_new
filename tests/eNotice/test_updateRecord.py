@@ -138,15 +138,20 @@ def test_on_possibility_to_update_record_without_params_tender_amendments_docume
 
 @pytestrail.case('C8314')
 def test_eNotice_adds_amendment_object_after_release_updating_if_release_already_has_an_array_of_amendments(
-        host, port, execute_insert_into_notice_compiled_release, prepared_cpid, prepared_ev_ocid, prepared_token_entity,
+        host, port, execute_insert_into_notice_compiled_release, prepared_cpid, prepared_ev_ocid,
         prepared_release_id, payload_notice_compiled_release, execute_select_notice_compiled_release,
         data_ev_with_amendment, response):
     data = data_ev_with_amendment
-
-    execute_insert_into_notice_compiled_release(cp_id=prepared_cpid, oc_id=prepared_ev_ocid, json_data=data,
-                                                publish_date=datetime.now(), release_date=datetime.now(),
-                                                release_id=prepared_release_id, stage='EV', status='active')
-
+    execute_insert_into_notice_compiled_release(
+        cp_id=prepared_cpid,
+        oc_id=prepared_ev_ocid,
+        json_data=data,
+        publish_date=datetime.now(),
+        release_date=datetime.now(),
+        release_id=prepared_release_id,
+        stage='EV',
+        status='active'
+    )
     payload = payload_notice_compiled_release()
     actualresult = requests.post(f'{host}:{port.eNotice}/command2', json=payload).json()
     result = execute_select_notice_compiled_release(cpid=prepared_cpid, ocid=prepared_ev_ocid).one()
