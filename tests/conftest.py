@@ -16,7 +16,8 @@ pytest_plugins = [
     "tests.fixtures.prepared_select",
     "tests.fixtures.execute_select",
     "tests.fixtures.payload_templates",
-    "tests.eEvaluation.fixtures.prepared_payload"
+    "tests.eEvaluation.fixtures.prepared_payload",
+    "tests.eAccess.fixtures.prepared_payload"
 ]
 
 
