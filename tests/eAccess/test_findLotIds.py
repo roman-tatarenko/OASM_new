@@ -59,7 +59,7 @@ from pytest_testrail.plugin import pytestrail
 def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetails, execute_insert_into_access_tender,
                                         prepared_cpid, response, prepared_owner,
                                         prepared_entity_id, prepared_token_entity,
-                                        prepared_payload_findLotIds, data_tender,
+                                        payload_findLotIds, data_tender,
                                         clear_access_tender_by_cpid):
     json_data = data_tender
     lot_id = prepared_entity_id()
@@ -75,7 +75,7 @@ def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetail
         json_data=json_data,
         owner=prepared_owner
     )
-    payload = prepared_payload_findLotIds(states)
+    payload = payload_findLotIds(states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.success['result'] = [f"{lot_id}"]
 
@@ -145,7 +145,7 @@ def test_findLotIds_there_are_no_lots_in_DB(host, port, states, status, statusDe
                                             execute_insert_into_access_tender,
                                             prepared_cpid, prepared_owner, response,
                                             prepared_entity_id, prepared_token_entity,
-                                            prepared_payload_findLotIds, data_tender, clear_access_tender_by_cpid):
+                                            payload_findLotIds, data_tender, clear_access_tender_by_cpid):
     data = data_tender
     lotId = prepared_entity_id()
     data['ocid'] = prepared_cpid
@@ -160,25 +160,24 @@ def test_findLotIds_there_are_no_lots_in_DB(host, port, states, status, statusDe
         json_data=data,
         owner=prepared_owner
     )
-    payload = prepared_payload_findLotIds(states)
+    payload = payload_findLotIds(states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
     assert actualresult == response.success
 
 
-@pytest.mark.parametrize("states,status,statusDetails",
+@pytest.mark.parametrize("states",
                          [
                              pytest.param(({"status": "complete"}, {"status": "unsuccessful"}),
                                           marks=pytestrail.case('C8063'))
                          ])
-def test_findLotIds_one_lot_in_the_required_state_from_request_is_presented_in_DB(host, port, states, status,
-                                                                                  statusDetails,
+def test_findLotIds_one_lot_in_the_required_state_from_request_is_presented_in_DB(host, port, states,
                                                                                   execute_insert_into_access_tender,
                                                                                   prepared_cpid, prepared_owner,
                                                                                   prepared_entity_id,
                                                                                   prepared_token_entity,
                                                                                   data_two_lots_and_items,
-                                                                                  prepared_payload_findLotIds,
+                                                                                  payload_findLotIds,
                                                                                   data_tender, response,
                                                                                   clear_access_tender_by_cpid):
     lot_id_1, lot_id_2 = prepared_entity_id(), prepared_entity_id()
@@ -199,7 +198,7 @@ def test_findLotIds_one_lot_in_the_required_state_from_request_is_presented_in_D
         json_data=json_data,
         owner=prepared_owner
     )
-    payload = prepared_payload_findLotIds(*states)
+    payload = payload_findLotIds(*states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.success['result'] = [f"{lot_id_1}"]
 
@@ -216,7 +215,7 @@ def test_findLotIds_there_are_two_states_object_in_request(host, port, states,
                                                            execute_insert_into_access_tender,
                                                            prepared_cpid, response,
                                                            prepared_entity_id, prepared_token_entity,
-                                                           prepared_owner, prepared_payload_findLotIds,
+                                                           prepared_owner, payload_findLotIds,
                                                            data_tender, data_two_lots_and_items,
                                                            clear_access_tender_by_cpid):
     lot_id_1, lot_id_2 = str(prepared_entity_id()), str(prepared_entity_id())
@@ -239,7 +238,7 @@ def test_findLotIds_there_are_two_states_object_in_request(host, port, states,
         json_data=json_data,
         owner=prepared_owner
     )
-    payload = prepared_payload_findLotIds(*states)
+    payload = payload_findLotIds(*states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
     assert actualresult == response.success
@@ -254,8 +253,8 @@ def test_findLotIds_there_are_two_states_object_in_request(host, port, states,
 def test_findLotIds_request_does_not_contain_param_in_params(port, host, param,
                                                              prepared_request_id,
                                                              response,
-                                                             prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds()
+                                                             payload_findLotIds):
+    payload = payload_findLotIds()
     del payload['params'][param]
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [
@@ -324,8 +323,8 @@ def test_findLotIds_request_does_not_contain_param_in_params(port, host, param,
                                           id='when status: active, statusDetails: disqualified')
                          ])
 def test_findLotIds_request_contains_states(port, host, param, states, code, description, response,
-                                            prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds(states)
+                                            payload_findLotIds):
+    payload = payload_findLotIds(states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [
         {
@@ -351,8 +350,8 @@ def test_findLotIds_request_contains_states(port, host, param, states, code, des
                                           marks=pytestrail.case('C8475'), id='ocid as empty string')
                          ])
 def test_findLotIds_data_mismatch_to_pattern(port, host, param, value, code, description, response,
-                                             prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds()
+                                             payload_findLotIds):
+    payload = payload_findLotIds()
     payload['params'][param] = value
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [
@@ -369,7 +368,7 @@ def test_findLotIds_data_mismatch_to_pattern(port, host, param, value, code, des
 @pytestrail.case('C8088')
 def test_findLotIds_request_does_not_contain_states_array(host, port, execute_insert_into_access_tender, prepared_cpid,
                                                           response, prepared_entity_id, prepared_token_entity,
-                                                          prepared_payload_findLotIds, data_tender, prepared_owner,
+                                                          payload_findLotIds, data_tender, prepared_owner,
                                                           clear_access_tender_by_cpid):
     lot_id = str(prepared_entity_id())
     data = data_tender
@@ -385,7 +384,7 @@ def test_findLotIds_request_does_not_contain_states_array(host, port, execute_in
         json_data=data,
         owner=prepared_owner
     )
-    payload = prepared_payload_findLotIds()
+    payload = payload_findLotIds()
     del payload['params']['states']
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.success['result'] = [lot_id]
@@ -396,7 +395,7 @@ def test_findLotIds_request_does_not_contain_states_array(host, port, execute_in
 @pytestrail.case('C8062')
 def test_findLotIds_there_two_states_objects_in_request(host, port, execute_insert_into_access_tender, prepared_cpid,
                                                         prepared_entity_id, prepared_token_entity, prepared_owner,
-                                                        prepared_payload_findLotIds, data_tender, response,
+                                                        payload_findLotIds, data_tender, response,
                                                         clear_access_tender_by_cpid, data_two_lots_and_items):
     states = ({"status": "complete"}, {"status": "active"})
     lot_id_1, lot_id_2 = str(prepared_entity_id()), str(prepared_entity_id())
@@ -417,7 +416,7 @@ def test_findLotIds_there_two_states_objects_in_request(host, port, execute_inse
         json_data=json_data,
         owner=prepared_owner
     )
-    payload = prepared_payload_findLotIds(*states)
+    payload = payload_findLotIds(*states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.success['result'] = [lot_id_1, lot_id_2]
 
@@ -426,8 +425,8 @@ def test_findLotIds_there_two_states_objects_in_request(host, port, execute_inse
 
 @pytestrail.case('C8648')
 def test_findLotIds_request_contains_status_object_instead_of_array_of_objects(port, host, response,
-                                                                               prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds()
+                                                                               payload_findLotIds):
+    payload = payload_findLotIds()
     payload['params']['states'] = {}
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error["result"] = [
@@ -441,9 +440,9 @@ def test_findLotIds_request_contains_status_object_instead_of_array_of_objects(p
 
 
 @pytestrail.case('C8964')
-def test_findLotIds_request_contain_empty_states_array_of_objects(host, port, response, prepared_payload_findLotIds):
+def test_findLotIds_request_contain_empty_states_array_of_objects(host, port, response, payload_findLotIds):
     states = {}
-    payload = prepared_payload_findLotIds(states)
+    payload = payload_findLotIds(states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [
         {

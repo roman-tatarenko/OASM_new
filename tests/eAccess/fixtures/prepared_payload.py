@@ -2,64 +2,60 @@ import pytest
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_getLotStateByIds(prepared_request_id, prepared_cpid, prepared_ev_ocid, prepared_token_entity,
-                                      prepared_owner):
-    def _prepared_payload_getLotStateByIds(lot_id=prepared_token_entity):
-        return {
-            "version": "2.0.0",
-            "id": f"{prepared_request_id}",
-            "action": "getLotStateByIds",
-            "params": {
-                "lotIds": [
-                    f"{lot_id}"
-                ],
-                "cpid": f"{prepared_cpid}",
-                "ocid": f"{prepared_ev_ocid}"
-            }
-        }
+def payload_getLotStateByIds(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(acton='getLotStateByIds')
 
-    return _prepared_payload_getLotStateByIds
-
-
-@pytest.fixture(scope='function')
-def prepared_payload_findLotIds(request_template, prepared_cpid, prepared_ev_ocid):
-    payload = request_template(acton='findLotIds')
-
-    def _prepared_payload_findLotIds(*states, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+    def _payload_getLotStateByIds(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid):
         payload['params'] = {
-            "states": list(states),
+            "lotIds": list(args),
             "cpid": cpid,
             "ocid": ocid
         }
         return payload
 
-    return _prepared_payload_findLotIds
+    return _payload_getLotStateByIds
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_checkAccessToTender(prepared_request_id, prepared_cpid, prepared_ev_ocid, prepared_token_entity,
-                                         prepared_owner):
-    return {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "action": "checkAccessToTender",
-        "params": {
-            "cpid": f"{prepared_cpid}",
-            "ocid": f"{prepared_ev_ocid}",
-            "token": f"{prepared_token_entity}",
-            "owner": f"{prepared_owner}"
+def payload_findLotIds(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(acton='findLotIds')
+
+    def _payload_findLotIds(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "states": list(args),
+            "cpid": cpid,
+            "ocid": ocid
         }
-    }
+        return payload
+
+    return _payload_findLotIds
+
+
+@pytest.fixture(scope='function')
+def payload_checkAccessToTender(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner,
+                                prepared_token_entity):
+    payload = request_template(acton='checkAccessToTender')
+
+    def _payload_checkAccessToTender(cpid=prepared_cpid, ocid=prepared_ev_ocid, token=str(prepared_token_entity),
+                                     owner=prepared_owner):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "token": token,
+            "owner": owner
+        }
+        return payload
+
+    return _payload_checkAccessToTender
 
 
 @pytest.fixture(scope='function')
 def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_ocid):
     payload = request_template(acton='checkPersonesStructure')
 
-    def _payload_checkPersonesStructure(persones, locationOfPersones, cpid=prepared_cpid, ocid=prepared_ev_ocid,
-                                        ):
+    def _payload_checkPersonesStructure(*args, locationOfPersones, cpid=prepared_cpid, ocid=prepared_ev_ocid):
         payload['params'] = {
-            "persones": persones,
+            "persones": list(args),
             "cpid": cpid,
             "ocid": ocid,
             "locationOfPersones": locationOfPersones
