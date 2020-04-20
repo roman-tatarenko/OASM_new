@@ -86,7 +86,7 @@ def prepared_payload_createAmendment(prepared_request_id, prepared_cpid, prepare
 @pytest.fixture(scope='function')
 def payload_checkAccessToAmendment(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner,
                                    prepared_entity_id, prepared_token_entity):
-    payload = request_template(acton='checkAccessToAmendment')
+    payload = request_template(action='checkAccessToAmendment')
 
     def _payload_checkAccessToAmendment(token=str(prepared_token_entity), amendmentId=str(prepared_entity_id()),
                                         owner=prepared_owner, cpid=prepared_cpid, ocid=prepared_ev_ocid,

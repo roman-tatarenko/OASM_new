@@ -3,7 +3,7 @@ import pytest
 
 @pytest.fixture(scope='function')
 def payload_getLotStateByIds(request_template, prepared_cpid, prepared_ev_ocid):
-    payload = request_template(acton='getLotStateByIds')
+    payload = request_template(action='getLotStateByIds')
 
     def _payload_getLotStateByIds(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid):
         payload['params'] = {
@@ -18,7 +18,7 @@ def payload_getLotStateByIds(request_template, prepared_cpid, prepared_ev_ocid):
 
 @pytest.fixture(scope='function')
 def payload_findLotIds(request_template, prepared_cpid, prepared_ev_ocid):
-    payload = request_template(acton='findLotIds')
+    payload = request_template(action='findLotIds')
 
     def _payload_findLotIds(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid):
         payload['params'] = {
@@ -34,7 +34,7 @@ def payload_findLotIds(request_template, prepared_cpid, prepared_ev_ocid):
 @pytest.fixture(scope='function')
 def payload_checkAccessToTender(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner,
                                 prepared_token_entity):
-    payload = request_template(acton='checkAccessToTender')
+    payload = request_template(action='checkAccessToTender')
 
     def _payload_checkAccessToTender(cpid=prepared_cpid, ocid=prepared_ev_ocid, token=str(prepared_token_entity),
                                      owner=prepared_owner):
@@ -51,7 +51,7 @@ def payload_checkAccessToTender(request_template, prepared_cpid, prepared_ev_oci
 
 @pytest.fixture(scope='function')
 def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_ocid):
-    payload = request_template(acton='checkPersonesStructure')
+    payload = request_template(action='checkPersonesStructure')
 
     def _payload_checkPersonesStructure(*args, locationOfPersones, cpid=prepared_cpid, ocid=prepared_ev_ocid):
         payload['params'] = {

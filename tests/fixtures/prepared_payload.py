@@ -132,7 +132,7 @@ def payload_check_registration(prepared_request_id):
 
 @pytest.fixture(scope='function')
 def payload_notice_compiled_release(request_template, data_for_test_notice_compiled_release):
-    payload = request_template(acton='updateRecord')
+    payload = request_template(action='updateRecord')
 
     def _payload_notice_compiled_release(data=data_for_test_notice_compiled_release, startDate="2020-04-02T09:14:25Z"):
         payload['params'] = {
@@ -147,7 +147,7 @@ def payload_notice_compiled_release(request_template, data_for_test_notice_compi
 
 @pytest.fixture(scope='function')
 def payload_openAccess(request_template):
-    payload = request_template(acton='openAccess')
+    payload = request_template(action='openAccess')
 
     def _payload_openAccess(ids, datePublished):
         payload['params'] = {
@@ -161,7 +161,7 @@ def payload_openAccess(request_template):
 
 @pytest.fixture(scope='function')
 def payload_checkRelatedTenderer(request_template):
-    payload = request_template(acton='checkRelatedTenderer')
+    payload = request_template(action='checkRelatedTenderer')
 
     def _payload_checkRelatedTenderer(cpid, ocid, awadId, requirmentId, relatedTendererId):
         payload['params'] = {
@@ -178,7 +178,7 @@ def payload_checkRelatedTenderer(request_template):
 
 @pytest.fixture(scope='function')
 def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_ocid):
-    payload = request_template(acton='checkPersonesStructure')
+    payload = request_template(action='checkPersonesStructure')
 
     def _payload_checkPersonesStructure(persones, cpid=prepared_cpid, ocid=prepared_ev_ocid,
                                         locationOfPersones="award"):
