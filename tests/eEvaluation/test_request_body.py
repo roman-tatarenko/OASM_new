@@ -1,12 +1,11 @@
-import json
 import random
 
 import pytest
 import requests
 from pytest_testrail.plugin import pytestrail
 
-action_enum = ("getAwardStateByIds", "checkAccessToAward", "checkRelatedTenderer", "createRequirementResponse",
-               "createUnsuccessfulAwards", "closeAwardPeriod")
+action_enum = ('getAwardStateByIds', 'checkAccessToAward', 'checkRelatedTenderer', 'createRequirementResponse',
+               'createUnsuccessfulAwards', 'closeAwardPeriod')
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -84,7 +83,7 @@ def test_on_eEvaluation_with_invalid_param(port, host, param, value, code, descr
     if param == 'version':
         response.error['version'] = '1.0.0'
 
-    assert actualresult == response.error, print(json.dumps(actualresult))
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param",
