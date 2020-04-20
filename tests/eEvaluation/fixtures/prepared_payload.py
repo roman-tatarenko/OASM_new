@@ -51,3 +51,19 @@ def payload_addRequirementResponse(request_template, prepared_cpid, prepared_ev_
         return payload
 
     return _payload_addRequirementResponse
+
+
+@pytest.fixture(scope='function')
+def payload_getAwardStateByIds(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='getAwardStateByIds')
+
+    def _payload_getAwardStateByIds(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "awardIds": list(args),
+
+        }
+        return payload
+
+    return _payload_getAwardStateByIds
