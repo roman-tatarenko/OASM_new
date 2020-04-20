@@ -1,7 +1,5 @@
-import json
 import random
 from datetime import datetime
-from uuid import uuid4
 
 import pytest
 import requests
@@ -10,325 +8,241 @@ from pytest_testrail.plugin import pytestrail
 
 @pytest.mark.parametrize("states,status,statusDetails",
                          [
-                             pytest.param([{"status": "complete"}], "complete",
+                             pytest.param({"status": "complete"}, "complete",
                                           random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
                                           marks=pytestrail.case('C8020')),
-                             pytest.param([{"status": "active"}], "active",
+
+                             pytest.param({"status": "active"}, "active",
                                           random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
                                           marks=pytestrail.case('C8025')),
-                             pytest.param([{"status": "unsuccessful"}], "unsuccessful",
+
+                             pytest.param({"status": "unsuccessful"}, "unsuccessful",
                                           random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
                                           marks=pytestrail.case('C8026')),
-                             pytest.param([{"status": "cancelled"}], "cancelled",
+
+                             pytest.param({"status": "cancelled"}, "cancelled",
                                           random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
                                           marks=pytestrail.case('C8027')),
-                             pytest.param([{"status": "planning"}], "planning",
+
+                             pytest.param({"status": "planning"}, "planning",
                                           random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
                                           marks=pytestrail.case('C8028')),
-                             pytest.param([{"statusDetails": "empty"}], "active", "empty",
+
+                             pytest.param({"statusDetails": "empty"}, "active", "empty",
                                           marks=pytestrail.case('C8029')),
-                             pytest.param([{"statusDetails": "awarded"}], "active", "awarded",
+
+                             pytest.param({"statusDetails": "awarded"}, "active", "awarded",
                                           marks=pytestrail.case('C8030')),
-                             pytest.param([{"status": "complete", "statusDetails": "empty"}], "complete", "empty",
+
+                             pytest.param({"status": "complete", "statusDetails": "empty"}, "complete", "empty",
                                           marks=pytestrail.case('C8031')),
-                             pytest.param([{"status": "active", "statusDetails": "empty"}], "active", "empty",
+
+                             pytest.param({"status": "active", "statusDetails": "empty"}, "active", "empty",
                                           marks=pytestrail.case('C8032')),
-                             pytest.param([{"status": "active", "statusDetails": "awarded"}], "active", "awarded",
+
+                             pytest.param({"status": "active", "statusDetails": "awarded"}, "active", "awarded",
                                           marks=pytestrail.case('C8033')),
-                             pytest.param([{"status": "unsuccessful", "statusDetails": "empty"}], "unsuccessful",
+
+                             pytest.param({"status": "unsuccessful", "statusDetails": "empty"}, "unsuccessful",
                                           "empty",
                                           marks=pytestrail.case('C8034')),
-                             pytest.param([{"status": "cancelled", "statusDetails": "empty"}], "cancelled",
+
+                             pytest.param({"status": "cancelled", "statusDetails": "empty"}, "cancelled",
                                           "empty",
                                           marks=pytestrail.case('C8035')),
-                             pytest.param([{"status": "planning", "statusDetails": "empty"}], "planning",
+
+                             pytest.param({"status": "planning", "statusDetails": "empty"}, "planning",
                                           "empty",
-                                          marks=pytestrail.case('C8036')),
+                                          marks=pytestrail.case('C8036'))
+
                          ])
 def test_eAccess_returns_lots_in_states(host, states, port, status, statusDetails, execute_insert_into_access_tender,
-                                        prepared_cpid,
-                                        prepared_entity_id, prepared_token_entity, prepared_request_id,
-                                        prepared_payload_findLotIds, prepared_data_access_tender,
+                                        prepared_cpid, response, prepared_owner,
+                                        prepared_entity_id, prepared_token_entity,
+                                        prepared_payload_findLotIds, data_tender,
                                         clear_access_tender_by_cpid):
-    data = prepared_data_access_tender
+    json_data = data_tender
     lot_id = prepared_entity_id()
+    json_data['ocid'] = prepared_cpid
+    json_data['tender']['lots'][0]['id'] = str(lot_id)
+    json_data['tender']['lots'][0]['status'] = status
+    json_data['tender']['lots'][0]['statusDetails'] = statusDetails
+    execute_insert_into_access_tender(
+        cp_id=prepared_cpid,
+        stage='EV',
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=json_data,
+        owner=prepared_owner
+    )
+    payload = prepared_payload_findLotIds(states)
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.success['result'] = [f"{lot_id}"]
 
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{lot_id}"
-    data['tender']['lots'][0]['status'] = status
-    data['tender']['lots'][0]['statusDetails'] = statusDetails
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "result": [
-            f"{lot_id}"
-        ],
-        "status": "success"
-    }
-
-    assert actual_result == expected_result
+    assert actualresult == response.success
 
 
 @pytest.mark.parametrize("states,status,statusDetails",
                          [
-                             pytest.param([{"status": "complete"}], "cancelled",
+                             pytest.param({"status": "complete"}, "cancelled",
                                           random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                          marks=pytestrail.case('C8048')),
-                             pytest.param([{"status": "active"}], "complete",
-                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                          marks=pytestrail.case('C8049')),
-                             pytest.param([{"status": "unsuccessful"}], "cancelled",
-                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                          marks=pytestrail.case('C8050')),
-                             pytest.param([{"status": "cancelled"}], "active",
-                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                          marks=pytestrail.case('C8051')),
-                             pytest.param([{"status": "planning"}], "cancelled",
-                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                          marks=pytestrail.case('C8052')),
-                             pytest.param([{"statusDetails": "empty"}], "active", "awarded",
-                                          marks=pytestrail.case('C8053')),
-                             pytest.param([{"statusDetails": "awarded"}], "active", "empty",
-                                          marks=pytestrail.case('C8054')),
-                             pytest.param([{"status": "complete", "statusDetails": "empty"}], "active", "empty",
-                                          marks=pytestrail.case('C8055')),
-                             pytest.param([{"status": "active", "statusDetails": "empty"}], "complete", "empty",
-                                          marks=pytestrail.case('C8056')),
-                             pytest.param([{"status": "active", "statusDetails": "awarded"}], "active", "empty",
-                                          marks=pytestrail.case('C8057')),
-                             pytest.param([{"status": "unsuccessful", "statusDetails": "empty"}], "active", "empty",
-                                          marks=pytestrail.case('C8058')),
-                             pytest.param([{"status": "cancelled", "statusDetails": "empty"}], "active", "empty",
-                                          marks=pytestrail.case('C8059')),
-                             pytest.param([{"status": "planning", "statusDetails": "empty"}], "active", "empty",
-                                          marks=pytestrail.case('C8060')),
-                         ])
-def test_eAccess_without_result(host, states, port, status, statusDetails, execute_insert_into_access_tender,
-                                prepared_cpid,
-                                prepared_entity_id, prepared_token_entity, response_success,
-                                prepared_payload_findLotIds, prepared_data_access_tender, clear_access_tender_by_cpid):
-    data = prepared_data_access_tender
-    lotId = prepared_entity_id()
+                                          marks=pytestrail.case('C8048'),
+                                          id='in status "complete"'),
 
+                             pytest.param({"status": "active"}, "complete",
+                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
+                                          marks=pytestrail.case('C8049'),
+                                          id='in status "active"'),
+
+                             pytest.param({"status": "unsuccessful"}, "cancelled",
+                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
+                                          marks=pytestrail.case('C8050'),
+                                          id='in status "unsuccessful"'),
+
+                             pytest.param({"status": "cancelled"}, "active",
+                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
+                                          marks=pytestrail.case('C8051'),
+                                          id='in status "cancelled"'),
+
+                             pytest.param({"status": "planning"}, "cancelled",
+                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
+                                          marks=pytestrail.case('C8052'),
+                                          id='in status "planning"'),
+
+                             pytest.param({"statusDetails": "empty"}, "active", "awarded",
+                                          marks=pytestrail.case('C8053'),
+                                          id='in statusDetails "empty"'),
+
+                             pytest.param({"statusDetails": "awarded"}, "active", "empty",
+                                          marks=pytestrail.case('C8054'),
+                                          id='in statusDetails "awarded"'),
+
+                             pytest.param({"status": "complete", "statusDetails": "empty"}, "active", "empty",
+                                          marks=pytestrail.case('C8055'),
+                                          id='in "status": "complete" and "statusDetails": "empty"'),
+
+                             pytest.param({"status": "active", "statusDetails": "empty"}, "complete", "empty",
+                                          marks=pytestrail.case('C8056'),
+                                          id='in "status": "active" and "statusDetails": "empty"'),
+
+                             pytest.param({"status": "active", "statusDetails": "awarded"}, "active", "empty",
+                                          marks=pytestrail.case('C8057'),
+                                          id='in "status": "active" and "statusDetails": "awarded"'),
+
+                             pytest.param({"status": "unsuccessful", "statusDetails": "empty"}, "active", "empty",
+                                          marks=pytestrail.case('C8058'),
+                                          id='in "status": "unsuccessful", "statusDetails": "empty"'),
+
+                             pytest.param({"status": "cancelled", "statusDetails": "empty"}, "active", "empty",
+                                          marks=pytestrail.case('C8059'),
+                                          id='in "status": "cancelled" and "statusDetails": "empty"'),
+
+                             pytest.param({"status": "planning", "statusDetails": "empty"}, "active", "empty",
+                                          marks=pytestrail.case('C8060'),
+                                          id='in "status": "planning" and "statusDetails": "empty"')
+                         ])
+def test_findLotIds_there_are_no_lots_in_DB(host, port, states, status, statusDetails,
+                                            execute_insert_into_access_tender,
+                                            prepared_cpid, prepared_owner, response,
+                                            prepared_entity_id, prepared_token_entity,
+                                            prepared_payload_findLotIds, data_tender, clear_access_tender_by_cpid):
+    data = data_tender
+    lotId = prepared_entity_id()
     data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{lotId}"
+    data['tender']['lots'][0]['id'] = str(lotId)
     data['tender']['lots'][0]['status'] = status
     data['tender']['lots'][0]['statusDetails'] = statusDetails
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
+    execute_insert_into_access_tender(
+        cp_id=prepared_cpid,
+        stage='EV',
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=data,
+        owner=prepared_owner
+    )
+    payload = prepared_payload_findLotIds(states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
-    expectedresult = response_success
-
-    assert actualresult == expectedresult
+    assert actualresult == response.success
 
 
 @pytest.mark.parametrize("states,status,statusDetails",
                          [
-                             pytest.param([{"status": "complete"}, {"status": "unsuccessful"}],
-                                          ("complete", "active"), (
-                                                  random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                                  random.choice(("unsuccessful", "awarded", "cancelled", "empty"))),
+                             pytest.param(({"status": "complete"}, {"status": "unsuccessful"}),
                                           marks=pytestrail.case('C8063'))
                          ])
-def test_eAccess_returns_lots_in_if_there_two_states_objects(host, states, port, status, statusDetails,
-                                                             execute_insert_into_access_tender,
-                                                             prepared_cpid,
-                                                             prepared_entity_id, prepared_token_entity,
-                                                             prepared_request_id,
-                                                             prepared_payload_findLotIds,
-                                                             prepared_data_access_tender_2_lots,
-                                                             clear_access_tender_by_cpid):
-    data = prepared_data_access_tender_2_lots
+def test_findLotIds_one_lot_in_the_required_state_from_request_is_presented_in_DB(host, port, states, status,
+                                                                                  statusDetails,
+                                                                                  execute_insert_into_access_tender,
+                                                                                  prepared_cpid, prepared_owner,
+                                                                                  prepared_entity_id,
+                                                                                  prepared_token_entity,
+                                                                                  data_two_lots_and_items,
+                                                                                  prepared_payload_findLotIds,
+                                                                                  data_tender, response,
+                                                                                  clear_access_tender_by_cpid):
+    lot_id_1, lot_id_2 = prepared_entity_id(), prepared_entity_id()
+    json_data = data_tender
+    json_data['tender'].update(data_two_lots_and_items)
+    json_data['ocid'] = prepared_cpid
+    json_data['tender']['lots'][0]['id'] = str(lot_id_1)
+    json_data['tender']['lots'][0]['status'] = "complete"
+    json_data['tender']['lots'][0]['statusDetails'] = random.choice(("unsuccessful", "awarded", "cancelled", "empty"))
+    json_data['tender']['lots'][1]['id'] = str(lot_id_2)
+    json_data['tender']['lots'][1]['status'] = "active"
+    json_data['tender']['lots'][1]['statusDetails'] = random.choice(("unsuccessful", "awarded", "cancelled", "empty"))
+    execute_insert_into_access_tender(
+        cp_id=prepared_cpid,
+        stage='EV',
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=json_data,
+        owner=prepared_owner
+    )
+    payload = prepared_payload_findLotIds(*states)
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.success['result'] = [f"{lot_id_1}"]
 
-    entity_id_1, entity_id_2 = uuid4(), uuid4()
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{entity_id_1}"
-    data['tender']['lots'][0]['status'] = status[0]
-    data['tender']['lots'][0]['statusDetails'] = statusDetails[0]
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][1]['id'] = f"{entity_id_2}"
-    data['tender']['lots'][1]['status'] = status[1]
-    data['tender']['lots'][1]['statusDetails'] = statusDetails[1]
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "result": [
-            f"{entity_id_1}"
-        ],
-        "status": "success"
-    }
-
-    assert actual_result == expected_result
+    assert actualresult == response.success
 
 
-@pytest.mark.parametrize("states,status,statusDetails",
+@pytest.mark.parametrize("states",
                          [
-                             pytest.param([{"status": "unsuccessful"}, {"status": "cancelled"}],
-                                          ("complete", "active"), (
-                                                  random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                                  random.choice(("unsuccessful", "awarded", "cancelled", "empty"))),
-                                          marks=pytestrail.case('C8064'))
+                             pytest.param(({"status": "unsuccessful"}, {"status": "cancelled"}),
+                                          marks=pytestrail.case('C8064'),
+                                          id='when there are no lots in required states from request in the DB')
                          ])
-def test_eAccess_returns_successful_response_without_result_array(host, states, port, status, statusDetails,
-                                                                  execute_insert_into_access_tender,
-                                                                  prepared_cpid,
-                                                                  prepared_entity_id, prepared_token_entity,
-                                                                  response_success,
-                                                                  prepared_payload_findLotIds,
-                                                                  prepared_data_access_tender_2_lots,
-                                                                  clear_access_tender_by_cpid):
-    data = prepared_data_access_tender_2_lots
+def test_findLotIds_there_are_two_states_object_in_request(host, port, states,
+                                                           execute_insert_into_access_tender,
+                                                           prepared_cpid, response,
+                                                           prepared_entity_id, prepared_token_entity,
+                                                           prepared_owner, prepared_payload_findLotIds,
+                                                           data_tender, data_two_lots_and_items,
+                                                           clear_access_tender_by_cpid):
+    lot_id_1, lot_id_2 = str(prepared_entity_id()), str(prepared_entity_id())
+    data_tender['tender'].update(data_two_lots_and_items)
+    json_data = data_tender
+    json_data['ocid'] = prepared_cpid
 
-    entity_id_1, entity_id_2 = uuid4(), uuid4()
+    json_data['tender']['lots'][0]['id'] = lot_id_1
+    json_data['tender']['lots'][0]['status'] = "complete"
+    json_data['tender']['lots'][0]['statusDetails'] = random.choice(("unsuccessful", "awarded", "cancelled", "empty"))
 
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{entity_id_1}"
-    data['tender']['lots'][0]['status'] = status[0]
-    data['tender']['lots'][0]['statusDetails'] = statusDetails[0]
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][1]['id'] = f"{entity_id_2}"
-    data['tender']['lots'][1]['status'] = status[1]
-    data['tender']['lots'][1]['statusDetails'] = statusDetails[1]
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
+    json_data['tender']['lots'][1]['id'] = lot_id_2
+    json_data['tender']['lots'][1]['status'] = "active"
+    json_data['tender']['lots'][1]['statusDetails'] = random.choice(("unsuccessful", "awarded", "cancelled", "empty"))
+    execute_insert_into_access_tender(
+        cp_id=prepared_cpid,
+        stage='EV',
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=json_data,
+        owner=prepared_owner
+    )
+    payload = prepared_payload_findLotIds(*states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
-    expectedresult = response_success
-
-    assert actualresult == expectedresult
-
-
-@pytest.mark.parametrize("param,states,status,statusDetails,description",
-                         [
-                             pytest.param("status", [{"status": "withdrawn"}], "canceled",
-                                          random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                          "Attribute value mismatch with one of enum expected values."
-                                          " Expected values: 'planning, active, cancelled, unsuccessful, complete',"
-                                          " actual value: 'withdrawn'.",
-                                          marks=pytestrail.case('C8071'))
-                         ])
-def test_eAccess_returns_response_with_status_error_if_request_contains_an_invalid_enum_value_for_(host, param, states,
-                                                                                                   port, status,
-                                                                                                   statusDetails,
-                                                                                                   description,
-                                                                                                   execute_insert_into_access_tender,
-                                                                                                   prepared_cpid,
-                                                                                                   prepared_entity_id,
-                                                                                                   prepared_token_entity,
-                                                                                                   prepared_request_id,
-                                                                                                   prepared_payload_findLotIds,
-                                                                                                   prepared_data_access_tender,
-                                                                                                   clear_access_tender_by_cpid):
-    data = prepared_data_access_tender
-    lot_id = prepared_entity_id()
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{lot_id}"
-    data['tender']['lots'][0]['status'] = status
-    data['tender']['lots'][0]['statusDetails'] = statusDetails
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": "DR-3/3",
-                "description": description,
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert actual_result == expected_result, print(actual_result)
-
-
-@pytest.mark.parametrize("param",
-                         [
-                             pytest.param("params", marks=pytestrail.case('C8087'))
-
-                         ])
-def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_(port, host, param,
-                                                                                 prepared_request_id,
-                                                                                 prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds
-    del payload[param]
-
-    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expectedresult = {
-        "version": "1.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": 'DR-1/3',
-                "description": "Missing required attribute.",
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
-            }
-        ]
-    }
-
-    if param == "id":
-        expectedresult['id'] = "00000000-0000-0000-0000-000000000000"
-
-    if param in {"action", "params", "id"}:
-        expectedresult['version'] = '2.0.0'
-
-    assert actualresult == expectedresult
+    assert actualresult == response.success
 
 
 @pytest.mark.parametrize("param",
@@ -337,167 +251,91 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
                              pytest.param("ocid", marks=pytestrail.case('C8090')),
 
                          ])
-def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_param_in_params(port, host, param,
-                                                                                                prepared_request_id,
-                                                                                                prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds
+def test_findLotIds_request_does_not_contain_param_in_params(port, host, param,
+                                                             prepared_request_id,
+                                                             response,
+                                                             prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds()
     del payload['params'][param]
-
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": "RQ-02/3",
+            "description": "Can not parse 'params'."
+        }
+    ]
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": "RQ-02/3",
-                "description": "Can not parse 'params'."
-            }
-        ]
-    }
-
-    assert actualresult == expectedresult
+    assert actualresult == response.error
 
 
-@pytest.mark.parametrize("param,value,code,description",
+@pytest.mark.parametrize("param,states,code,description",
                          [
-                             pytest.param("version", "", "DR-4/3",
-                                          "Data format mismatch. Expected data format: '00.00.00', actual value: ''.",
-                                          marks=pytestrail.case('C8466')),
-                             pytest.param("id", "", "DR-4/3",
-                                          "Data format mismatch. Expected data format: 'uuid', actual value: ''.",
-                                          marks=pytestrail.case('C8467')),
-                             pytest.param("action", "", "DR-3/3",
+                             pytest.param("status", {"status": "withdrawn"}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
-                                          " Expected values: 'findLotIds, checkAccessToTender, getLotStateByIds,"
-                                          " responderProcessing, checkPersonesStructure', actual value: ''.",
-                                          marks=pytestrail.case('C8468')),
-                             pytest.param("version", 3.14, "DR-2/3",
-                                          "Data type mismatch."
-                                          " Expected data type: 'STRING', actual data type: 'NUMBER'.",
-                                          marks=pytestrail.case('C8642')),
-                             pytest.param("id", 3.14, "DR-2/3",
-                                          "Data type mismatch."
-                                          " Expected data type: 'STRING', actual data type: 'NUMBER'.",
-                                          marks=pytestrail.case('C8643')),
-                             pytest.param("action", 3.14, "DR-2/3",
-                                          "Data type mismatch."
-                                          " Expected data type: 'STRING', actual data type: 'NUMBER'.",
-                                          marks=pytestrail.case('C8644')),
-                             pytest.param("version", True, "DR-2/3", "Data type mismatch."
-                                                                     " Expected data type: 'STRING',"
-                                                                     " actual data type: 'BOOLEAN'.",
-                                          marks=pytestrail.case('C8645')),
-                             pytest.param("id", True, "DR-2/3", "Data type mismatch."
-                                                                " Expected data type: 'STRING',"
-                                                                " actual data type: 'BOOLEAN'.",
-                                          marks=pytestrail.case('C8646')),
-                             pytest.param("action", True, "DR-2/3", "Data type mismatch."
-                                                                    " Expected data type: 'STRING',"
-                                                                    " actual data type: 'BOOLEAN'.",
-                                          marks=pytestrail.case('C8647')),
+                                          " Expected values: 'planning, active, cancelled, unsuccessful, complete',"
+                                          " actual value: 'withdrawn'.",
+                                          marks=pytestrail.case('C8071'),
+                                          id='when status:withdrawn'),
 
-                         ])
-def test_eAccess_returns_response_with_status_error_if_request_contains(port, host, param,
-                                                                        value, code,
-                                                                        description,
-                                                                        prepared_request_id,
-                                                                        prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds
-    payload[param] = value
-
-    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expectedresult = {
-        "version": "1.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description,
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
-            }
-        ]
-    }
-
-    if param == "id":
-        expectedresult['id'] = "00000000-0000-0000-0000-000000000000"
-
-    if param in {"action", "params", "id"}:
-        expectedresult['version'] = '2.0.0'
-
-    assert actualresult == expectedresult, print(actualresult)
-
-
-@pytest.mark.parametrize("param,value,code,description",
-                         [
-                             pytest.param("status", [{"status": "", "statusDetails": "empty"}], "DR-3/3",
+                             pytest.param("status", {"status": "", "statusDetails": "empty"}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values. "
                                           "Expected values: 'planning, active, cancelled, unsuccessful,"
                                           " complete', actual value: ''.",
-                                          marks=pytestrail.case('C8470')),
-                             pytest.param("statusDetails", [{"status": "active", "statusDetails": ""}], "DR-3/3",
+                                          marks=pytestrail.case('C8470'),
+                                          id='when status as empty string and statusDetails:empty'),
+
+                             pytest.param("statusDetails", {"status": "active", "statusDetails": ""}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
                                           " Expected values: 'awarded, empty', actual value: ''.",
-                                          marks=pytestrail.case('C8471')),
-                             pytest.param("status", [{"status": ""}], "DR-3/3",
+                                          marks=pytestrail.case('C8471'),
+                                          id='when status:active and statusDetails as empty string'),
+
+                             pytest.param("status", {"status": ""}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
                                           " Expected values: 'planning, active, cancelled, unsuccessful,"
                                           " complete', actual value: ''.",
-                                          marks=pytestrail.case('C8472')),
-                             pytest.param("statusDetails", [{"statusDetails": ""}], "DR-3/3",
+                                          marks=pytestrail.case('C8472'),
+                                          id='when status as empty string'),
+
+                             pytest.param("statusDetails", {"statusDetails": ""}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
                                           " Expected values: 'awarded, empty', actual value: ''.",
-                                          marks=pytestrail.case('C8473')),
-                             pytest.param("statusDetails", [{"statusDetails": "withdrawn"}], "DR-3/3",
+                                          marks=pytestrail.case('C8473'),
+                                          id='when statusDetails as empty string'),
+
+                             pytest.param("statusDetails", {"statusDetails": "withdrawn"}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
                                           " Expected values: 'awarded, empty', actual value: 'withdrawn'.",
-                                          marks=pytestrail.case('C8072')),
-                             pytest.param("status", [{"status": "disqualified", "statusDetails": "empty"}], "DR-3/3",
+                                          marks=pytestrail.case('C8072'),
+                                          id='when statusDetails:withdrawn'),
+
+                             pytest.param("status", {"status": "disqualified", "statusDetails": "empty"}, "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
                                           " Expected values: 'planning, active, cancelled, "
                                           "unsuccessful, complete', actual value: 'disqualified'.",
-                                          marks=pytestrail.case('C8073')),
-                             pytest.param("statusDetails", [{"status": "active", "statusDetails": "disqualified"}],
+                                          marks=pytestrail.case('C8073'),
+                                          id='when status: disqualified, statusDetails: empty'),
+
+                             pytest.param("statusDetails", {"status": "active", "statusDetails": "disqualified"},
                                           "DR-3/3",
                                           "Attribute value mismatch with one of enum expected values."
                                           " Expected values: 'awarded, empty', actual value: 'disqualified'.",
-                                          marks=pytestrail.case('C8074'))
+                                          marks=pytestrail.case('C8074'),
+                                          id='when status: active, statusDetails: disqualified')
                          ])
-def test_eAccess_returns_response_with_status_error_if_request_contains_status(port, host, param,
-                                                                               value, code,
-                                                                               description,
-                                                                               prepared_request_id,
-                                                                               prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = value
-
+def test_findLotIds_request_contains_states(port, host, param, states, code, description, response,
+                                            prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds(states)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": code,
+            "description": description,
+            "details": [{"name": param}]
+        }
+    ]
 
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description,
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert actualresult == expectedresult, print(actualresult)
+    assert actualresult == response.error
 
 
 @pytest.mark.parametrize("param,value,code,description",
@@ -505,220 +343,114 @@ def test_eAccess_returns_response_with_status_error_if_request_contains_status(p
                              pytest.param('cpid', "", "DR-5/3",
                                           "Data mismatch to pattern:"
                                           " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. Actual value: ''.",
-                                          marks=pytestrail.case('C8474')),
+                                          marks=pytestrail.case('C8474'), id='cpid as empty string'),
                              pytest.param("ocid", "", "DR-5/3",
                                           "Data mismatch to pattern: "
                                           "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
                                           " Actual value: ''.",
-                                          marks=pytestrail.case('C8475')),
-
+                                          marks=pytestrail.case('C8475'), id='ocid as empty string')
                          ])
-def test_eAccess_returns_response_with_status_error_if_request_contains_param(port, host, param,
-                                                                              value, code,
-                                                                              description,
-                                                                              prepared_request_id,
-                                                                              prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds
+def test_findLotIds_data_mismatch_to_pattern(port, host, param, value, code, description, response,
+                                             prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds()
     payload['params'][param] = value
-
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": code,
-                "description": description,
-                "details": [
-                    {
-                        "name": param
-                    }
-                ]
-            }
-        ]
-    }
-
-    if param == "id":
-        expectedresult['id'] = "00000000-0000-0000-0000-000000000000"
-
-    if param in {"action", "params", "id"}:
-        expectedresult['version'] = '2.0.0'
-
-    assert actualresult == expectedresult, print(payload)
-
-
-@pytest.mark.parametrize("status,statusDetails",
-                         [
-                             pytest.param("cancelled", "empty", marks=pytestrail.case('C8088'))
-                         ])
-def test_eAccess_returns_successful_response_with_lots_ids_if_request_does_not_contain_states_array(host, port, status,
-                                                                                                    statusDetails,
-                                                                                                    execute_insert_into_access_tender,
-                                                                                                    prepared_cpid,
-                                                                                                    prepared_entity_id,
-                                                                                                    prepared_token_entity,
-                                                                                                    prepared_request_id,
-                                                                                                    prepared_payload_findLotIds,
-                                                                                                    prepared_data_access_tender,
-                                                                                                    clear_access_tender_by_cpid):
-    lot_id = prepared_entity_id()
-    data = prepared_data_access_tender
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{lot_id}"
-    data['tender']['lots'][0]['status'] = status
-    data['tender']['lots'][0]['statusDetails'] = statusDetails
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    del payload['params']['states']
-
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "result": [
-            f"{lot_id}"
-        ],
-        "status": "success"
-    }
-
-    assert actual_result == expected_result
-
-
-@pytest.mark.parametrize("states,status,statusDetails",
-                         [
-                             pytest.param([{"status": "complete"}, {"status": "active"}],
-                                          ("complete", "active"), (
-                                                  random.choice(("unsuccessful", "awarded", "cancelled", "empty")),
-                                                  random.choice(("unsuccessful", "awarded", "cancelled", "empty"))),
-                                          marks=pytestrail.case('C8062'))
-                         ])
-def test_eAccess_returns_successful_response_with_lots_ids_if_there_two_states_objects_in_request(host, states, port,
-                                                                                                  status, statusDetails,
-                                                                                                  execute_insert_into_access_tender,
-                                                                                                  prepared_cpid,
-                                                                                                  prepared_entity_id,
-                                                                                                  prepared_token_entity,
-                                                                                                  prepared_request_id,
-                                                                                                  prepared_payload_findLotIds,
-                                                                                                  prepared_data_access_tender_2_lots,
-                                                                                                  clear_access_tender_by_cpid):
-    data = prepared_data_access_tender_2_lots
-
-    entity_id_1, entity_id_2 = uuid4(), uuid4()
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{entity_id_1}"
-    data['tender']['lots'][0]['status'] = status[0]
-    data['tender']['lots'][0]['statusDetails'] = statusDetails[0]
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][1]['id'] = f"{entity_id_2}"
-    data['tender']['lots'][1]['status'] = status[1]
-    data['tender']['lots'][1]['statusDetails'] = statusDetails[1]
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
-    actual_result = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expected_result = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "success",
-        "result": [
-            f"{entity_id_1}",
-            f"{entity_id_2}"
-        ]
-    }
-
-    assert actual_result == expected_result
-
-
-@pytest.mark.parametrize("value",
-                         [
-                             pytest.param({}, marks=pytestrail.case('C8648'))
-                         ])
-def test_eAccess_returns_response_with_status_error_if_request_contains_status_object_instead_of_array_of_objects(port,
-                                                                                                                  host,
-                                                                                                                  value,
-                                                                                                                  prepared_request_id,
-                                                                                                                  prepared_payload_findLotIds):
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = value
-
-    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expectedresult = {
-        "version": "2.0.0",
-        "id": f"{prepared_request_id}",
-        "status": "error",
-        "result": [
-            {
-                "code": "RQ-02/3",
-                "description": "Can not parse 'params'."
-            }
-        ]
-    }
-
-    assert actualresult == expectedresult, print(actualresult)
-
-
-@pytest.mark.parametrize("states,status,statusDetails",
-                         [
-                             pytest.param([{}], "cancelled", "empty", marks=pytestrail.case('C8964'))
-                         ])
-def test_eAccess_returns_successful_response_without_result_if_request_contain_empty_states_array_of_objects(host, port,
-                                                                                                             states,
-                                                                                                             status,
-                                                                                                             statusDetails,
-                                                                                                             execute_insert_into_access_tender,
-                                                                                                             prepared_cpid,
-                                                                                                             prepared_entity_id,
-                                                                                                             prepared_token_entity,
-                                                                                                             response_error,
-                                                                                                             prepared_payload_findLotIds,
-                                                                                                             prepared_data_access_tender
-                                                                                                             ):
-    data = prepared_data_access_tender
-    lot_id = prepared_entity_id()
-
-    data['ocid'] = prepared_cpid
-    data['tender']['lots'][0]['id'] = f"{lot_id}"
-    data['tender']['lots'][0]['status'] = status
-    data['tender']['lots'][0]['statusDetails'] = statusDetails
-
-    execute_insert_into_access_tender(cp_id=prepared_cpid, stage='EV', token_entity=prepared_token_entity,
-                                      created_date=datetime.now(), json_data=data,
-                                      owner='3fa85f64-5717-4562-b3fc-2c963f66afa6')
-
-    payload = prepared_payload_findLotIds
-    payload['params']['states'] = states
-
-    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-
-    expectedresult = response_error
-    expectedresult['result'] = [
+    response.error['result'] = [
         {
-            "code": "DR-9/3",
-            "description": "Object is empty.",
-            "details": [
-                {
-                    "name": "states"
-                }
-            ]
+            "code": code,
+            "description": description,
+            "details": [{"name": param}]
         }
     ]
 
-    assert actualresult == expectedresult, print(json.dumps(actualresult))
+    assert actualresult == response.error
+
+
+@pytestrail.case('C8088')
+def test_findLotIds_request_does_not_contain_states_array(host, port, execute_insert_into_access_tender, prepared_cpid,
+                                                          response, prepared_entity_id, prepared_token_entity,
+                                                          prepared_payload_findLotIds, data_tender, prepared_owner,
+                                                          clear_access_tender_by_cpid):
+    lot_id = str(prepared_entity_id())
+    data = data_tender
+    data['ocid'] = prepared_cpid
+    data['tender']['lots'][0]['id'] = lot_id
+    data['tender']['lots'][0]['status'] = "cancelled"
+    data['tender']['lots'][0]['statusDetails'] = "empty"
+    execute_insert_into_access_tender(
+        cp_id=prepared_cpid,
+        stage='EV',
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=data,
+        owner=prepared_owner
+    )
+    payload = prepared_payload_findLotIds()
+    del payload['params']['states']
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.success['result'] = [lot_id]
+
+    assert actualresult == response.success
+
+
+@pytestrail.case('C8062')
+def test_findLotIds_there_two_states_objects_in_request(host, port, execute_insert_into_access_tender, prepared_cpid,
+                                                        prepared_entity_id, prepared_token_entity, prepared_owner,
+                                                        prepared_payload_findLotIds, data_tender, response,
+                                                        clear_access_tender_by_cpid, data_two_lots_and_items):
+    states = ({"status": "complete"}, {"status": "active"})
+    lot_id_1, lot_id_2 = str(prepared_entity_id()), str(prepared_entity_id())
+    data_tender['tender'].update(data_two_lots_and_items)
+    json_data = data_tender
+    json_data['ocid'] = prepared_cpid
+    json_data['tender']['lots'][0]['id'] = lot_id_1
+    json_data['tender']['lots'][0]['status'] = "complete"
+    json_data['tender']['lots'][0]['statusDetails'] = random.choice(("unsuccessful", "awarded", "cancelled", "empty"))
+    json_data['tender']['lots'][1]['id'] = lot_id_2
+    json_data['tender']['lots'][1]['status'] = "active"
+    json_data['tender']['lots'][1]['statusDetails'] = random.choice(("unsuccessful", "awarded", "cancelled", "empty"))
+    execute_insert_into_access_tender(
+        cp_id=prepared_cpid,
+        stage='EV',
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=json_data,
+        owner=prepared_owner
+    )
+    payload = prepared_payload_findLotIds(*states)
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.success['result'] = [lot_id_1, lot_id_2]
+
+    assert actualresult == response.success
+
+
+@pytestrail.case('C8648')
+def test_findLotIds_request_contains_status_object_instead_of_array_of_objects(port, host, response,
+                                                                               prepared_payload_findLotIds):
+    payload = prepared_payload_findLotIds()
+    payload['params']['states'] = {}
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.error["result"] = [
+        {
+            "code": "RQ-02/3",
+            "description": "Can not parse 'params'."
+        }
+    ]
+
+    assert actualresult == response.error
+
+
+@pytestrail.case('C8964')
+def test_findLotIds_request_contain_empty_states_array_of_objects(host, port, response, prepared_payload_findLotIds):
+    states = {}
+    payload = prepared_payload_findLotIds(states)
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.error['result'] = [
+        {
+            "code": "DR-9/3",
+            "description": "Object is empty.",
+            "details": [{"name": "states"}]
+        }
+    ]
+
+    assert actualresult == response.error
