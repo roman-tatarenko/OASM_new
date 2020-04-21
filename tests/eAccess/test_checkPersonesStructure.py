@@ -106,9 +106,9 @@ def test_checkPersonesStructure_a_request_contains_more_than_one_businessFunctio
 
 
 @pytestrail.case('C13277')
-def test_checkPersonesStructure_a_request_contains_invalid_enum_for_businessFunctions_type(host, port, data_person,
-                                                                                           payload_checkPersonesStructure,
-                                                                                           response):
+def test_checkPersonesStructure_a_request_contains_invalid_value_for_businessFunctions_type(host, port, data_person,
+                                                                                            payload_checkPersonesStructure,
+                                                                                            response):
     person = data_person
     person['businessFunctions'][0]['type'] = 'authority'
     payload = payload_checkPersonesStructure(person, locationOfPersones='award')
@@ -129,9 +129,9 @@ def test_checkPersonesStructure_a_request_contains_invalid_enum_for_businessFunc
 
 
 @pytestrail.case('C13276')
-def test_checkPersonesStructure_a_request_contains_invalid_enum_for_documentType(host, port, data_person,
-                                                                                 payload_checkPersonesStructure,
-                                                                                 response):
+def test_checkPersonesStructure_a_request_contains_invalid_value_for_documentType(host, port, data_person,
+                                                                                  payload_checkPersonesStructure,
+                                                                                  response):
     person = data_person
     person['businessFunctions'][0]['documents'][0]['documentType'] = 'x_eligibilityDocuments'
     payload = payload_checkPersonesStructure(person, locationOfPersones='award')
@@ -160,3 +160,24 @@ def test_checkPersonesStructure_a_request_contains_more_than_one_document_object
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
     assert actualresult == response.success
+
+
+@pytestrail.case('C16389')
+def test_checkPersonesStructure_request_contains_invalid_value_for_locationOfPersones(host, port, data_person,
+                                                                                      payload_checkPersonesStructure,
+                                                                                      response):
+    person = data_person
+    payload = payload_checkPersonesStructure(person, locationOfPersones='')
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+
+    response.error['result'] = [
+        {
+            "code": "DR-3/3",
+            "description": "Attribute value mismatch with one of enum expected values. "
+                           "Expected values: 'award, procuringEntity',"
+                           " actual value: ''.",
+            "details": [{"name": "locationOfPersones"}]
+        }
+    ]
+
+    assert actualresult == response.error
