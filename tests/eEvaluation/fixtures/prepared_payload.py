@@ -67,3 +67,23 @@ def payload_getAwardStateByIds(request_template, prepared_cpid, prepared_ev_ocid
         return payload
 
     return _payload_getAwardStateByIds
+
+
+@pytest.fixture(scope='function')
+def payload_checkAccessToAward(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner,
+                               prepared_token_entity):
+    payload = request_template(action='checkAccessToAward')
+
+    def _payload_checkAccessToAward(awardId=str(prepared_token_entity), token=str(prepared_token_entity),
+                                    owner=prepared_owner, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "token": token,
+            "owner": owner,
+            "awardId": awardId
+        }
+
+        return payload
+
+    return _payload_checkAccessToAward
