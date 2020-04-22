@@ -3229,3 +3229,87 @@ def data_document():
         "title": "string",
         "description": "string"
     }
+
+
+@pytest.fixture(scope='function')
+def data_create_criteria():
+    return {
+        "criteria": [{
+            "id": "56a602ee-3f24-4cf0-bec8-8be38c87468e",
+            "title": "",
+            "source": "procuringEntity",
+            "description": "",
+            "requirementGroups": [{
+                "id": "f57897e6-8e29-4851-b10f-7d296975a1e1",
+                "requirements": [{
+                    "id": "e3a9cb34-2113-4fdc-9cea-3dc1d31df45e",
+                    "title": "title",
+                    "dataType": "boolean"
+                }]
+            }],
+            "relatesTo": "award"
+        }],
+        "awardCriteria": "priceOnly",
+        "awardCriteriaDetails": "automated"
+
+    }
+
+
+@pytest.fixture(scope='function')
+def data_create_two_criteria_and_conversion():
+    return {
+        "criteria": [{
+            "id": "1b405bb4-7d26-4846-80c7-f0885138a330",
+            "title": "criteriatitle",
+            "source": "procuringEntity",
+            "description": "criteria description",
+            "requirementGroups": [{
+                "id": "588801bd-4f3b-4c56-9ada-b5667e0a4111",
+                "requirements": [{
+                    "id": "519db2de-1c5e-48b2-8421-98a4aee07322",
+                    "title": "Your age???",
+                    "dataType": "integer",
+                    "period": {
+                        "startDate": "2019-12-26T14:45:00Z",
+                        "endDate": "2019-12-30T14:45:00Z"
+                    },
+                    "minValue": -5,
+                    "maxValue": 18
+                }]
+            }],
+            "relatesTo": "lot",
+            "relatedItem": "70d5dc92-b863-4a06-add2-1637bb212145"
+        }, {
+            "id": "56a602ee-3f24-4cf0-bec8-8be38c87468e",
+            "title": "title",
+            "source": "procuringEntity",
+            "description": "description",
+            "requirementGroups": [{
+                "id": "f57897e6-8e29-4851-b10f-7d296975a1e1",
+                "requirements": [{
+                    "id": "e3a9cb34-2113-4fdc-9cea-3dc1d31df45e",
+                    "title": "requirements.title",
+                    "dataType": "boolean"
+                }]
+            }],
+            "relatesTo": "award"
+        }],
+        "conversions": [{
+            "id": "f1630717-539e-47e8-ba33-96799eff836d",
+            "relatesTo": "requirement",
+            "relatedItem": "519db2de-1c5e-48b2-8421-98a4aee07322",
+            "rationale": "Number of years/conversions rationale",
+            "description": "conversions description",
+            "coefficients": [{
+                "id": "7b79906d-8389-4867-8226-f7489a8446a7",
+                "value": 6,
+                "coefficient": 0.6
+            }, {
+                "id": "08b77874-7fbc-4617-8d36-68d76aece4b3",
+                "value": 7,
+                "coefficient": 0.7
+            }]
+        }],
+        "awardCriteria": "qualityOnly",
+        "awardCriteriaDetails": "automated"
+    }

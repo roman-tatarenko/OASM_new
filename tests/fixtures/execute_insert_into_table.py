@@ -4,6 +4,7 @@ import pytest
 from cassandra.query import UNSET_VALUE
 
 
+
 @pytest.fixture(scope='function')
 def execute_insert_into_revision_amendments(prepared_insert_revision_amendments, cassandra_session):
     def with_values(cpid, ocid, id, data):
@@ -85,3 +86,6 @@ def execute_insert_into_access_tender(prepared_insert_access_tender, cassandra_s
         cassandra_session.execute(prepared_insert_access_tender, values)
 
     return with_values
+
+
+

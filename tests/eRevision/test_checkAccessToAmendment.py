@@ -9,7 +9,7 @@ def test_checkAccessToAmendment_check_access_to_amendment_of_tender(host, port, 
                                                                     prepared_create_amendment, prepared_cpid,
                                                                     prepared_ev_ocid, prepared_entity_id,
                                                                     payload_checkAccessToAmendment,
-                                                                    prepared_token_entity, prepared_owner,
+                                                                    prepared_owner,
                                                                     response):
     amendment_id = prepared_entity_id()
     data = prepared_create_amendment
