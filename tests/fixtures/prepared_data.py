@@ -1717,7 +1717,7 @@ def data_tender():
                     },
                     "businessFunctions": [{
                         "id": "businessFunctions id",
-                        "type": "chairman",
+                        "type": "authority",
                         "jobTitle": "Chief Executive Officer",
                         "period": {
                             "startDate": "2019-10-30T00:00:35Z"
