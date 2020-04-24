@@ -63,3 +63,17 @@ def payload_checkPersonesStructure(request_template, prepared_cpid, prepared_ev_
         return payload
 
     return _payload_checkPersonesStructure
+
+
+@pytest.fixture(scope='function')
+def payload_getTenderState(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='getTenderState')
+
+    def _payload_getTenderState(cpid=prepared_cpid, ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid
+        }
+        return payload
+
+    return _payload_getTenderState
