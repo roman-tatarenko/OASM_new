@@ -18,7 +18,8 @@ pytest_plugins = [
     "tests.fixtures.payload_templates",
     "tests.eEvaluation.fixtures.prepared_payload",
     "tests.eAccess.fixtures.prepared_payload",
-    "tests.eRevision.fixtures.prepared_payload"
+    "tests.eRevision.fixtures.prepared_payload",
+    "tests.eDossier.fixtures.prepared_payload"
 ]
 
 
@@ -36,6 +37,7 @@ def port():
         eRevision: int = 9351
         iStorage: int = 9131
         eNotice: int = 9041
+        eDossier: int = 9251
 
     return Port
 

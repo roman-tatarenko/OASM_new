@@ -9,14 +9,15 @@ def test_checkAccessToAmendment_check_access_to_amendment_of_tender(host, port, 
                                                                     prepared_create_amendment, prepared_cpid,
                                                                     prepared_ev_ocid, prepared_entity_id,
                                                                     payload_checkAccessToAmendment,
-                                                                    prepared_token_entity, prepared_owner,
+                                                                    prepared_token_entity,
+                                                                    prepared_owner,
                                                                     response):
     amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['id'] = str(amendment_id)
     data['relatesTo'] = "tender"
     data['relatedItem'] = prepared_ev_ocid
-    data['token'] = str(prepared_token_entity)
+    data['token'] = str(prepared_token_entity())
     data['owner'] = prepared_owner
     execute_insert_into_revision_amendments(
         cpid=prepared_cpid,
@@ -239,7 +240,6 @@ def test_checkAccessToAmendment_if_amendment_does_not_present_in_DB(port, host, 
             "details": [{"id": payload['params']['amendmentId']}]
         }
     ]
-
 
     assert actualresult == response.error
 
