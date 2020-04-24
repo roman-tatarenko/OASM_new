@@ -27,10 +27,10 @@ def test_validateRequirementResponse_check_of_the_validation(host, port, execute
                                                              prepared_cpid, data_create_criteria, prepared_owner,
                                                              payload_validateRequirementResponse, response, param,
                                                              value, ):
+    requirement_id = str(uuid4())
     data = data_create_criteria
     data['criteria'][0]['requirementGroups'][0]['requirements'][0]['dataType'] = param
-    data['criteria'][0]['requirementGroups'][0]['requirements'][0]['id'] = str(uuid4())
-    requirement_id = data['criteria'][0]['requirementGroups'][0]['requirements'][0]['id']
+    data['criteria'][0]['requirementGroups'][0]['requirements'][0]['id'] = requirement_id
     execute_insert_into_dossier_tenders(
         cp_id=prepared_cpid,
         json_data=data,
@@ -58,7 +58,7 @@ def test_validateRequirementResponse_cpid_does_not_present_in_DB(host, port, pay
     response.error['result'] = [
         {
             "code": "VR-10.5.1.3/19",
-            "description": "Requirements not found by cpid '" + str(prepared_cpid) + "'.",
+            "description": f"Requirements not found by cpid '{prepared_cpid}'.",
         }
     ]
     assert actualresult == response.error
@@ -87,7 +87,7 @@ def test_validateRequirementResponse_requirement_does_not_present_in_DB(host, po
     response.error['result'] = [
         {
             "code": "VR-10.5.1.1/19",
-            "description": "Requirement with id '" + requirement_id + "' not found.",
+            "description": f"Requirement with id '{requirement_id}' not found.",
             "details": [
                 {
                     "id": requirement_id
@@ -106,7 +106,6 @@ def test_validateRequirementResponse_requirement_as_award_criteria_price_only(ho
                                                                               payload_validateRequirementResponse,
                                                                               response):
     cpid = prepared_cpid
-    requirement_id = str(uuid4())
     execute_insert_into_dossier_tenders(
         cp_id=cpid,
         json_data={"awardCriteria": "priceOnly", "awardCriteriaDetails": "automated"},
@@ -114,14 +113,14 @@ def test_validateRequirementResponse_requirement_as_award_criteria_price_only(ho
     )
     payload = payload_validateRequirementResponse(
         cpid=cpid,
-        requirement_id=requirement_id
+        requirement_id=str(uuid4())
     )
 
     actualresult = requests.post(f'{host}:{port.eDossier}/command2', json=payload).json()
     response.error['result'] = [
         {
             "code": "VR-10.5.1.3/19",
-            "description": "Requirements not found by cpid '" + str(prepared_cpid) + "'.",
+            "description": f"Requirements not found by cpid '{prepared_cpid}'.",
         }
     ]
     assert actualresult == response.error
@@ -132,12 +131,12 @@ def test_validateRequirementResponse_dataType_mismatch_for_requirement(host, por
                                                                        prepared_cpid, data_create_criteria,
                                                                        prepared_owner,
                                                                        payload_validateRequirementResponse, response):
+    requirement_id = str(uuid4())
     cpid = prepared_cpid
     data = data_create_criteria
     requirement = data['criteria'][0]['requirementGroups'][0]['requirements'][0]
     requirement['dataType'] = "boolean"
-    requirement['id'] = str(uuid4())
-    data['criteria'][0]['requirementGroups'][0]['requirements'][0]['id'] = str(uuid4())
+    requirement['id'] = requirement_id
     execute_insert_into_dossier_tenders(
         cp_id=cpid,
         json_data=data,
@@ -147,7 +146,7 @@ def test_validateRequirementResponse_dataType_mismatch_for_requirement(host, por
     payload = payload_validateRequirementResponse(
         cpid=cpid,
         value=22.9,
-        requirement_id=requirement['id']
+        requirement_id=requirement_id
     )
 
     actualresult = requests.post(f'{host}:{port.eDossier}/command2', json=payload).json()
@@ -198,7 +197,6 @@ def test_validateRequirementResponse_unexpected_criteria_source(host, port, exec
     assert actualresult == response.error
 
 
-# Сервис ожидает ocid
 @pytestrail.case("C14127")
 def test_validateRequirementResponse_cpid_of_param_mismatch_to_the_pattern(host, port,
                                                                            payload_validateRequirementResponse,
@@ -265,9 +263,9 @@ def test_validateRequirementResponse_without_param_in_params(port, host, respons
                                           id="request without requirementResponse.requirement object"),
 
                          ])
-def test_validateRequirementResponse_without_param_in_params_id_value_requirement(port, host, response, param,
-                                                                                  payload_validateRequirementResponse,
-                                                                                  ):
+def test_validateRequirementResponse_without_attribute_in_requirementResponse(port, host, response, param,
+                                                                              payload_validateRequirementResponse,
+                                                                              ):
     payload = payload_validateRequirementResponse()
     del payload['params']['requirementResponse'][param]
     actualresult = requests.post(f'{host}:{port.eDossier}/command2', json=payload).json()
@@ -281,21 +279,12 @@ def test_validateRequirementResponse_without_param_in_params_id_value_requiremen
     assert actualresult == response.error
 
 
-# В работе
 @pytestrail.case("C16388")
-def test_validateRequirementResponse_without_param_in_params_requirement_id(host, port,
-                                                                            payload_validateRequirementResponse,
-                                                                            response):
+def test_validateRequirementResponse_without_attribute_in_requirement_id(host, port,
+                                                                         payload_validateRequirementResponse,
+                                                                         response):
     payload = payload_validateRequirementResponse()
-    payload['params'] = {
-            "requirementResponse": {
-                "id": "string",
-                "value": 22,
-                "requirement": {
-                    "id": str(uuid4())
-                }
-            }
-        }
+    del payload['params']['requirementResponse']['requirement']['id']
 
     actualresult = requests.post(f'{host}:{port.eDossier}/command2', json=payload).json()
     response.error['result'] = [
@@ -305,5 +294,3 @@ def test_validateRequirementResponse_without_param_in_params_requirement_id(host
         }
     ]
     assert actualresult == response.error
-
-
