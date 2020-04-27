@@ -23,7 +23,7 @@ def payload_checkRelatedTenderer(request_template, prepared_cpid, prepared_ev_oc
 
 @pytest.fixture(scope='function')
 def payload_addRequirementResponse(request_template, prepared_cpid, prepared_ev_ocid, prepared_entity_id):
-    payload = request_template(action='createRequirementResponse')
+    payload = request_template(action='addRequirementResponse')
 
     def _payload_addRequirementResponse(award_id, requirementResponse_id, relatedTenderer_id, requirement_id,
                                         cpid=prepared_cpid, ocid=prepared_ev_ocid):
@@ -42,9 +42,12 @@ def payload_addRequirementResponse(request_template, prepared_cpid, prepared_ev_
                         "id": str(requirement_id)
 
                     },
-                    "responderer": {
-                        "id": "respondererId",
-                        "name": "respondererName"
+                    "responder": {
+                        "name": "responderName",
+                        "identifier": {
+                            "id": "string",
+                            "scheme": ""
+                        }
                     }
                 }
             }
