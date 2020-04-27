@@ -1,4 +1,5 @@
 import pytest
+from mimesis.schema import Schema
 
 
 @pytest.fixture(scope='function')
@@ -3313,3 +3314,15 @@ def data_create_two_criteria_and_conversion():
         "awardCriteria": "qualityOnly",
         "awardCriteriaDetails": "automated"
     }
+
+
+@pytest.fixture(scope='session')
+def prepare_data():
+    def _prepare_data(schema, quantity=1):
+        schema = Schema(schema=lambda: schema)
+        if quantity == 1:
+            return schema.create(iterations=quantity)[0]
+        else:
+            return schema.create(iterations=quantity)
+
+    return _prepare_data
