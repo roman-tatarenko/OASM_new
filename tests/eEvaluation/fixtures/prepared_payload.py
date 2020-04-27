@@ -2,11 +2,12 @@ import pytest
 
 
 @pytest.fixture(scope='function')
-def payload_checkRelatedTenderer(request_template, prepared_cpid, prepared_ev_ocid, prepared_entity_id):
+def payload_checkRelatedTenderer(request_template, prepared_cpid, prepared_ev_ocid, prepared_entity_id,
+                                 prepared_tenderer_id):
     payload = request_template(action='checkRelatedTenderer')
 
     def _payload_checkRelatedTenderer(awardId=str(prepared_entity_id()), requirementId=str(prepared_entity_id()),
-                                      relatedTendererId="relatedTendererId", cpid=prepared_cpid,
+                                      relatedTendererId=prepared_tenderer_id(), cpid=prepared_cpid,
                                       ocid=prepared_ev_ocid):
         payload['params'] = {
             "cpid": cpid,
