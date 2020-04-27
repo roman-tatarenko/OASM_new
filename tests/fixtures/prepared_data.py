@@ -3326,3 +3326,146 @@ def prepare_data():
             return schema.create(iterations=quantity)
 
     return _prepare_data
+
+
+@pytest.fixture(scope='function')
+def data_supplier():
+    return {
+        "id": "MD-IDNO-tenderers id",
+        "name": "name",
+        "identifier": {
+            "id": "tenderers id",
+            "scheme": "MD-IDNO",
+            "legalName": "tenderers legalname",
+            "uri": "http://tenderers.com"
+        },
+        "address": {
+            "streetAddress": "tenderers street adress",
+            "postalCode": "tenderers postalcode",
+            "addressDetails": {
+                "country": {
+                    "scheme": "iso-alpha2",
+                    "id": "MD",
+                    "description": "MOLDOVA",
+                    "uri": "http://reference.iatistandard.org"
+                },
+                "region": {
+                    "scheme": "CUATM",
+                    "id": "1000000",
+                    "description": "Anenii Noi",
+                    "uri": "http://statistica.md"
+                },
+                "locality": {
+                    "scheme": "CUATM",
+                    "id": "1001000",
+                    "description": "or.Anenii Noi",
+                    "uri": "http://statistica.md"
+                }
+            }
+        },
+        "contactPoint": {
+            "name": "Illia Petrusenko",
+            "email": "illya.petrusenko@gmail.com",
+            "telephone": "+380632074071",
+            "faxNumber": "+380445450099",
+            "url": "http://petrusenko.com/illia"
+        },
+        "additionalIdentifiers": [{
+            "id": "additionalIdentifiers id",
+            "scheme": "MD-IDNO",
+            "legalName": "additionalIdentifiers legalName",
+            "uri": "http://additionalIdentifier.com"
+        }],
+        "details": {
+            "typeOfSupplier": "company",
+            "mainEconomicActivities": ["456-00"],
+            "scale": "sme",
+            "permits": [{
+                "scheme": "SRLE",
+                "id": "2",
+                "url": "5",
+                "permitDetails": {
+                    "issuedBy": {
+                        "id": "changed",
+                        "name": "changed1"
+                    },
+                    "issuedThought": {
+                        "id": "kjhgh",
+                        "name": "rey"
+                    },
+                    "validityPeriod": {
+                        "startDate": "2019-10-29T16:35",
+                        "endDate": "2019-10-29T16:36"
+                    }
+                }
+            }],
+            "bankAccounts": [{
+                "description": "description",
+                "bankName": "bankName",
+                "address": {
+                    "streetAddress": "streetAddress",
+                    "postalCode": "postalCode",
+                    "addressDetails": {
+                        "country": {
+                            "scheme": "iso-alpha2",
+                            "id": "MD",
+                            "description": "description of country",
+                            "uri": "URI*"
+                        },
+                        "region": {
+                            "scheme": "CUATM",
+                            "id": "0301000",
+                            "description": "description",
+                            "uri": "URI*"
+                        },
+                        "locality": {
+                            "scheme": "CUATM",
+                            "id": "0301000",
+                            "description": ""
+                        }
+                    }
+                },
+                "identifier": {
+                    "scheme": "UA-MFO",
+                    "id": "300711"
+                },
+                "accountIdentification": {
+                    "scheme": "IBAN",
+                    "id": "2600000625637"
+                },
+                "additionalAccountIdentifiers": [{
+                    "scheme": "settlement",
+                    "id": "458-9652"
+                }]
+            }],
+            "legalForm": {
+                "scheme": "MD-IDNO",
+                "id": "260000",
+                "description": "description",
+                "uri": "uri"
+            }
+        },
+        "persones": [{
+            "title": "persones.title",
+            "name": "persones.name",
+            "identifier": {
+                "scheme": "persones MD-IDNO",
+                "id": "88888000",
+                "uri": "http://petrusenko.com/illia"
+            },
+            "businessFunctions": [{
+                "id": "businessFunctions id",
+                "type": "authority",
+                "jobTitle": "Chief Executive Officer",
+                "period": {
+                    "startDate": "2019-10-30T00:00:35Z"
+                },
+                "documents": [{
+                    "id": "e6886bf2-6911-4d11-ac38-62b943d73bb5-1572864287975",
+                    "documentType": "regulatoryDocument",
+                    "title": "doc title",
+                    "description": "doc description"
+                }]
+            }]
+        }]
+    }

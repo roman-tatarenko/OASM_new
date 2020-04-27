@@ -73,3 +73,11 @@ def prepared_entity_id():
 @pytest.fixture(scope='function')
 def prepared_owner():
     return '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+
+
+@pytest.fixture(scope='function')
+def prepared_tenderer_id():
+    def _prepared_tenderer_id():
+        return f"MD-IDNO-{random.randint(1, 1000)}"
+
+    return _prepared_tenderer_id
