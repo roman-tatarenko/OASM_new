@@ -5,6 +5,7 @@ import pytest
 import requests
 from pytest_testrail.plugin import pytestrail
 
+from resources.domain.award import schema_award
 from resources.domain.requirementResponse import schema_requirementResponse
 
 
@@ -12,16 +13,17 @@ from resources.domain.requirementResponse import schema_requirementResponse
 def test_addRequirementResponse_add_first_requirementResponse(port, host, execute_insert_into_evaluation_award,
                                                               execute_select_evaluation_award_by_token_entity,
                                                               payload_addRequirementResponse, prepared_cpid,
-                                                              prepared_token_entity, data_award, prepared_owner,
+                                                              prepared_token_entity, prepare_data, prepared_owner,
                                                               prepared_entity_id, response):
     stage = 'EV'
     award_id = str(prepared_entity_id())
-    data_award['id'] = award_id
+    data = prepare_data(schema=schema_award)
+    data['id'] = award_id
     execute_insert_into_evaluation_award(
         cp_id=prepared_cpid,
         stage=stage,
         token_entity=prepared_token_entity,
-        json_data=data_award,
+        json_data=data,
         owner=prepared_owner,
         status='pending',
         status_details='awaiting'
@@ -50,18 +52,20 @@ def test_addRequirementResponse_add_first_requirementResponse(port, host, execut
 def test_addRequirementResponse_add_two_requirementResponse(port, host, execute_insert_into_evaluation_award,
                                                             execute_select_evaluation_award_by_token_entity,
                                                             payload_addRequirementResponse, prepared_cpid,
-                                                            prepared_token_entity, data_award, prepared_owner,
+                                                            prepared_token_entity, prepare_data, prepared_owner,
                                                             prepared_entity_id, response):
     stage = 'EV'
     award_id = str(prepared_entity_id())
-    data_award['id'] = award_id
-    data_award.update({"requirementResponses": [schema_requirementResponse]})
+    data = prepare_data(schema=schema_award)
+    requirement_response = prepare_data(schema=schema_requirementResponse)
+    data['id'] = award_id
+    data.update({"requirementResponses": [requirement_response]})
 
     execute_insert_into_evaluation_award(
         cp_id=prepared_cpid,
         stage=stage,
         token_entity=prepared_token_entity,
-        json_data=data_award,
+        json_data=data,
         owner=prepared_owner,
         status='pending',
         status_details='awaiting'
@@ -126,7 +130,7 @@ def test_addRequirementResponse_data_format_mismatch_of_attribute_awardId(port, 
                              pytest.param('requirementResponseId', 'id', '', "DR-4/7",
                                           "Data format mismatch of attribute 'requirementResponseId'."
                                           " Expected data format: 'uuid', actual value: ''.",
-                                          id='awardId as empty string',
+                                          id='requirementResponseId as empty string',
                                           marks=pytestrail.case('C13267'))
                          ])
 def test_addRequirementResponse_data_format_mismatch_of_attribute_requirementResponse_id(port, host, name, param, value,
@@ -210,13 +214,14 @@ def test_addRequirementResponse_data_format_mismatch_of_attribute_requirement_id
 def test_addRequirementResponse_award_not_found(host, port, param, value, payload_checkRelatedTenderer,
                                                 response, execute_insert_into_evaluation_award,
                                                 prepared_entity_id, prepared_cpid, prepared_tenderer_id,
-                                                prepared_token_entity, data_award, prepared_owner):
+                                                prepared_token_entity, prepare_data, prepared_owner):
     award_id = str(prepared_entity_id())
+    data = prepare_data(schema=schema_award)
     execute_insert_into_evaluation_award(
         cp_id=prepared_cpid,
         stage='EV',
         token_entity=prepared_token_entity,
-        json_data=data_award,
+        json_data=data,
         owner=prepared_owner,
         status='pending',
         status_details='awaiting'
@@ -226,7 +231,6 @@ def test_addRequirementResponse_award_not_found(host, port, param, value, payloa
         requirementId=str(prepared_entity_id()),
         relatedTendererId=prepared_tenderer_id()
     )
-    print(award_id)
     payload['params'][param] = value
     actualresult = requests.post(f'{host}:{port.eEvaluation}/command2', json=payload).json()
     response.error['result'] = [
