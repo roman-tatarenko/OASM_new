@@ -85,3 +85,13 @@ def execute_insert_into_access_tender(prepared_insert_access_tender, cassandra_s
         cassandra_session.execute(prepared_insert_access_tender, values)
 
     return with_values
+
+
+@pytest.fixture(scope='function')
+def execute_insert_into_evaluation_period(prepared_insert_evaluation_period, cassandra_session):
+    def with_values(cp_id: str, stage, award_criteria=None, end_date=None, start_date=None):
+        values = (
+            cp_id, stage, award_criteria, end_date, start_date)
+        cassandra_session.execute(prepared_insert_evaluation_period, values)
+
+    return with_values

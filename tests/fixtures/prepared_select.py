@@ -30,3 +30,10 @@ def prepared_select_evaluation_award_by_cpid(cassandra_session):
     cassandra_session.set_keyspace('ocds')
     query = 'SELECT * FROM evaluation_award WHERE cp_id=?'
     return cassandra_session.prepare(query)
+
+
+@pytest.fixture(scope='session')
+def prepared_select_evaluation_period_by_cpid(cassandra_session):
+    cassandra_session.set_keyspace('ocds')
+    query = 'SELECT * FROM evaluation_period WHERE cp_id=?'
+    return cassandra_session.prepare(query)
