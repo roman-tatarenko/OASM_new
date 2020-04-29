@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import datetime
 from uuid import uuid4
@@ -9,7 +10,8 @@ from pytest_testrail.plugin import pytestrail
 
 @pytestrail.case("C16416")
 def test_createUnsuccessfulAwards_create_unsuccessful_award_for_one_lot(port, host, payload_createUnsuccessfulAwards,
-                                                                        prepared_entity_id):
+                                                                        prepared_entity_id, prepared_cpid,
+                                                                        execute_select_evaluation_award_by_cpid):
     lot_id = str(prepared_entity_id())
     date = (datetime.utcnow()).strftime('%Y-%m-%dT%H:%M:%SZ')
     payload = payload_createUnsuccessfulAwards(
@@ -28,11 +30,30 @@ def test_createUnsuccessfulAwards_create_unsuccessful_award_for_one_lot(port, ho
     assert unsuccessful_award['statusDetails'] == "lotCancelled"
     assert unsuccessful_award['relatedLots'][0] == lot_id
 
+    record = execute_select_evaluation_award_by_cpid(
+        cp_id=prepared_cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.status == "unsuccessful"
+    assert record.status_details == "lotCancelled"
+
+    json_data = json.loads(record.json_data)
+
+    assert uuid.UUID(json_data['id'])
+    assert json_data['date'] == date
+    assert json_data['title'] == "Lot is not awarded"
+    assert json_data['description'] == "Other reasons (discontinuation of procedure)"
+    assert json_data['status'] == "unsuccessful"
+    assert json_data['statusDetails'] == "lotCancelled"
+    assert json_data['relatedLots'][0] == lot_id
+
 
 @pytestrail.case("C16417")
 def test_createUnsuccessfulAwards_create_unsuccessful_award_for_more_then_one_lot(port, host,
                                                                                   payload_createUnsuccessfulAwards,
-                                                                                  prepared_entity_id):
+                                                                                  prepared_entity_id
+                                                                                  ):
     lot_ids = [str(uuid4()) for _ in range(100)]
     date = (datetime.utcnow()).strftime('%Y-%m-%dT%H:%M:%SZ')
     payload = payload_createUnsuccessfulAwards(
