@@ -23,3 +23,10 @@ def prepared_select_evaluation_award_by_token_entity(cassandra_session):
     query = 'SELECT * FROM evaluation_award WHERE cp_id=? AND stage=? AND token_entity=?'
     prepared = cassandra_session.prepare(query)
     return prepared
+
+
+@pytest.fixture(scope='session')
+def prepared_select_evaluation_award_by_cpid(cassandra_session):
+    cassandra_session.set_keyspace('ocds')
+    query = 'SELECT * FROM evaluation_award WHERE cp_id=?'
+    return cassandra_session.prepare(query)
