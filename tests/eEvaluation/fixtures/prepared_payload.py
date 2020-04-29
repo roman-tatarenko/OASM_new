@@ -91,3 +91,22 @@ def payload_checkAccessToAward(request_template, prepared_cpid, prepared_ev_ocid
         return payload
 
     return _payload_checkAccessToAward
+
+
+@pytest.fixture(scope='function')
+def payload_createUnsuccessfulAwards(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner):
+    payload = request_template(action='createUnsuccessfulAwards')
+
+    def _payload_createUnsuccessfulAwards(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid, owner=prepared_owner,
+                                          date="2020-04-28T14:12:32.055Z"):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "lotIds": list(args),
+            "date": date,
+            "owner": owner
+        }
+
+        return payload
+
+    return _payload_createUnsuccessfulAwards
