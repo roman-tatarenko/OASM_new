@@ -24,3 +24,9 @@ def execute_select_evaluation_award_by_token_entity(prepared_select_evaluation_a
         return cassandra_session.execute(prepared_select_evaluation_award_by_token_entity, [cp_id, stage, token_entity])
 
     return with_values
+
+
+@pytest.fixture(scope='function')
+def execute_select_evaluation_award_by_cpid(prepared_select_evaluation_award_by_cpid,
+                                            cassandra_session):
+    return lambda cp_id: cassandra_session.execute(prepared_select_evaluation_award_by_cpid, [cp_id])
