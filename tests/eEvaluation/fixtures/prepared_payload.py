@@ -116,7 +116,7 @@ def payload_createUnsuccessfulAwards(request_template, prepared_cpid, prepared_e
 def payload_closeAwardPeriod(request_template, prepared_cpid, prepared_ev_ocid):
     payload = request_template(action='closeAwardPeriod')
 
-    def _payload_closeAwardPeriod(endDate, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+    def _payload_closeAwardPeriod(endDate=None, cpid=prepared_cpid, ocid=prepared_ev_ocid):
         payload['params'] = {
             "cpid": cpid,
             "ocid": ocid,
