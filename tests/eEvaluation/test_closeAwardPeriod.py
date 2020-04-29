@@ -31,7 +31,7 @@ def test_closeAwardPeriod_with_valid_params_and_awardPeriod_in_db(port, host, pa
     }
     assert actualresult == response.success
 
-    record = execute_select_evaluation_period(
+    record = execute_select_evaluation_period_by_cpid(
         cp_id=prepared_cpid
     ).one()
 
