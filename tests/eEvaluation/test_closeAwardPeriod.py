@@ -7,7 +7,7 @@ from pytest_testrail.plugin import pytestrail
 from utils.ocds_date import ocds_datetime, ocds_date_to_datetime
 
 
-@pytestrail.case('C13253')
+@pytestrail.case('C16916')
 def test_closeAwardPeriod_with_valid_params_and_awardPeriod_in_db(port, host, payload_closeAwardPeriod,
                                                                   execute_insert_into_evaluation_period,
                                                                   execute_select_evaluation_period_by_cpid,
