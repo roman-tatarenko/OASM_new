@@ -340,17 +340,14 @@ def test_responderProcessing_without_responder_identifier_uri_persones_does_not_
     cpid = prepared_cpid
 
     data = prepare_data(schema=schema_tender)
-    name=data.copy()
+    name = data.copy()
 
     del name['tender']['procuringEntity']['persones']
-
-
 
     responder = prepare_data(schema=schema_responder)
 
     # responder['identifier'] = prepare_data(schema=schema_identifier)
     del responder['identifier']['uri']
-
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -379,15 +376,23 @@ def test_responderProcessing_without_responder_identifier_uri_persones_does_not_
     assert actualresult == response.success
 
 
+
+# # Для примера
+# Здесь суть кейса:
+# Положить в БД документы
+# В запросе удалить объект документов
+# Для наглядности поменять тайтл
+# Результат: в БД есть объект документов, но с новым тайтлом.
+# Сервис не удаляет то что уже есть в БД.
 @pytestrail.case("C16890")
 def test_responderProcessing_without_responder_businessFunction_documents_object_0(host, port,
-                                                                                 prepared_cpid,
-                                                                                 prepare_data,
-                                                                                 execute_insert_into_access_tender,
-                                                                                 prepared_token_entity,
-                                                                                 prepared_owner,
-                                                                                 payload_responderProcessing,
-                                                                                 response):
+                                                                                   prepared_cpid,
+                                                                                   prepare_data,
+                                                                                   execute_insert_into_access_tender,
+                                                                                   prepared_token_entity,
+                                                                                   prepared_owner,
+                                                                                   payload_responderProcessing,
+                                                                                   response):
     cpid = prepared_cpid
 
     data = prepare_data(schema=schema_tender)
@@ -399,12 +404,15 @@ def test_responderProcessing_without_responder_businessFunction_documents_object
     data['tender']['procuringEntity']['persones'][0]['identifier'] = val
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = busFuncVal
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0] = documentVal
+    print(json.dumps(data))
+    # Здесь объект документов есть
 
     responder = prepare_data(schema=schema_responder)
     responder['title'] = "Title for drop documents[]"
     responder['identifier'] = val
     responder['businessFunctions'][0] = busFuncVal
     del responder['businessFunctions'][0]['documents']
+    # Здесь объекта документов уже нет
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -435,13 +443,13 @@ def test_responderProcessing_without_responder_businessFunction_documents_object
 
 @pytestrail.case("C16891")
 def test_responderProcessing_without_responder_businessFunction_documents_objec_does_not_presentDB_1(host, port,
-                                                                                                   prepared_cpid,
-                                                                                                   prepare_data,
-                                                                                                   execute_insert_into_access_tender,
-                                                                                                   prepared_token_entity,
-                                                                                                   prepared_owner,
-                                                                                                   payload_responderProcessing,
-                                                                                                   response):
+                                                                                                     prepared_cpid,
+                                                                                                     prepare_data,
+                                                                                                     execute_insert_into_access_tender,
+                                                                                                     prepared_token_entity,
+                                                                                                     prepared_owner,
+                                                                                                     payload_responderProcessing,
+                                                                                                     response):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     val = prepare_data(schema=schema_identifier)
@@ -455,6 +463,59 @@ def test_responderProcessing_without_responder_businessFunction_documents_objec_
     responder['businessFunctions'][0] = prepare_data(schema=schema_businessFunction)
     responder['businessFunctions'][0]['id'] = id_busFunc
     responder['businessFunctions'][0]['documents'][0] = prepare_data(schema=schema_document)
+
+    execute_insert_into_access_tender(
+        cp_id=cpid,
+        stage="EV",
+        token_entity=prepared_token_entity,
+        created_date=datetime.now(),
+        json_data=data,
+        owner=prepared_owner
+    )
+
+    payload = payload_responderProcessing(
+        cpid=cpid,
+        responder=responder,
+        date="2020-04-24T11:07:00Z"
+
+    )
+    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
+    response.success['result'] = {
+        "name": responder['name'],
+        "identifier": {
+            "id": responder['identifier']['id'],
+            "scheme": responder['identifier']['scheme']
+        }
+    }
+    print(cpid)
+    assert actualresult == response.success
+
+
+@pytestrail.case("C14099")
+def test_responderProcessing_request_without_documents_description_persones_object_is_present_into_DB(host, port,
+                                                                                                      prepared_cpid,
+                                                                                                      prepare_data,
+                                                                                                      execute_insert_into_access_tender,
+                                                                                                      prepared_token_entity,
+                                                                                                      prepared_owner,
+                                                                                                      payload_responderProcessing,
+                                                                                                      response):
+    cpid = prepared_cpid
+    data = prepare_data(schema=schema_tender)
+    val = prepare_data(schema=schema_identifier)
+    busFuncVal = prepare_data(schema=schema_businessFunction)
+    documentVal = prepare_data(schema=schema_document)
+    data['tender']['procuringEntity']['persones'][0]['identifier'] = val
+    data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = busFuncVal
+    data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0] = documentVal
+    print(json.dumps(data))
+
+    responder = prepare_data(schema=schema_responder)
+    responder['identifier'] = val
+    responder['businessFunctions'][0] = busFuncVal
+    responder['businessFunctions'][0]['documents'][0] = documentVal
+    responder['businessFunctions'][0]['documents'][0]['title'] = "title88"
+    del responder['businessFunctions'][0]['documents'][0]['description']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
