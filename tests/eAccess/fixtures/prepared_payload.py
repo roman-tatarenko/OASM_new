@@ -1,8 +1,5 @@
 import pytest
 
-from resources.domain.period import schema_period_start_date
-from resources.domain.responder import schema_responder
-
 
 @pytest.fixture(scope='function')
 def payload_getLotStateByIds(request_template, prepared_cpid, prepared_ev_ocid):
