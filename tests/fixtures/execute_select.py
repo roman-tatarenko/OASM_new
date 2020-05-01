@@ -31,14 +31,8 @@ def execute_select_evaluation_award_by_cpid(prepared_select_evaluation_award_by_
                                             cassandra_session):
     return lambda cp_id: cassandra_session.execute(prepared_select_evaluation_award_by_cpid, [cp_id])
 
-  
-def execute_select_evaluation_period_by_cpid(prepared_select_evaluation_period_by_cpid,
-                                             cassandra_session):
-    return lambda cp_id: cassandra_session.execute(prepared_select_evaluation_period_by_cpid, [cp_id])
 
-  @pytest.fixture(scope='function')
-
-  
+@pytest.fixture(scope='function')
 def execute_select_access_tenders_by_cpid(prepared_select_access_tender_by_cpid,
-                                               cassandra_session):
+                                          cassandra_session):
     return lambda cp_id: cassandra_session.execute(prepared_select_access_tender_by_cpid, [cp_id])
