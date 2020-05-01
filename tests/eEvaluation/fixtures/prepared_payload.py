@@ -110,3 +110,19 @@ def payload_createUnsuccessfulAwards(request_template, prepared_cpid, prepared_e
         return payload
 
     return _payload_createUnsuccessfulAwards
+
+
+@pytest.fixture(scope='function')
+def payload_closeAwardPeriod(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='closeAwardPeriod')
+
+    def _payload_closeAwardPeriod(endDate=None, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "endDate": endDate
+        }
+
+        return payload
+
+    return _payload_closeAwardPeriod
