@@ -41,11 +41,13 @@ def execute_insert_into_submission_bid(prepared_insert_submission_bid, cassandra
 
 @pytest.fixture(scope='function')
 def execute_insert_into_contracting_can(prepared_insert_contracting_can, cassandra_session):
-    def with_values(cp_id, can_id, award_id, created_date, json_data, lot_id, owner, status, status_details,
-                    token_entity, ac_id=UNSET_VALUE):
+    def with_values(cp_id: str, can_id, award_id: str, created_date, lot_id: str, owner: str, status: str,
+                    status_details: str, token_entity, json_data=None, ac_id=UNSET_VALUE):
+        if json_data is None:
+            json_data = {}
         values = (
-            f'{cp_id}', can_id, ac_id, f'{award_id}', created_date, f'{json.dumps(json_data)}',
-            f'{lot_id}', owner, status, status_details, token_entity
+            str(cp_id), can_id, ac_id, str(award_id), created_date, f'{json.dumps(json_data)}',
+            str(lot_id), str(owner), status, status_details, token_entity
         )
         cassandra_session.execute(prepared_insert_contracting_can, values)
 
