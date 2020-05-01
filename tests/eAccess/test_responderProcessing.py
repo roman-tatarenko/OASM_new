@@ -1,36 +1,35 @@
 import json
 from datetime import datetime
-
 import pytest
 from pytest_testrail.plugin import pytestrail
 import requests
-from uuid import uuid4
-
 from resources.domain.businessFunction import schema_businessFunction
 from resources.domain.document import schema_document
 from resources.domain.identifier import schema_identifier
-from resources.domain.period import schema_period_start_date
 from resources.domain.responder import schema_responder
 from resources.domain.tender import schema_tender
+from utils.ocds_date import ocds_datetime, ocds_date_to_datetime
 
 
 @pytestrail.case("C13318")
-def test_responderProcessing_update_person_object(host, port, prepared_cpid, prepare_data,
-                                                  execute_insert_into_access_tender,
-                                                  prepared_token_entity, prepared_owner,
-                                                  payload_responderProcessing, response):
+def test_responderProcessing_update_person_object(host, port, prepared_cpid, prepare_data, prepared_token_entity,
+                                                  execute_insert_into_access_tender, payload_responderProcessing,
+                                                  prepared_owner, response, execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
+    data['ocid'] = cpid
+    token = prepared_token_entity
+    owner = prepared_owner
 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -38,11 +37,12 @@ def test_responderProcessing_update_person_object(host, port, prepared_cpid, pre
     responder['title'] = "tat1"
     responder['name'] = "tat2"
     responder['identifier']['uri'] = "tat_uri"
+    date = ocds_datetime()
 
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -53,35 +53,54 @@ def test_responderProcessing_update_person_object(host, port, prepared_cpid, pre
             "scheme": responder['identifier']['scheme']
         }
     }
-
+    print(cpid)
     assert actualresult == response.success
+
+    #  Выполняет выборку с БД по cpid и кладет в переменную record
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    # Сравнивает значения из БД и значения с запроса
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    # Преобразовывает json, который лежит в переменной record, в объект Пайтон  и кладет в
+    # переменную python_data
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
 
 
 @pytestrail.case("C13319")
-def test_responderProcessing_new_persones_object(host, port, prepared_cpid, prepare_data,
-                                                 execute_insert_into_access_tender,
-                                                 prepared_entity_id,
-                                                 prepared_token_entity, prepared_owner,
-                                                 payload_responderProcessing, response):
+def test_responderProcessing_new_persones_object(host, port, prepared_cpid, prepare_data, prepared_owner,
+                                                 execute_insert_into_access_tender, payload_responderProcessing,
+                                                 prepared_entity_id, prepared_token_entity, response,
+                                                 execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
+    token = prepared_token_entity
+    owner = prepared_owner
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier']['id'] = str(prepared_entity_id())
     responder['identifier']['scheme'] = "UA-NEDNO"
+    date = ocds_datetime()
 
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -95,15 +114,30 @@ def test_responderProcessing_new_persones_object(host, port, prepared_cpid, prep
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][1] == responder
+
 
 @pytestrail.case("C13320")
-def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, prepare_data,
-                                                     execute_insert_into_access_tender,
-                                                     prepared_token_entity, prepared_owner,
-                                                     payload_responderProcessing, response):
+def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, prepare_data, prepared_owner,
+                                                     execute_insert_into_access_tender, prepared_token_entity,
+                                                     payload_responderProcessing, response,
+                                                     execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
+    token = prepared_token_entity
+    owner = prepared_owner
     business_function = prepare_data(schema=schema_businessFunction)
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = business_function
@@ -111,10 +145,10 @@ def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -123,11 +157,12 @@ def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, 
     responder['businessFunctions'][0]['type'] = "technicalOpener"
     responder['businessFunctions'][0]['jobTitle'] = "tat_4to-4to"
     responder['businessFunctions'][0]['period']['startDate'] = "2020-04-29T11:07:00Z"
+    date = ocds_datetime()
 
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -140,32 +175,48 @@ def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, 
     }
 
     assert actualresult == response.success
+
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
 
 
 @pytestrail.case("C13321")
 def test_responderProcessing_add_new_business_function_object(host, port, prepared_cpid, prepare_data,
-                                                              execute_insert_into_access_tender,
+                                                              execute_insert_into_access_tender, prepared_entity_id,
                                                               prepared_token_entity, prepared_owner,
                                                               payload_responderProcessing, response,
-                                                              prepared_entity_id):
+                                                              execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
+    token = prepared_token_entity
+    owner = prepared_owner
 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['businessFunctions'][0]['id'] = str(prepared_entity_id())
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -179,13 +230,29 @@ def test_responderProcessing_add_new_business_function_object(host, port, prepar
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][1] == \
+           responder['businessFunctions'][0]
+
 
 @pytestrail.case("C13322")
-def test_responderProcessing_update_documents_object(host, port, prepared_cpid, prepare_data,
-                                                     execute_insert_into_access_tender,
-                                                     prepared_token_entity, prepared_owner,
-                                                     payload_responderProcessing, response):
+def test_responderProcessing_update_documents_object(host, port, prepared_cpid, prepare_data, prepared_owner,
+                                                     execute_insert_into_access_tender, prepared_token_entity,
+                                                     payload_responderProcessing, response,
+                                                     execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -197,10 +264,10 @@ def test_responderProcessing_update_documents_object(host, port, prepared_cpid, 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -209,10 +276,11 @@ def test_responderProcessing_update_documents_object(host, port, prepared_cpid, 
     responder['businessFunctions'][0]['documents'][0] = documents
     responder['businessFunctions'][0]['documents'][0]['title'] = "tat_doc_title"
     responder['businessFunctions'][0]['documents'][0]['description'] = "tat_doc_description"
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -226,14 +294,28 @@ def test_responderProcessing_update_documents_object(host, port, prepared_cpid, 
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
+
 
 @pytestrail.case("C13323")
-def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid, prepare_data,
-                                                      execute_insert_into_access_tender,
-                                                      prepared_token_entity, prepared_owner,
-                                                      payload_responderProcessing, response,
-                                                      prepared_entity_id):
+def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid, prepare_data, prepared_entity_id,
+                                                      execute_insert_into_access_tender, payload_responderProcessing,
+                                                      prepared_token_entity, prepared_owner, response,
+                                                      execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -245,10 +327,10 @@ def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid,
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -256,10 +338,11 @@ def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid,
     responder['businessFunctions'][0] = business_function
     responder['businessFunctions'][0]['documents'][0] = documents
     responder['businessFunctions'][0]['documents'][0]['id'] = str(prepared_entity_id())
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -272,6 +355,20 @@ def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid,
     }
 
     assert actualresult == response.success
+
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][1] == \
+           responder['businessFunctions'][0]['documents'][0]
 
 
 @pytestrail.case("C14098")
@@ -279,29 +376,34 @@ def test_responderProcessing_without_identifier_uri_if_persones_present_into_DB(
                                                                                 prepared_cpid, prepared_owner,
                                                                                 execute_insert_into_access_tender,
                                                                                 prepared_token_entity, response,
-                                                                                payload_responderProcessing):
+                                                                                payload_responderProcessing,
+                                                                                execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
+    identifier_uri = data['tender']['procuringEntity']['persones'][0]['identifier']['uri']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     del responder['identifier']['uri']
     responder['title'] = "for compare title"
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -314,6 +416,19 @@ def test_responderProcessing_without_identifier_uri_if_persones_present_into_DB(
     }
 
     assert actualresult == response.success
+
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0]['identifier']['uri'] == identifier_uri
 
 
 @pytestrail.case("C16889")
@@ -322,27 +437,30 @@ def test_responderProcessing_without_identifier_uri_if_persones_does_not_present
                                                                                          execute_insert_into_access_tender,
                                                                                          prepared_token_entity,
                                                                                          payload_responderProcessing,
-                                                                                         response):
+                                                                                         response,
+                                                                                         execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     del data['tender']['procuringEntity']['persones']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     del responder['identifier']['uri']
-
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -356,13 +474,29 @@ def test_responderProcessing_without_identifier_uri_if_persones_does_not_present
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
+
 
 @pytestrail.case("C16890")
 def test_responderProcessing_without_documents_if_documents_present_in_DB(host, port, prepared_cpid, prepare_data,
                                                                           execute_insert_into_access_tender,
                                                                           prepared_token_entity, prepared_owner,
-                                                                          payload_responderProcessing, response):
+                                                                          payload_responderProcessing, response,
+                                                                          execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -375,10 +509,10 @@ def test_responderProcessing_without_documents_if_documents_present_in_DB(host, 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -386,10 +520,11 @@ def test_responderProcessing_without_documents_if_documents_present_in_DB(host, 
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function.copy()
     del responder['businessFunctions'][0]['documents']
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -403,14 +538,30 @@ def test_responderProcessing_without_documents_if_documents_present_in_DB(host, 
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0] == documents
+
 
 @pytestrail.case("C16891")
 def test_responderProcessing_without_documents_if_documents_does_not_present_in_DB(host, port, prepared_cpid, response,
                                                                                    prepare_data, prepared_owner,
                                                                                    execute_insert_into_access_tender,
                                                                                    prepared_token_entity,
-                                                                                   payload_responderProcessing):
+                                                                                   payload_responderProcessing,
+                                                                                   execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     identifier = prepare_data(schema=schema_identifier)
     data = prepare_data(schema=schema_tender)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -421,19 +572,20 @@ def test_responderProcessing_without_documents_if_documents_does_not_present_in_
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -446,6 +598,19 @@ def test_responderProcessing_without_documents_if_documents_does_not_present_in_
     }
 
     assert actualresult == response.success
+
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
 
 
 @pytestrail.case("C14099")
@@ -454,8 +619,11 @@ def test_responderProcessing_without_documents_description_if_persones_present_i
                                                                                      execute_insert_into_access_tender,
                                                                                      prepared_token_entity,
                                                                                      prepared_owner,
-                                                                                     payload_responderProcessing):
+                                                                                     payload_responderProcessing,
+                                                                                     execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -463,14 +631,16 @@ def test_responderProcessing_without_documents_description_if_persones_present_i
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = business_function
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0] = documents
+    documents_description = data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0][
+        'description']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -479,10 +649,11 @@ def test_responderProcessing_without_documents_description_if_persones_present_i
     responder['businessFunctions'][0]['documents'][0] = documents
     responder['businessFunctions'][0]['documents'][0]['title'] = "title88"
     del responder['businessFunctions'][0]['documents'][0]['description']
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -496,6 +667,20 @@ def test_responderProcessing_without_documents_description_if_persones_present_i
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0][
+               'description'] == documents_description
+
 
 @pytestrail.case("C16892")
 def test_responderProcessing_without_documents_description_if_persones_does_not_present_in_DB(host, port, prepared_cpid,
@@ -503,9 +688,12 @@ def test_responderProcessing_without_documents_description_if_persones_does_not_
                                                                                               execute_insert_into_access_tender,
                                                                                               prepared_token_entity,
                                                                                               prepared_owner, response,
-                                                                                              payload_responderProcessing
+                                                                                              payload_responderProcessing,
+                                                                                              execute_select_access_tenders_by_cpid
                                                                                               ):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     identifier = prepare_data(schema=schema_identifier)
     data = prepare_data(schema=schema_tender)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -516,20 +704,21 @@ def test_responderProcessing_without_documents_description_if_persones_does_not_
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = prepare_data(schema=schema_businessFunction)
     del responder['businessFunctions'][0]['documents'][0]['description']
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -543,13 +732,29 @@ def test_responderProcessing_without_documents_description_if_persones_does_not_
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
+
 
 @pytestrail.case("C16893")
 def test_responderProcessing_correct_change_businessFunctions_type(host, port, prepared_cpid, prepare_data,
                                                                    execute_insert_into_access_tender,
                                                                    prepared_token_entity, prepared_owner, response,
-                                                                   payload_responderProcessing):
+                                                                   payload_responderProcessing,
+                                                                   execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     identifier = prepare_data(schema=schema_identifier)
     data = prepare_data(schema=schema_tender)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -558,20 +763,21 @@ def test_responderProcessing_correct_change_businessFunctions_type(host, port, p
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function
     responder['businessFunctions'][0]['type'] = "technicalOpener"
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -585,23 +791,39 @@ def test_responderProcessing_correct_change_businessFunctions_type(host, port, p
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
+
 
 @pytestrail.case("C16880")
 def test_responderProcessing_return_the_created_responder_object_in_the_response(host, port, prepared_cpid,
                                                                                  prepare_data, prepared_token_entity,
                                                                                  execute_insert_into_access_tender,
                                                                                  prepared_owner, response,
-                                                                                 payload_responderProcessing):
+                                                                                 payload_responderProcessing,
+                                                                                 execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     data = prepare_data(schema=schema_tender)
 
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
@@ -609,10 +831,11 @@ def test_responderProcessing_return_the_created_responder_object_in_the_response
     name = responder['name']
     identifier_id = responder['identifier']['id']
     identifier_scheme = responder['identifier']['scheme']
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -623,14 +846,30 @@ def test_responderProcessing_return_the_created_responder_object_in_the_response
     assert actualresult['result']['identifier']['id'] == identifier_id
     assert actualresult['result']['identifier']['scheme'] == identifier_scheme
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
+
 
 @pytestrail.case("C16922")
 def test_responderProcessing_add_new_persones_object_if_schema_does_not_coincides(host, port, prepared_cpid,
                                                                                   prepare_data, prepared_token_entity,
                                                                                   execute_insert_into_access_tender,
                                                                                   prepared_owner, response,
-                                                                                  payload_responderProcessing):
+                                                                                  payload_responderProcessing,
+                                                                                  execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     identifier = prepare_data(schema=schema_identifier)
     data = prepare_data(schema=schema_tender)
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
@@ -638,19 +877,20 @@ def test_responderProcessing_add_new_persones_object_if_schema_does_not_coincide
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['identifier']['scheme'] = "TEST SCHEMA"
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
 
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -664,14 +904,30 @@ def test_responderProcessing_add_new_persones_object_if_schema_does_not_coincide
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
+
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][1] == responder
+
 
 @pytestrail.case("C16894")
 def test_responderProcessing_businessFunctions_type_as_authority_which_presents_in_DB(host, port, prepared_cpid,
                                                                                       prepare_data, prepared_owner,
                                                                                       execute_insert_into_access_tender,
                                                                                       prepared_token_entity, response,
-                                                                                      payload_responderProcessing):
+                                                                                      payload_responderProcessing,
+                                                                                      execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
+    token = prepared_token_entity
+    owner = prepared_owner
     identifier = prepare_data(schema=schema_identifier)
     data = prepare_data(schema=schema_tender)
     business_function = prepare_data(schema=schema_businessFunction)
@@ -682,20 +938,21 @@ def test_responderProcessing_businessFunctions_type_as_authority_which_presents_
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
-        token_entity=prepared_token_entity,
+        token_entity=token,
         created_date=datetime.now(),
         json_data=data,
-        owner=prepared_owner
+        owner=owner
     )
 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function
     responder['businessFunctions'][0]['type'] = "technicalOpener"
+    date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=date
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.success['result'] = {
@@ -708,9 +965,22 @@ def test_responderProcessing_businessFunctions_type_as_authority_which_presents_
 
     assert actualresult == response.success
 
+    record = execute_select_access_tenders_by_cpid(
+        cp_id=cpid
+    ).one()
 
-# ok -> this test will be failed This is bug
+    assert record.stage == 'EV'
+    assert record.token_entity == token
+    assert record.created_date == ocds_date_to_datetime(date)
+    assert record.owner == owner
+
+    python_data = json.loads(record.json_data)
+
+    assert python_data['tender']['procuringEntity']['persones'][0] == responder
+
+
 @pytestrail.case("C14095")
+@pytest.mark.xfail(reason="Incorrect code and description in result in error")
 def test_responderProcessing_cpid_does_not_present_in_the_DB(host, port, prepared_cpid, prepare_data, response,
                                                              payload_responderProcessing):
     cpid = prepared_cpid
@@ -718,7 +988,7 @@ def test_responderProcessing_cpid_does_not_present_in_the_DB(host, port, prepare
     payload = payload_responderProcessing(
         cpid=cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [
@@ -743,28 +1013,13 @@ def test_responderProcessing_cpid_does_not_present_in_the_DB(host, port, prepare
 
                          ])
 def test_responderProcessing_mismatch_with_one_of_enum_expected_values(port, host, param, response, prepared_cpid,
-                                                                       prepared_token_entity, prepared_owner,
-                                                                       payload_responderProcessing, prepare_data,
-                                                                       execute_insert_into_access_tender):
-    cpid = prepared_cpid
-    data = prepare_data(schema=schema_tender)
-
-    del data['tender']['procuringEntity']['persones']
-    execute_insert_into_access_tender(
-        cp_id=cpid,
-        stage="EV",
-        token_entity=prepared_token_entity,
-        created_date=datetime.now(),
-        json_data=data,
-        owner=prepared_owner
-    )
-
+                                                                       payload_responderProcessing, prepare_data):
     responder = prepare_data(schema=schema_responder)
     responder['businessFunctions'][0]['type'] = param
     payload = payload_responderProcessing(
-        cpid=cpid,
+        cpid=prepared_cpid,
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -803,7 +1058,7 @@ def test_responderProcessing_if_data_of_ocid_ocid_mismatch_to_the_pattern(port, 
     responder = prepare_data(schema=schema_responder)
     payload = payload_responderProcessing(
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
     payload['params'][param] = value
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -833,8 +1088,8 @@ def test_responderProcessing_if_data_of_ocid_ocid_mismatch_to_the_pattern(port, 
                                           id="without date attribute")
 
                          ])
-def test_responderProcessing_without_cpid_responder_date_in_params(port, host, param, response,
-                                                                   payload_responderProcessing):
+def test_responderProcessing_without_param_in_params(port, host, param, response,
+                                                     payload_responderProcessing):
     payload = payload_responderProcessing(date="2020-04-24T11:07:00Z")
     del payload['params'][param]
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -867,14 +1122,14 @@ def test_responderProcessing_without_cpid_responder_date_in_params(port, host, p
                                           id="without responder.businessFunctions"),
 
                          ])
-def test_responderProcessing_without_responder_title_name_identifier_businessFunctions(port, host, param,
-                                                                                       response, prepare_data,
-                                                                                       payload_responderProcessing):
+def test_responderProcessing_without_attribute_in_responder(port, host, param,
+                                                            response, prepare_data,
+                                                            payload_responderProcessing):
     responder = prepare_data(schema=schema_responder)
     del responder[param]
     payload = payload_responderProcessing(
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -899,13 +1154,13 @@ def test_responderProcessing_without_responder_title_name_identifier_businessFun
                                           id="without responder.identifier.id")
 
                          ])
-def test_responderProcessing_without_responder_identifier_id(port, host, param, response, prepare_data,
-                                                             payload_responderProcessing):
+def test_responderProcessing_without_attribute_in_responder_identifier(port, host, param, response, prepare_data,
+                                                                       payload_responderProcessing):
     responder = prepare_data(schema=schema_responder)
     del responder['identifier'][param]
     payload = payload_responderProcessing(
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -923,29 +1178,29 @@ def test_responderProcessing_without_responder_identifier_id(port, host, param, 
                          [
                              pytest.param("id",
                                           marks=pytestrail.case('C16850'),
-                                          id=" request without responder.businessFunctions.id attribute"),
+                                          id=" without id attribute"),
 
                              pytest.param("type",
                                           marks=pytestrail.case('C16851'),
-                                          id="request without responder.businessFunctions.type attribute"),
+                                          id="without type attribute"),
 
                              pytest.param("jobTitle",
                                           marks=pytestrail.case('C16852'),
-                                          id="request without responder.businessFunctions.jobTitle attribute"),
+                                          id="without jobTitle attribute"),
 
                              pytest.param("period",
                                           marks=pytestrail.case('C16853'),
-                                          id="request without responder.businessFunctions.period object"),
+                                          id="without period object"),
 
                          ])
-def test_responderProcessing_request_without_businessFunctions_id_type_jobTitle_period_object(port, host, param,
-                                                                                              response, prepare_data,
-                                                                                              payload_responderProcessing):
+def test_responderProcessing_without_attribute_in_responder_businessFunctions(port, host, param,
+                                                                              response, prepare_data,
+                                                                              payload_responderProcessing):
     responder = prepare_data(schema=schema_responder)
     del responder['businessFunctions'][0][param]
     payload = payload_responderProcessing(
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -960,13 +1215,13 @@ def test_responderProcessing_request_without_businessFunctions_id_type_jobTitle_
 
 
 @pytestrail.case("C16854")
-def test_responderProcessing_without_businessFunctions_period_startDate_attribute(port, host, response, prepare_data,
-                                                                                  payload_responderProcessing):
+def test_responderProcessing_without_attribute_in_businessFunctions_period(port, host, response, prepare_data,
+                                                                           payload_responderProcessing):
     responder = prepare_data(schema=schema_responder)
     del responder['businessFunctions'][0]['period']['startDate']
     payload = payload_responderProcessing(
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -984,26 +1239,25 @@ def test_responderProcessing_without_businessFunctions_period_startDate_attribut
                          [
                              pytest.param("id",
                                           marks=pytestrail.case("C16855"),
-                                          id="without responder.businessFunctions.documents.id attribute"),
+                                          id="without id attribute"),
 
                              pytest.param("documentType",
                                           marks=pytestrail.case("C16856"),
-                                          id="without responder.businessFunctions.documents.documentType "
-                                             "attribute"),
+                                          id="without documentType attribute"),
 
                              pytest.param("title",
                                           marks=pytestrail.case('C16857'),
-                                          id="without responder.businessFunctions.documents.title attribute")
+                                          id="without title attribute")
 
                          ])
-def test_responderProcessing_without_businessFunctions_documents_id_documentType_title(port, host, param, response,
-                                                                                       payload_responderProcessing,
-                                                                                       prepare_data):
+def test_responderProcessing_without_attribute_in_businessFunctions_document(port, host, param, response,
+                                                                             payload_responderProcessing,
+                                                                             prepare_data):
     responder = prepare_data(schema=schema_responder)
     del responder['businessFunctions'][0]['documents'][0][param]
     payload = payload_responderProcessing(
         responder=responder,
-        date="2020-04-24T11:07:00Z"
+        date=ocds_datetime()
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
