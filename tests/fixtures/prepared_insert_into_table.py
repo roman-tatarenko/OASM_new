@@ -11,6 +11,15 @@ def prepared_insert_evaluation_award(cassandra_session):
 
 
 @pytest.fixture(scope='session')
+def prepared_insert_evaluation_period(cassandra_session):
+    cassandra_session.set_keyspace('ocds')
+    query = 'INSERT INTO evaluation_period (cp_id,stage,award_criteria,end_date,start_date) ' \
+            'VALUES (?,?,?,?,?)'
+    prepared = cassandra_session.prepare(query)
+    return prepared
+
+
+@pytest.fixture(scope='session')
 def prepared_insert_access_tender(cassandra_session):
     cassandra_session.set_keyspace('ocds')
     query = 'INSERT INTO access_tender (cp_id,stage,token_entity,created_date,json_data,owner) ' \

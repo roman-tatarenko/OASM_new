@@ -602,3 +602,38 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_lot_in_pa
     ]
 
     assert all(item in expectedresult for item in actualresult['result']), actualresult
+
+
+@pytestrail.case('C16939')
+@pytest.mark.parametrize('status', ('pending', 'active', 'cancelled'))
+def test_findAmendmentIds_by_param_status(host, port, status, response,
+                                          execute_insert_into_revision_amendments,
+                                          prepared_cpid,
+                                          prepared_ev_ocid,
+                                          prepared_create_amendment,
+                                          prepared_entity_id,
+                                          prepared_payload_findAmendmentIds):
+    amendment_id = prepared_entity_id()
+    prepared_create_amendment['id'] = str(amendment_id)
+    prepared_create_amendment['status'] = status
+    prepared_create_amendment['relatesTo'] = 'tender'
+    prepared_create_amendment['relatedItem'] = prepared_ev_ocid
+    execute_insert_into_revision_amendments(
+        cpid=prepared_cpid,
+        ocid=prepared_ev_ocid,
+        id=amendment_id,
+        data=prepared_create_amendment
+    )
+    payload = prepared_payload_findAmendmentIds(
+        status=status
+    )
+    del payload['params']['type']
+    del payload['params']['relatesTo']
+    del payload['params']['relatedItems']
+
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    response.success['result'] = [
+        str(amendment_id)
+    ]
+
+    assert actualresult == response.success
