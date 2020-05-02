@@ -27,8 +27,11 @@ def test_findCANIds_without_search_params(port, host, payload_findCANIds, prepar
     payload = payload_findCANIds()
     actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
 
+    actualresult['result'].sort()
+    can_ids.sort()
+
     assert actualresult['status'] == "success"
-    assert actualresult['result'].sort() == list(map(str, can_ids)).sort()
+    assert actualresult['result'] == list(map(str, can_ids))
 
 
 @pytestrail.case('C16942')
@@ -145,8 +148,11 @@ def test_findCANIds_by_lotId(port, host, payload_findCANIds, prepared_cpid, prep
     )
     actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
 
+    actualresult['result'].sort()
+    can_ids.sort()
+
     assert actualresult['status'] == "success"
-    assert actualresult['result'].sort() == list(map(str, can_ids)).sort()
+    assert actualresult['result'] == list(map(str, can_ids))
 
 
 @pytestrail.case('C16947')
@@ -211,8 +217,12 @@ def test_findCANIds_by_two_states(port, host, payload_findCANIds,
     ]
     actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
 
+    del can_ids[2]
+    actualresult['result'].sort()
+    can_ids.sort()
+
     assert actualresult['status'] == "success"
-    assert actualresult['result'].sort() == list(map(str, can_ids)).sort()
+    assert actualresult['result'] == list(map(str, can_ids))
 
 
 @pytest.mark.parametrize("param",
