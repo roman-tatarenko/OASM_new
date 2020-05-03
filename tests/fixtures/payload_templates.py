@@ -5,7 +5,9 @@ import pytest
 
 @pytest.fixture(scope='function')
 def request_template(prepared_request_id):
-    def _with_value(action: str = None, params={}):
+    def _with_value(action: str = None, params: dict = None):
+        if params is None:
+            params = {}
         return {
             "id": f"{prepared_request_id}",
             "version": "2.0.0",
