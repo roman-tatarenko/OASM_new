@@ -552,7 +552,7 @@ def test_findAmendmentIds_with_relatesTo_lot_and_relatedItems_tender_id(host, po
                                                                         prepared_payload_findAmendmentIds,
                                                                         execute_insert_into_revision_amendments,
                                                                         ):
-    data = prepared_create_amendment()
+    data = prepared_create_amendment
     data['relatedItem'] = f"{tenderId}"
     data['id'] = f"{tenderId}"
     data['relatesTo'] = 'tender'
