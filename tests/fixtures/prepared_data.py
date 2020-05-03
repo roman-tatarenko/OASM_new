@@ -3203,36 +3203,6 @@ def data_requirementResponse():
 
 
 @pytest.fixture(scope='function')
-def data_businessFunction():
-    return {
-        "id": "string",
-        "type": "priceEvaluator",
-        "jobTitle": "string",
-        "period": {
-            "startDate": "2020-02-12T12:14:12Z"
-        },
-        "documents": [
-            {
-                "documentType": "regulatoryDocument",
-                "id": "UUID_2",
-                "title": "string",
-                "description": "string"
-            }
-        ]
-    }
-
-
-@pytest.fixture(scope='function')
-def data_document():
-    return {
-        "documentType": "regulatoryDocument",
-        "id": "UUID_2",
-        "title": "string",
-        "description": "string"
-    }
-
-
-@pytest.fixture(scope='function')
 def data_create_criteria():
     return {
         "criteria": [{
