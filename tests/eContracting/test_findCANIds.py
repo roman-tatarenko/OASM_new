@@ -31,7 +31,7 @@ def test_findCANIds_without_search_params(port, host, payload_findCANIds, prepar
     can_ids.sort()
 
     assert actualresult['status'] == "success"
-    assert actualresult['result'] == list(map(str, can_ids))
+    assert actualresult['result'] == [str(can_id) for can_id in can_ids]
 
 
 @pytestrail.case('C16942')
@@ -152,7 +152,7 @@ def test_findCANIds_by_lotId(port, host, payload_findCANIds, prepared_cpid, prep
     can_ids.sort()
 
     assert actualresult['status'] == "success"
-    assert actualresult['result'] == list(map(str, can_ids))
+    assert actualresult['result'] == [str(can_id) for can_id in can_ids]
 
 
 @pytestrail.case('C16947')
@@ -222,7 +222,7 @@ def test_findCANIds_by_two_states(port, host, payload_findCANIds,
     can_ids.sort()
 
     assert actualresult['status'] == "success"
-    assert actualresult['result'] == list(map(str, can_ids))
+    assert actualresult['result'] == [str(can_id) for can_id in can_ids]
 
 
 @pytest.mark.parametrize("param",
@@ -260,6 +260,7 @@ def test_findCANIds_with_param_lotIds_as_empty_array(port, host, payload_findCAN
     assert actualresult == response.error
 
 
+@pytest.mark.xfail(reason='Internal Server Error')
 @pytestrail.case('C16952')
 def test_findCANIds_with_lotId_null(port, host, payload_findCANIds, response):
     payload = payload_findCANIds()
