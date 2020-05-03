@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture(scope='function')
 def prepared_payload_findAmendmentIds(prepared_request_id, prepared_cpid, prepared_ev_ocid):
     def with_values(version="2.0.0", id=f"{prepared_request_id}", action="findAmendmentIds",
