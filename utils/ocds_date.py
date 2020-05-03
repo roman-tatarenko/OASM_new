@@ -2,9 +2,7 @@ from datetime import datetime
 
 
 def ocds_datetime() -> str:
-    """
-    OCDS makes use of ISO8601 date-times.
-    """
+    """OCDS makes use of ISO8601 date-times."""
     return (datetime.utcnow()).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
