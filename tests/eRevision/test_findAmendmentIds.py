@@ -545,14 +545,13 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_tender_in
                          [
                              pytest.param("lot", uuid4(), uuid4(), marks=pytestrail.case('C8620')),
                          ])
-def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_lot_in_params_relatesTo_and_tender_id_in_params_relatedItems(
-        host, port, relatesTo, lotId, tenderId,
-        prepared_create_amendment,
-        prepared_cpid,
-        prepared_ev_ocid, response,
-        prepared_payload_findAmendmentIds,
-        execute_insert_into_revision_amendments,
-):
+def test_findAmendmentIds_with_relatesTo_lot_and_relatedItems_tender_id(host, port, relatesTo, lotId, tenderId,
+                                                                        prepared_create_amendment,
+                                                                        prepared_cpid,
+                                                                        prepared_ev_ocid, response,
+                                                                        prepared_payload_findAmendmentIds,
+                                                                        execute_insert_into_revision_amendments,
+                                                                        ):
     data = prepared_create_amendment()
     data['relatedItem'] = f"{tenderId}"
     data['id'] = f"{tenderId}"
@@ -574,14 +573,13 @@ def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_lot_in_pa
                          [
                              pytest.param("lot", uuid4(), marks=pytestrail.case('C8621')),
                          ])
-def test_on_eRevisions_behavior_with_two_amendmets_for_one_tender_with_lot_in_params_relatesTo_and_tender_id_in_params_relatedItems(
-        host, port, relatesTo, lotId,
-        prepared_create_amendment,
-        prepared_cpid, prepared_entity_id,
-        prepared_ev_ocid, prepared_request_id,
-        prepared_payload_findAmendmentIds,
-        execute_insert_into_revision_amendments,
-):
+def test_findAmendmentIds_with_relatesTo_lot_and_relatedItems_lot_id(host, port, relatesTo, lotId,
+                                                                     prepared_create_amendment,
+                                                                     prepared_cpid, prepared_entity_id,
+                                                                     prepared_ev_ocid, prepared_request_id,
+                                                                     prepared_payload_findAmendmentIds,
+                                                                     execute_insert_into_revision_amendments,
+                                                                     ):
     amendment_id = prepared_entity_id()
     data = prepared_create_amendment
     data['relatedItem'] = f"{lotId}"
