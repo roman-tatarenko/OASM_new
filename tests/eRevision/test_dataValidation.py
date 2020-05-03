@@ -200,15 +200,15 @@ def test_on_dataValidation_with_amendment_documents_as_empty_object(host, port, 
                          [
                              pytest.param("documentType", 3.14,
                                           "Attribute value mismatch of 'documentType' with one of enum expected values."
-                                          f" Expected values: 'cancellationDetails', actual value: '3.14'.",
+                                          " Expected values: 'cancellationDetails', actual value: '3.14'.",
                                           marks=pytestrail.case('C8151')),
                              pytest.param("documentType", True,
                                           "Attribute value mismatch of 'documentType' with one of enum expected values."
-                                          f" Expected values: 'cancellationDetails', actual value: 'true'.",
+                                          " Expected values: 'cancellationDetails', actual value: 'true'.",
                                           marks=pytestrail.case('C8152')),
                              pytest.param("documentType", "",
                                           "Attribute value mismatch of 'documentType' with one of enum expected values."
-                                          f" Expected values: 'cancellationDetails', actual value: ''.",
+                                          " Expected values: 'cancellationDetails', actual value: ''.",
                                           marks=pytestrail.case('C8153'))
 
                          ])
