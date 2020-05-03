@@ -3292,8 +3292,8 @@ def prepare_data():
         init_schema = Schema(schema=lambda: schema)
         if quantity == 1:
             return init_schema.create(iterations=quantity)[0]
-        else:
-            return init_schema.create(iterations=quantity)
+
+        return init_schema.create(iterations=quantity)
 
     return _prepare_data
 
