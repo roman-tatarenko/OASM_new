@@ -181,32 +181,12 @@ def test_on_dataValidation_with_inccorect_type_param_in_amendment_payload(host, 
                              pytest.param("documents", {}, marks=pytestrail.case('C8149')),
 
                          ])
-def test_on_dataValidation_with_params_amendment_documents_in_payload(host, port, param, value, prepared_request_id,
-                                                                      prepared_payload_dataValidation, response):
+def test_on_dataValidation_with_amendment_documents_as_empty_object(host, port, param, value, prepared_request_id,
+                                                                    prepared_payload_dataValidation, response):
     payload = prepared_payload_dataValidation()
     payload['params']['amendment'][param] = value
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
     response.error['result'] = [
-        {
-            "code": "RQ-1/21",
-            "description": "Error parsing 'params'"
-        }
-    ]
-
-    assert actualresult == response.error
-
-
-@pytest.mark.parametrize("param,value",
-                         [
-                             pytest.param("documents", {}, marks=pytestrail.case('C8149')),
-
-                         ])
-def test_on_dataValidation_with_params_amendment_documents_in_payload(host, port, param, value, prepared_request_id,
-                                                                      prepared_payload_dataValidation, response):
-    payload = prepared_payload_dataValidation()
-    payload['params']['amendment'][param] = value
-    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
-    response["result"] = [
         {
             "code": "RQ-1/21",
             "description": "Error parsing 'params'"
