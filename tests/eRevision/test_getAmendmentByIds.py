@@ -59,9 +59,9 @@ def test_getAmendmentByIds_get_many_amendments(port, host,
 
 
 @pytestrail.case('C17067')
-def test_setStateForAmendment_amendment_not_found_by_cpid(port, host,
-                                                          payload_getAmendmentByIds,
-                                                          prepared_entity_id, response):
+def test_getAmendmentByIds_amendment_not_found_by_cpid(port, host,
+                                                       payload_getAmendmentByIds,
+                                                       prepared_entity_id, response):
     amendment_id = str(prepared_entity_id())
     payload = payload_getAmendmentByIds(amendment_id)
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
@@ -78,9 +78,9 @@ def test_setStateForAmendment_amendment_not_found_by_cpid(port, host,
 
 @pytestrail.case('C17065')
 @pytest.mark.parametrize('amendment_id', ("", 1))
-def test_setStateForAmendment_data_format_mismatch_of_attribute_amendment_id(port, host, amendment_id,
-                                                                             payload_getAmendmentByIds,
-                                                                             response):
+def test_getAmendmentByIds_data_format_mismatch_of_attribute_amendment_id(port, host, amendment_id,
+                                                                          payload_getAmendmentByIds,
+                                                                          response):
     payload = payload_getAmendmentByIds(
         amendment_id
     )
@@ -124,9 +124,9 @@ def test_getAmendmentByIds_without_required_param(port, host, param,
 
 
 @pytestrail.case('C17068')
-def test_setStateForAmendment_with_empty_array_amendmentIds(port, host,
-                                                            payload_getAmendmentByIds,
-                                                            response):
+def test_getAmendmentByIds_with_empty_array_amendmentIds(port, host,
+                                                         payload_getAmendmentByIds,
+                                                         response):
     payload = payload_getAmendmentByIds()
     actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
     response.error['result'] = [
