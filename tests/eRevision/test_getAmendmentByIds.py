@@ -58,6 +58,24 @@ def test_getAmendmentByIds_get_many_amendments(port, host,
         assert data in actualresult['result']
 
 
+@pytestrail.case('C17067')
+def test_setStateForAmendment_amendment_not_found_by_cpid(port, host,
+                                                          payload_getAmendmentByIds,
+                                                          prepared_entity_id, response):
+    amendment_id = str(prepared_entity_id())
+    payload = payload_getAmendmentByIds(amendment_id)
+    actualresult = requests.post(f'{host}:{port.eRevision}/command', json=payload).json()
+    response.error['result'] = [
+        {
+            'code': 'VR-10.2.5.1/21',
+            'description': 'Amendment not found.',
+            'details': [{'id': str(amendment_id)}]
+        }
+    ]
+
+    assert actualresult == response.error
+
+
 @pytestrail.case('C17065')
 @pytest.mark.parametrize('amendment_id', ("", 1))
 def test_setStateForAmendment_data_format_mismatch_of_attribute_amendment_id(port, host, amendment_id,
@@ -70,7 +88,7 @@ def test_setStateForAmendment_data_format_mismatch_of_attribute_amendment_id(por
     response.error['result'] = [
         {
             'code': 'DR-4/21',
-            'description': "Data format mismatch of attribute 'amendment.id'."
+            'description': "Data format mismatch of attribute 'amendmentIds'."
                            " Expected data format: 'uuid',"
                            f" actual value: '{amendment_id}'.",
             'details': [{'name': 'amendmentIds'}]
