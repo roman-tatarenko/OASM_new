@@ -74,7 +74,7 @@ def test_responderProcessing_new_persones_object(host, port, prepared_cpid, prep
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
-    tender_persones = data['tender']['procuringEntity']['persones'][0]
+    data_person = data['tender']['procuringEntity']['persones'][0]
     token = prepared_token_entity
     owner = prepared_owner
     execute_insert_into_access_tender(
@@ -115,8 +115,8 @@ def test_responderProcessing_new_persones_object(host, port, prepared_cpid, prep
     json_data = json.loads(record.json_data)
     record_procuring_entity = json_data['tender']['procuringEntity']
 
-    assert record_procuring_entity['persones'][0] == tender_persones
-    assert record_procuring_entity['persones'][1] == responder
+
+    assert record_procuring_entity['persones'] == [data_person, responder]
 
 
 @pytestrail.case("C13320")
@@ -146,10 +146,9 @@ def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function
-    responder_business_function = responder['businessFunctions'][0]
-    responder_business_function['type'] = "technicalOpener"
-    responder_business_function['jobTitle'] = "tat_4to-4to"
-    responder_business_function['period']['startDate'] = ocds_datetime()
+    business_function['type'] = "technicalOpener"
+    business_function['jobTitle'] = "tat_4to-4to"
+    business_function['period']['startDate'] = ocds_datetime()
     date = ocds_datetime()
 
     payload = payload_responderProcessing(
@@ -174,9 +173,9 @@ def test_responderProcessing_update_businessFunction(host, port, prepared_cpid, 
     ).one()
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persones = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persones['businessFunctions'][0] == responder_business_function
+    assert record_person['businessFunctions'][0] == business_function
 
 
 @pytestrail.case("C13321")
@@ -188,7 +187,7 @@ def test_responderProcessing_add_new_business_function_object(host, port, prepar
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
-    tender_business_function = data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]
+    data_business_function = data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]
     token = prepared_token_entity
     owner = prepared_owner
 
@@ -203,7 +202,6 @@ def test_responderProcessing_add_new_business_function_object(host, port, prepar
 
     responder = prepare_data(schema=schema_responder)
     responder['businessFunctions'][0]['id'] = str(prepared_entity_id())
-    responder_business_function = responder['businessFunctions'][0]
     date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
@@ -228,10 +226,9 @@ def test_responderProcessing_add_new_business_function_object(host, port, prepar
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persone = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persone['businessFunctions'][0] == tender_business_function
-    assert record_persone['businessFunctions'][1] == responder_business_function
+    assert record_person['businessFunctions'] == [data_business_function, responder['businessFunctions'][0]]
 
 
 @pytestrail.case("C13322")
@@ -246,10 +243,10 @@ def test_responderProcessing_update_documents_object(host, port, prepared_cpid, 
     data['ocid'] = cpid
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
-    documents = prepare_data(schema=schema_document)
+    document = prepare_data(schema=schema_document)
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = business_function
-    business_function['documents'][0] = documents
+    business_function['documents'][0] = document
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -263,10 +260,9 @@ def test_responderProcessing_update_documents_object(host, port, prepared_cpid, 
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function
-    responder['businessFunctions'][0]['documents'][0] = documents
-    responder_documents = responder['businessFunctions'][0]['documents'][0]
-    responder['businessFunctions'][0]['documents'][0]['title'] = "tat_doc_title"
-    responder['businessFunctions'][0]['documents'][0]['description'] = "tat_doc_description"
+    responder_document = document
+    document['title'] = "tat_doc_title"
+    document['description'] = "tat_doc_description"
     date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
@@ -293,7 +289,7 @@ def test_responderProcessing_update_documents_object(host, port, prepared_cpid, 
     json_data = json.loads(record.json_data)
     record_business_function = json_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]
 
-    assert record_business_function['documents'][0] == responder_documents
+    assert record_business_function['documents'][0] == responder_document
 
 
 @pytestrail.case("C13323")
@@ -308,9 +304,9 @@ def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid,
     data['ocid'] = cpid
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
-    documents = prepare_data(schema=schema_document)
+    document = prepare_data(schema=schema_document)
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = business_function
-    tender_documents = business_function['documents'][0]
+    data_document = business_function['documents'][0]
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
 
     execute_insert_into_access_tender(
@@ -325,9 +321,9 @@ def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid,
     responder = prepare_data(schema=schema_responder)
     responder['identifier'] = identifier
     responder['businessFunctions'][0] = business_function
-    responder['businessFunctions'][0]['documents'][0] = documents
-    responder_documents = responder['businessFunctions'][0]['documents'][0]
-    responder_documents['id'] = str(prepared_entity_id())
+    responder['businessFunctions'][0]['documents'][0] = document
+    responder_document = responder['businessFunctions'][0]['documents'][0]
+    responder_document['id'] = str(prepared_entity_id())
     date = ocds_datetime()
     payload = payload_responderProcessing(
         cpid=cpid,
@@ -353,10 +349,9 @@ def test_responderProcessing_add_new_documents_object(host, port, prepared_cpid,
     assert record.created_date == ocds_date_to_datetime(date)
 
     json_data = json.loads(record.json_data)
-    record_documents = json_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]
+    record_businessFunction = json_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]
 
-    assert record_documents['documents'][0] == tender_documents
-    assert record_documents['documents'][1] == responder_documents
+    assert record_businessFunction['documents'] == [data_document, responder_document]
 
 
 @pytestrail.case("C14098")
@@ -371,9 +366,9 @@ def test_responderProcessing_without_identifier_uri_if_persones_present_into_DB(
     owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
-    identifier = prepare_data(schema=schema_identifier)
-    data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
-    tender_identifier_uri = identifier['uri']
+    data_identifier = prepare_data(schema=schema_identifier)
+    data['tender']['procuringEntity']['persones'][0]['identifier'] = data_identifier
+    data_identifier_uri = data_identifier['uri']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -385,7 +380,7 @@ def test_responderProcessing_without_identifier_uri_if_persones_present_into_DB(
     )
 
     responder = prepare_data(schema=schema_responder)
-    responder['identifier'] = identifier
+    responder['identifier'] = data_identifier
     del responder['identifier']['uri']
     responder['title'] = "for compare title"
     date = ocds_datetime()
@@ -413,10 +408,10 @@ def test_responderProcessing_without_identifier_uri_if_persones_present_into_DB(
     assert record.created_date == ocds_date_to_datetime(date)
 
     json_data = json.loads(record.json_data)
-    record_persones = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persones['identifier']['uri'] == tender_identifier_uri
-    assert record_persones['title'] == responder['title']
+    assert record_person['identifier']['uri'] == data_identifier_uri
+    assert record_person['title'] == responder['title']
 
 
 @pytestrail.case("C16889")
@@ -471,9 +466,9 @@ def test_responderProcessing_without_identifier_uri_if_persones_does_not_present
     assert record.created_date == ocds_date_to_datetime(date)
 
     json_data = json.loads(record.json_data)
-    record_persones = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persones['identifier'] == responder_identifier
+    assert record_person['identifier'] == responder_identifier
 
 
 @pytestrail.case("C16890")
@@ -489,10 +484,10 @@ def test_responderProcessing_without_documents_if_documents_present_in_DB(host, 
     data['ocid'] = cpid
     identifier = prepare_data(schema=schema_identifier)
     business_function = prepare_data(schema=schema_businessFunction)
-    tender_documents = prepare_data(schema=schema_document)
+    data_document = prepare_data(schema=schema_document)
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = business_function
-    business_function['documents'][0] = tender_documents
+    business_function['documents'][0] = data_document
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -532,11 +527,11 @@ def test_responderProcessing_without_documents_if_documents_present_in_DB(host, 
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persones = json_data['tender']['procuringEntity']['persones'][0]
-    record_business_function = record_persones['businessFunctions'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
+    record_business_function = record_person['businessFunctions'][0]
 
-    assert record_business_function['documents'][0] == tender_documents
-    assert record_persones['title'] == responder['title']
+    assert record_business_function['documents'][0] == data_document
+    assert record_person['title'] == responder['title']
 
 
 @pytestrail.case("C16891")
@@ -593,9 +588,9 @@ def test_responderProcessing_without_documents_if_documents_does_not_present_in_
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persones = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persones['businessFunctions'][0] == responder['businessFunctions'][0]
+    assert record_person['businessFunctions'][0] == responder['businessFunctions'][0]
 
 
 @pytestrail.case("C14099")
@@ -617,7 +612,7 @@ def test_responderProcessing_without_documents_description_if_persones_present_i
     data['tender']['procuringEntity']['persones'][0]['identifier'] = identifier
     data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0] = business_function
     business_function['documents'][0] = document
-    tender_documents_description = document['description']
+    data_document_description = document['description']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -658,8 +653,8 @@ def test_responderProcessing_without_documents_description_if_persones_present_i
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_documents = json_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0]
-    assert record_documents['description'] == tender_documents_description
+    record_document = json_data['tender']['procuringEntity']['persones'][0]['businessFunctions'][0]['documents'][0]
+    assert record_document['description'] == data_document_description
 
 
 @pytestrail.case("C16892")
@@ -719,9 +714,9 @@ def test_responderProcessing_without_documents_description_if_persones_does_not_
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persone = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persone == responder
+    assert record_person == responder
 
 
 @pytestrail.case("C16893")
@@ -776,9 +771,9 @@ def test_responderProcessing_correct_change_businessFunctions_type(host, port, p
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persone = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persone == responder
+    assert record_person == responder
 
 
 @pytestrail.case("C16880")
@@ -835,9 +830,9 @@ def test_responderProcessing_return_the_created_responder_object_in_the_response
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persones = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persones == responder
+    assert record_person == responder
 
 
 @pytestrail.case("C16922")
@@ -852,9 +847,9 @@ def test_responderProcessing_add_new_persones_object_if_schema_does_not_coincide
     owner = prepared_owner
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
-    tender_persones = data['tender']['procuringEntity']['persones'][0]
+    data_persones = data['tender']['procuringEntity']['persones'][0]
     identifier = prepare_data(schema=schema_identifier)
-    tender_persones['identifier'] = identifier
+    data_persones['identifier'] = identifier
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -894,7 +889,7 @@ def test_responderProcessing_add_new_persones_object_if_schema_does_not_coincide
     json_data = json.loads(record.json_data)
     record_procuring_entity = json_data['tender']['procuringEntity']
 
-    assert record_procuring_entity['persones'][0] == tender_persones
+    assert record_procuring_entity['persones'][0] == data_persones
     assert record_procuring_entity['persones'][1] == responder
 
 
@@ -952,9 +947,9 @@ def test_responderProcessing_businessFunctions_type_as_authority_which_presents_
 
     assert record.created_date == ocds_date_to_datetime(date)
     json_data = json.loads(record.json_data)
-    record_persone = json_data['tender']['procuringEntity']['persones'][0]
+    record_person = json_data['tender']['procuringEntity']['persones'][0]
 
-    assert record_persone == responder
+    assert record_person == responder
 
 
 @pytestrail.case("C14095")
