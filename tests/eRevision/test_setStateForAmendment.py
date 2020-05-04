@@ -163,7 +163,7 @@ def test_setStateForAmendment_amendment_not_found_by_cpid(port, host,
         {
             'code': 'VR-10.2.6.1/21',
             'description': 'Amendment not found.',
-            'details': [{'id': '58079143-d77b-4fc1-85df-2753a3537cd5'}]
+            'details': [{'id': str(amendment_id)}]
         }
     ]
 
