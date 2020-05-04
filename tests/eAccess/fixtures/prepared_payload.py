@@ -77,3 +77,20 @@ def payload_getTenderState(request_template, prepared_cpid, prepared_ev_ocid):
         return payload
 
     return _payload_getTenderState
+
+
+@pytest.fixture(scope='function')
+def payload_responderProcessing(request_template, prepared_cpid, prepared_ev_ocid, prepare_data):
+    payload = request_template(action='responderProcessing')
+
+    def _payload_responderProcessing(cpid=prepared_cpid, ocid=prepared_ev_ocid,
+                                     responder=None, date=None):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "responder": responder,
+            "date": date
+        }
+        return payload
+
+    return _payload_responderProcessing

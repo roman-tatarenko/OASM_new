@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pytest
 from mimesis.schema import Schema
 
@@ -3286,10 +3288,10 @@ def data_create_two_criteria_and_conversion():
     }
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def prepare_data():
     def _prepare_data(schema, quantity=1):
-        init_schema = Schema(schema=lambda: schema)
+        init_schema = Schema(schema=lambda: deepcopy(schema))
         if quantity == 1:
             return init_schema.create(iterations=quantity)[0]
 
