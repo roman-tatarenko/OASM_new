@@ -24,7 +24,8 @@ def prepared_payload_findAmendmentIds(prepared_request_id, prepared_cpid, prepar
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id, prepared_cpid, prepared_ev_ocid):
+def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id,
+                                    prepared_cpid, prepared_ev_ocid):
     def with_values(id=prepared_request_id, amendment_id=prepared_entity_id()):
         return {
             "version": "2.0.0",
@@ -54,7 +55,8 @@ def prepared_payload_dataValidation(prepared_request_id, prepared_entity_id, pre
 
 
 @pytest.fixture(scope='function')
-def prepared_payload_createAmendment(prepared_request_id, prepared_cpid, prepared_ev_ocid, prepared_entity_id):
+def prepared_payload_createAmendment(prepared_request_id, prepared_cpid,
+                                     prepared_ev_ocid, prepared_entity_id):
     def _prepared_payload_createAmendment(amendment_id=prepared_entity_id()):
         return {
             "version": "2.0.0",
@@ -85,13 +87,16 @@ def prepared_payload_createAmendment(prepared_request_id, prepared_cpid, prepare
 
 
 @pytest.fixture(scope='function')
-def payload_checkAccessToAmendment(request_template, prepared_cpid, prepared_ev_ocid, prepared_owner,
+def payload_checkAccessToAmendment(request_template, prepared_cpid,
+                                   prepared_ev_ocid, prepared_owner,
                                    prepared_entity_id, prepared_token_entity):
     payload = request_template(action='checkAccessToAmendment')
 
-    def _payload_checkAccessToAmendment(token=str(prepared_token_entity), amendmentId=str(prepared_entity_id()),
-                                        owner=prepared_owner, cpid=prepared_cpid, ocid=prepared_ev_ocid,
-                                        ):
+    def _payload_checkAccessToAmendment(token=str(prepared_token_entity),
+                                        amendmentId=str(prepared_entity_id()),
+                                        owner=prepared_owner,
+                                        cpid=prepared_cpid,
+                                        ocid=prepared_ev_ocid):
         payload['params'] = {
             "cpid": cpid,
             "ocid": ocid,
@@ -102,3 +107,24 @@ def payload_checkAccessToAmendment(request_template, prepared_cpid, prepared_ev_
         return payload
 
     return _payload_checkAccessToAmendment
+
+
+@pytest.fixture(scope='function')
+def payload_setStateForAmendment(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='setStateForAmendment')
+
+    def _payload_setStateForAmendment(amendmentId: str = None,
+                                      status: str = None,
+                                      cpid=prepared_cpid,
+                                      ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "amendment": {
+                "id": str(amendmentId),
+                "status": status
+            }
+        }
+        return payload
+
+    return _payload_setStateForAmendment
