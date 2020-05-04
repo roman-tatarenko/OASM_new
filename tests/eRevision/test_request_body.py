@@ -4,8 +4,10 @@ import pytest
 import requests
 from pytest_testrail.plugin import pytestrail
 
-action_enum = ("findAmendmentIds", "dataValidation", "createAmendment", "CheckAccessToAmendment",
-               "getMainPartOfAmendmentByIds", "setStateForAmendment")
+action_enum = (
+    "findAmendmentIds", "dataValidation", "createAmendment",
+    "CheckAccessToAmendment", "getAmendmentByIds", "setStateForAmendment"
+)
 
 
 @pytest.mark.parametrize("param,value,code,description",
