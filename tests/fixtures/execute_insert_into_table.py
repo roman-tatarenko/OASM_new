@@ -6,9 +6,9 @@ from cassandra.query import UNSET_VALUE
 
 @pytest.fixture(scope='function')
 def execute_insert_into_revision_amendments(prepared_insert_revision_amendments, cassandra_session):
-    def with_values(cpid, ocid, id, data):
+    def with_values(cpid: str, ocid: str, id, data):
         values = (
-            f'{cpid}', f'{ocid}', id, f'{json.dumps(data)}'
+            str(cpid), str(ocid), id, f'{json.dumps(data)}'
         )
         cassandra_session.execute(prepared_insert_revision_amendments, values)
 
