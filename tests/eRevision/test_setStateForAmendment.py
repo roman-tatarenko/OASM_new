@@ -149,6 +149,7 @@ def test_setStateForAmendment_without_required_attribute_in_amendment(port, host
     assert actualresult == response.error
 
 
+@pytest.mark.xfail(reason='invalid code VR-VR-10.2.6.1/21')
 @pytestrail.case('C16993')
 def test_setStateForAmendment_amendment_not_found_by_cpid(port, host,
                                                           payload_setStateForAmendment,
@@ -163,7 +164,7 @@ def test_setStateForAmendment_amendment_not_found_by_cpid(port, host,
         {
             'code': 'VR-10.2.6.1/21',
             'description': 'Amendment not found.',
-            'details': [{'id': '58079143-d77b-4fc1-85df-2753a3537cd5'}]
+            'details': [{'id': str(amendment_id)}]
         }
     ]
 

@@ -128,3 +128,20 @@ def payload_setStateForAmendment(request_template, prepared_cpid, prepared_ev_oc
         return payload
 
     return _payload_setStateForAmendment
+
+
+@pytest.fixture(scope='function')
+def payload_getAmendmentByIds(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='getAmendmentByIds')
+
+    def _payload_getAmendmentByIds(*args,
+                                   cpid=prepared_cpid,
+                                   ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "amendmentIds": list(args)
+        }
+        return payload
+
+    return _payload_getAmendmentByIds
