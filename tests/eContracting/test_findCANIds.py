@@ -7,8 +7,10 @@ from pytest_testrail.plugin import pytestrail
 
 
 @pytestrail.case('C16941')
-def test_findCANIds_without_search_params(port, host, payload_findCANIds, prepared_entity_id,
-                                          execute_insert_into_contracting_can, prepared_cpid,
+def test_findCANIds_without_search_params(port, host,
+                                          payload_findCANIds, prepared_entity_id,
+                                          prepared_cpid,
+                                          execute_insert_into_contracting_can,
                                           clear_contracting_can_by_cpid):
     can_ids = [prepared_entity_id() for _ in range(randint(1, 10))]
 
@@ -35,7 +37,9 @@ def test_findCANIds_without_search_params(port, host, payload_findCANIds, prepar
 
 
 @pytestrail.case('C16942')
-def test_findCANIds_without_search_params_and_without_record(port, host, payload_findCANIds, response):
+def test_findCANIds_without_search_params_and_without_record(port, host,
+                                                             payload_findCANIds,
+                                                             response):
     payload = payload_findCANIds()
     actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
 
@@ -45,9 +49,11 @@ def test_findCANIds_without_search_params_and_without_record(port, host, payload
 @pytestrail.case('C16943')
 @pytest.mark.parametrize('status', ('pending', 'unsuccessful', 'active', 'cancelled'))
 @pytest.mark.parametrize('status_details', ('contractProject', 'unsuccessful', 'empty', 'active'))
-def test_findCANIds_by_states(port, host, status, status_details, payload_findCANIds,
-                              prepared_cpid, prepared_entity_id, response,
-                              execute_insert_into_contracting_can, clear_contracting_can_by_cpid):
+def test_findCANIds_by_states(port, host, status, status_details,
+                              payload_findCANIds, prepared_cpid,
+                              prepared_entity_id, response,
+                              execute_insert_into_contracting_can,
+                              clear_contracting_can_by_cpid):
     can_id = prepared_entity_id()
 
     execute_insert_into_contracting_can(
@@ -71,10 +77,59 @@ def test_findCANIds_by_states(port, host, status, status_details, payload_findCA
     assert actualresult == response.success
 
 
+@pytestrail.case('C17110')
+@pytest.mark.parametrize('status_details', ('', 'pending'))
+def test_findCANIds_statusDetails_mismatch_with_enum(port, host, status_details,
+                                                     payload_findCANIds, prepared_cpid,
+                                                     prepared_entity_id, response,
+                                                     execute_insert_into_contracting_can,
+                                                     clear_contracting_can_by_cpid):
+    payload = payload_findCANIds(
+        statusDetails=status_details
+    )
+    actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
+    response.error['result'] = [
+        {
+            'code': 'DR-3/9',
+            'description': "Attribute value mismatch of 'statusDetails' with one of enum expected values."
+                           " Expected values: 'contractProject, active, unsuccessful, empty',"
+                           f" actual value: '{status_details}'.",
+            'details': [{'name': 'statusDetails'}]
+        }
+    ]
+    assert actualresult == response.error
+
+
+@pytestrail.case('C17111')
+@pytest.mark.parametrize('status', ('', 'contractProject'))
+def test_findCANIds_status_mismatch_with_enum(port, host, status,
+                                              payload_findCANIds, prepared_cpid,
+                                              prepared_entity_id, response,
+                                              execute_insert_into_contracting_can,
+                                              clear_contracting_can_by_cpid):
+    payload = payload_findCANIds(
+        status=status
+    )
+    actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
+    response.error['result'] = [
+        {
+            'code': 'DR-3/9',
+            'description': "Attribute value mismatch of 'status' with one of enum expected values."
+                           " Expected values: 'pending, active, cancelled, unsuccessful',"
+                           f" actual value: '{status}'.",
+            'details': [{'name': 'status'}]
+        }
+    ]
+    assert actualresult == response.error
+
+
 @pytestrail.case('C16944')
 @pytest.mark.parametrize('status', ('pending', 'unsuccessful', 'active', 'cancelled'))
-def test_findCANIds_by_states_status(port, host, status, payload_findCANIds, prepared_cpid, prepared_entity_id,
-                                     response, execute_insert_into_contracting_can, clear_contracting_can_by_cpid):
+def test_findCANIds_by_states_status(port, host, status,
+                                     payload_findCANIds, prepared_cpid,
+                                     prepared_entity_id, response,
+                                     execute_insert_into_contracting_can,
+                                     clear_contracting_can_by_cpid):
     can_id = prepared_entity_id()
 
     execute_insert_into_contracting_can(
@@ -99,9 +154,11 @@ def test_findCANIds_by_states_status(port, host, status, payload_findCANIds, pre
 
 @pytestrail.case('C16945')
 @pytest.mark.parametrize('status_details', ('contractProject', 'unsuccessful', 'empty', 'active'))
-def test_findCANIds_by_states_statusDetails(port, host, status_details, payload_findCANIds,
-                                            prepared_cpid, prepared_entity_id, response,
-                                            execute_insert_into_contracting_can, clear_contracting_can_by_cpid):
+def test_findCANIds_by_states_statusDetails(port, host, status_details,
+                                            payload_findCANIds, prepared_cpid,
+                                            prepared_entity_id, response,
+                                            execute_insert_into_contracting_can,
+                                            clear_contracting_can_by_cpid):
     can_id = prepared_entity_id()
 
     execute_insert_into_contracting_can(
@@ -125,8 +182,10 @@ def test_findCANIds_by_states_statusDetails(port, host, status_details, payload_
 
 
 @pytestrail.case('C16946')
-def test_findCANIds_by_lotId(port, host, payload_findCANIds, prepared_cpid, prepared_entity_id,
-                             execute_insert_into_contracting_can, clear_contracting_can_by_cpid):
+def test_findCANIds_by_lotId(port, host,
+                             payload_findCANIds, prepared_cpid, prepared_entity_id,
+                             execute_insert_into_contracting_can,
+                             clear_contracting_can_by_cpid):
     quantity = randint(1, 100)
     can_ids = [prepared_entity_id() for _ in range(quantity)]
     lot_ids = [str(prepared_entity_id()) for _ in range(quantity)]
@@ -158,8 +217,10 @@ def test_findCANIds_by_lotId(port, host, payload_findCANIds, prepared_cpid, prep
 @pytestrail.case('C16947')
 @pytest.mark.parametrize('status', ('pending', 'unsuccessful', 'active', 'cancelled'))
 @pytest.mark.parametrize('status_details', ('contractProject', 'unsuccessful', 'empty', 'active'))
-def test_findCANIds_by_lotId_and_states(port, host, status, status_details, payload_findCANIds,
-                                        prepared_cpid, prepared_entity_id, execute_insert_into_contracting_can,
+def test_findCANIds_by_lotId_and_states(port, host, status, status_details,
+                                        payload_findCANIds, prepared_cpid,
+                                        prepared_entity_id,
+                                        execute_insert_into_contracting_can,
                                         clear_contracting_can_by_cpid):
     quantity = randint(1, 10)
     can_ids = [prepared_entity_id() for _ in range(quantity)]
@@ -230,7 +291,8 @@ def test_findCANIds_by_two_states(port, host, payload_findCANIds,
                              pytest.param("cpid", marks=pytestrail.case('C16949')),
                              pytest.param("ocid", marks=pytestrail.case('C16950'))
                          ])
-def test_findCANIds_without_required_param(port, host, param, payload_findCANIds, response):
+def test_findCANIds_without_required_param(port, host, param,
+                                           payload_findCANIds, response):
     payload = payload_findCANIds()
     del payload['params'][param]
     actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
@@ -245,7 +307,9 @@ def test_findCANIds_without_required_param(port, host, param, payload_findCANIds
 
 
 @pytestrail.case('C16951')
-def test_findCANIds_with_param_lotIds_as_empty_array(port, host, payload_findCANIds, response):
+def test_findCANIds_with_param_lotIds_as_empty_array(port, host,
+                                                     payload_findCANIds,
+                                                     response):
     payload = payload_findCANIds()
     payload['params']['lotIds'] = []
     actualresult = requests.post(f'{host}:{port.eContracting}/command2', json=payload).json()
@@ -270,7 +334,7 @@ def test_findCANIds_with_lotId_null(port, host, payload_findCANIds, response):
     # 'status': 500, 'error': 'Internal Server Error',
     # 'message': 'Parameter specified as non-null is null:
     # method com.procurement.contracting.application.
-    # model.can.FindCANIdsParams$Companion$tryCreate$lotIdsParsed$1.invoke, parameter lotId',
-    # 'path': '/command2'}
+    # model.can.FindCANIdsParams$Companion$tryCreate$lotIdsParsed$1.invoke,
+    # parameter lotId', 'path': '/command2'}
     assert actualresult['status'] != 500
     assert actualresult['status'] == 'error'
