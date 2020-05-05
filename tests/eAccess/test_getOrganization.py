@@ -105,7 +105,8 @@ def test_getOrganization_tender_not_found_by_cpid(host, port, prepared_cpid, pre
                                           id="by cpid"),
 
                              pytest.param("ocid", "ocds-t1s2t3-MD-9999999999999EV0000000000999",
-                                          "Data mismatch to pattern: '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
+                                          "Data mismatch to pattern: "
+                                          "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
                                           " Actual value: 'ocds-t1s2t3-MD-9999999999999EV0000000000999'.",
                                           marks=pytestrail.case('C17092'),
                                           id="by ocid")
