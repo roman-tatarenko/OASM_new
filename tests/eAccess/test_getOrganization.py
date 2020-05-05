@@ -14,7 +14,6 @@ def test_getOrganization_returns_the_full_role_model_of_the_organization(host, p
     cpid = prepared_cpid
 
     data = prepare_data(schema=schema_tender)
-    data_procuring_entity = data['tender']['procuringEntity']
 
     execute_insert_into_access_tender(
         cp_id=cpid,
@@ -33,7 +32,7 @@ def test_getOrganization_returns_the_full_role_model_of_the_organization(host, p
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-    response.success['result'] = data_procuring_entity
+    response.success['result'] = data['tender']['procuringEntity']
 
     assert actualresult == response.success
 
@@ -88,7 +87,7 @@ def test_getOrganization_tender_not_found_by_cpid(host, port, prepared_cpid, pre
     response.error['result'] = [
         {
             "code": "VR.COM-1.9.1",
-            "description": "Tender not found by cpid '" + cpid + "' and ocid '" + ocid + "'."
+            "description": f"Tender not found by cpid '{cpid}' and ocid '{ocid}'."
 
         }
     ]
@@ -174,7 +173,7 @@ def test_getOrganization_value_mismatch_with_one_of_enum_expected_values(host, p
         {
             "code": "DR-3/3",
             "description": "Attribute value mismatch with one of enum expected values. "
-                           "Expected values: 'procuringEntity', actual value: '" + value + "'.",
+                           f"Expected values: 'procuringEntity', actual value: '{value}'.",
             "details": [{"name": "role"}]
         }
     ]
