@@ -94,3 +94,19 @@ def payload_responderProcessing(request_template, prepared_cpid, prepared_ev_oci
         return payload
 
     return _payload_responderProcessing
+
+
+
+@pytest.fixture(scope='function')
+def payload_getOrganization(request_template, prepared_cpid, prepared_ev_ocid, prepare_data):
+    payload = request_template(action='getOrganization')
+
+    def _payload_getOrganization(cpid=prepared_cpid, ocid=prepared_ev_ocid, role=None):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "role": role,
+        }
+        return payload
+
+    return _payload_getOrganization
