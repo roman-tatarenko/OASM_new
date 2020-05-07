@@ -1,4 +1,8 @@
+from uuid import uuid4
+
 import pytest
+
+from resources.domain.lot import schema_lot_for_request
 
 
 @pytest.fixture(scope='function')
@@ -109,3 +113,18 @@ def payload_getOrganization(request_template, prepared_cpid, prepared_ev_ocid):
         return payload
 
     return _payload_getOrganization
+
+
+@pytest.fixture(scope='function')
+def payload_setStateForLots(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='setStateForLots')
+
+    def _payload_setStateForLots(cpid=prepared_cpid, ocid=prepared_ev_ocid, lots=None):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "lots": lots
+        }
+        return payload
+
+    return _payload_setStateForLots
