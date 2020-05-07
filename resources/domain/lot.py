@@ -57,8 +57,4 @@ schema_lot = {
     }
 }
 
-schema_lot_for_request = {
-    "id": _("uuid"),
-    "status": _("random.schoice", seq=status, end=1),
-    "statusDetails": _("random.schoice", seq=statusDetails, end=1),
-}
+
