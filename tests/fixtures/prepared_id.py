@@ -53,11 +53,6 @@ def prepared_request_id():
 
 
 @pytest.fixture(scope='function')
-def prepared_operation_id():
-    return uuid4()
-
-
-@pytest.fixture(scope='function')
 def prepared_token_entity():
     return uuid4()
 
