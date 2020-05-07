@@ -160,7 +160,7 @@ schema_tender={
 				}]
 			}],
 			"relatesTo": "lot",
-			"relatedItem": [schema_lot][0]['id']
+			"relatedItem": schema_lot['id']
 		}],
 		"conversions": [{
 			"id": "1",
@@ -197,7 +197,7 @@ schema_tender={
 				"name": "Milion decalitri"
 			},
 			"description": "Душа моя озарена неземной радостью, как эти чудесные весенние утра, которыми я наслаждаюсь от всего сердца. Я совсем один и блаженствую в здешнем краю, словно созданном для таких, как я.",
-			"relatedLot": [schema_lot][0]['id']
+			"relatedLot": schema_lot['id']
 		}],
 		"awardCriteria": "qualityOnly",
 		"awardCriteriaDetails": "automated",
