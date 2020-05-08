@@ -109,3 +109,19 @@ def payload_getOrganization(request_template, prepared_cpid, prepared_ev_ocid):
         return payload
 
     return _payload_getOrganization
+
+
+@pytest.fixture(scope='function')
+def payload_setStateForLots(request_template, prepared_cpid, prepared_ev_ocid):
+    payload = request_template(action='setStateForLots')
+
+    def _payload_setStateForLots(*args, cpid=prepared_cpid, ocid=prepared_ev_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "lots": list(args)
+
+        }
+        return payload
+
+    return _payload_setStateForLots

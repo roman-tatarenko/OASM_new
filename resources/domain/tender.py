@@ -1,3 +1,4 @@
+from resources.domain.lot import schema_lot
 from resources.domain.person import schema_person
 
 schema_tender={
@@ -159,7 +160,7 @@ schema_tender={
 				}]
 			}],
 			"relatesTo": "lot",
-			"relatedItem": "8fb60930-6947-4d1c-9512-f6a7dea12d97"
+			"relatedItem": schema_lot['id']
 		}],
 		"conversions": [{
 			"id": "1",
@@ -177,59 +178,7 @@ schema_tender={
 				"coefficient": 0.7
 			}]
 		}],
-		"lots": [{
-			"id": "8fb60930-6947-4d1c-9512-f6a7dea12d97",
-			"title": "Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Вдали от всех живут они в буквенных домах на берегу Семантика большого языкового океана. Маленький ручеек Даль журчит по всей стране и обеспечивает ее всеми необходимыми правилами. Эта парадигматическая страна, в которой жаренные члены предложения залетают прямо в рот. Даже всемогущая пунктуация не имеет власти над рыбными текстами, ведущими безорфографичный образ жизни.",
-			"description": "looot",
-			"status": "active",
-			"statusDetails": "empty",
-			"value": {
-				"amount": 10.00,
-				"currency": "EUR"
-			},
-			"options": [{
-				"hasOptions": False
-			}],
-			"variants": [{
-				"hasVariants": False
-			}],
-			"renewals": [{
-				"hasRenewals": False
-			}],
-			"recurrentProcurement": [{
-				"isRecurrent": False
-			}],
-			"contractPeriod": {
-				"startDate": "2020-04-28T14:45:00Z",
-				"endDate": "2020-04-30T14:45:00Z"
-			},
-			"placeOfPerformance": {
-				"address": {
-					"streetAddress": "6666",
-					"postalCode": "666",
-					"addressDetails": {
-						"country": {
-							"scheme": "iso-alpha2",
-							"id": "MD",
-							"description": "MOLDOVA",
-							"uri": "http://reference.iatistandard.org"
-						},
-						"region": {
-							"scheme": "CUATM",
-							"id": "1000000",
-							"description": "Anenii Noi",
-							"uri": "http://statistica.md"
-						},
-						"locality": {
-							"scheme": "666",
-							"id": "666",
-							"description": "666"
-						}
-					}
-				},
-				"description": ""
-			}
-		}],
+		"lots": [schema_lot],
 		"items": [{
 			"id": "400fc08d-9a1a-4129-ad16-0e7f2967e5eb",
 			"classification": {
@@ -248,7 +197,7 @@ schema_tender={
 				"name": "Milion decalitri"
 			},
 			"description": "Душа моя озарена неземной радостью, как эти чудесные весенние утра, которыми я наслаждаюсь от всего сердца. Я совсем один и блаженствую в здешнем краю, словно созданном для таких, как я.",
-			"relatedLot": "8fb60930-6947-4d1c-9512-f6a7dea12d97"
+			"relatedLot": schema_lot['id']
 		}],
 		"awardCriteria": "qualityOnly",
 		"awardCriteriaDetails": "automated",
