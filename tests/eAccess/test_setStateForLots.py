@@ -12,11 +12,11 @@ from resources.domain.tender import schema_tender
 @pytestrail.case("C17128")
 def test_setStateForLots_lot_state_is_not_different_from_the_current(host, port, prepared_cpid,
                                                                      prepare_data, prepared_token_entity,
-                                                                     execute_insert_into_access_tender,
                                                                      payload_setStateForLots,
-                                                                     clear_access_tender_by_cpid,
                                                                      prepared_owner, response,
-                                                                     execute_select_access_tenders_by_cpid):
+                                                                     execute_insert_into_access_tender,
+                                                                     execute_select_access_tenders_by_cpid,
+                                                                     clear_access_tender_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
@@ -30,16 +30,13 @@ def test_setStateForLots_lot_state_is_not_different_from_the_current(host, port,
         owner=prepared_owner
     )
 
-    lots = [
-        {"id": data['tender']['lots'][0]['id'],
-         "status": data['tender']['lots'][0]['status'],
-         "statusDetails": data['tender']['lots'][0]['statusDetails']}
-    ]
+    lot = {
+        "id": data['tender']['lots'][0]['id'],
+        "status": data['tender']['lots'][0]['status'],
+        "statusDetails": data['tender']['lots'][0]['statusDetails']
+    }
 
-    payload = payload_setStateForLots(
-        cpid=cpid,
-        *lots
-    )
+    payload = payload_setStateForLots(lot)
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
 
@@ -70,15 +67,18 @@ def test_setStateForLots_lot_state_is_not_different_from_the_current(host, port,
                                           marks=pytestrail.case('C17133'),
                                           id=" status as complete"),
                          ])
-def test_setStateForLots_set_the_status(host, port, execute_insert_into_access_tender, prepared_cpid, response,
-                                        prepared_token_entity, prepared_owner, prepare_data, payload_setStateForLots,
-                                        record_status, set_status, clear_access_tender_by_cpid):
+def test_setStateForLots_set_the_status(host, port, record_status, set_status,
+                                        prepared_cpid, response,
+                                        prepared_token_entity, prepared_owner,
+                                        prepare_data, payload_setStateForLots,
+                                        execute_insert_into_access_tender,
+                                        clear_access_tender_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
     data['tender']['lots'][0]['status'] = record_status
-    record_lot_id = data['tender']['lots'][0]['id']
-    record_status_detail = data['tender']['lots'][0]['statusDetails']
+    lot_id = data['tender']['lots'][0]['id']
+    status_details = data['tender']['lots'][0]['statusDetails']
     execute_insert_into_access_tender(
         cp_id=cpid,
         stage="EV",
@@ -87,34 +87,33 @@ def test_setStateForLots_set_the_status(host, port, execute_insert_into_access_t
         json_data=data,
         owner=prepared_owner
     )
-
-    lots = [{"id": record_lot_id,
-             "status": set_status,
-             "statusDetails": record_status_detail
-             }
-            ]
-
-    payload = payload_setStateForLots(
-        cpid=cpid,
-        *lots
-    )
+    lot = {
+        "id": lot_id,
+        "status": set_status,
+        "statusDetails": status_details
+    }
+    payload = payload_setStateForLots(lot)
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-    response.success['result'] = lots
+    response.success['result'] = payload['params']['lots']
 
     assert actualresult == response.success
 
 
 @pytestrail.case('C17134')
-@pytest.mark.parametrize('value', ["empty"])
-def test_setStateForLots_set_statusDetails_as_empty(host, port, execute_insert_into_access_tender, prepared_cpid,
-                                                    response, prepared_token_entity, prepared_owner, prepare_data,
-                                                    payload_setStateForLots, value, clear_access_tender_by_cpid,
-                                                    execute_select_access_tenders_by_cpid):
+@pytest.mark.parametrize('statusDetails', ["empty"])
+def test_setStateForLots_set_statusDetails_as_empty(host, port, statusDetails,
+                                                    prepared_cpid,
+                                                    response, prepared_token_entity,
+                                                    prepared_owner, prepare_data,
+                                                    payload_setStateForLots,
+                                                    execute_insert_into_access_tender,
+                                                    execute_select_access_tenders_by_cpid,
+                                                    clear_access_tender_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
-    record_lot_id = data['tender']['lots'][0]['id']
-    record_lot_status = data['tender']['lots'][0]['status']
+    lot_id = data['tender']['lots'][0]['id']
+    status = data['tender']['lots'][0]['status']
     data['tender']['lots'][0]['statusDetails'] = "awarded"
 
     execute_insert_into_access_tender(
@@ -126,24 +125,16 @@ def test_setStateForLots_set_statusDetails_as_empty(host, port, execute_insert_i
         owner=prepared_owner
     )
 
-    lots = [{"id": record_lot_id,
-             "status": record_lot_status,
-             "statusDetails": value
-             }]
+    lot = {
+        "id": lot_id,
+        "status": status,
+        "statusDetails": statusDetails
+    }
 
-    payload = payload_setStateForLots(
-        cpid=cpid,
-        *lots
-    )
+    payload = payload_setStateForLots(lot)
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-    response.success['result'] = [
-        {
-            "id": record_lot_id,
-            "status": record_lot_status,
-            "statusDetails": value
-        }
-
-    ]
+    response.success['result'] = [lot]
 
     assert actualresult == response.success
 
@@ -153,30 +144,31 @@ def test_setStateForLots_set_statusDetails_as_empty(host, port, execute_insert_i
 
     json_data = json.loads(record.json_data)
 
-    assert json_data['tender']['lots'][0]['status'] == record_lot_status
-    assert json_data['tender']['lots'][0]['statusDetails'] == value
+    assert json_data['tender']['lots'][0]['status'] == status
+    assert json_data['tender']['lots'][0]['statusDetails'] == statusDetails
 
 
 @pytestrail.case('C17135')
-def test_setStateForLots_return_status_for_lots_and_the_statusDetails_for_lots(host, port, prepared_cpid,
-                                                                               execute_insert_into_access_tender,
-                                                                               response, prepared_token_entity,
-                                                                               prepared_owner, prepare_data,
-                                                                               payload_setStateForLots,
-                                                                               prepared_entity_id,
-                                                                               clear_access_tender_by_cpid,
-                                                                               execute_select_access_tenders_by_cpid):
+def test_setStateForLots_return_state_for_lots(host, port, prepared_cpid,
+                                               execute_insert_into_access_tender,
+                                               response, prepared_token_entity,
+                                               prepared_owner, prepare_data,
+                                               payload_setStateForLots,
+                                               prepared_entity_id,
+                                               clear_access_tender_by_cpid,
+                                               execute_select_access_tenders_by_cpid):
     cpid = prepared_cpid
     data = prepare_data(schema=schema_tender)
     data['ocid'] = cpid
     data['tender']['lots'] = prepare_data(schema=schema_lot, quantity=2)
-    lot_1 = data['tender']['lots'][0]
-    lot_2 = data['tender']['lots'][1]
-    lot_1['id'] = str(prepared_entity_id())
-    lot_2['id'] = str(prepared_entity_id())
 
+    lot_1 = data['tender']['lots'][0]
+    lot_1['id'] = str(prepared_entity_id())
     lot_1['status'] = "cancelled"
     lot_1['statusDetails'] = "awarded"
+
+    lot_2 = data['tender']['lots'][1]
+    lot_2['id'] = str(prepared_entity_id())
     lot_2['status'] = "active"
     lot_2['statusDetails'] = "awarded"
 
@@ -189,11 +181,12 @@ def test_setStateForLots_return_status_for_lots_and_the_statusDetails_for_lots(h
         owner=prepared_owner
     )
 
-    lots = [{
-        "id": lot_1['id'],
-        "status": "active",
-        "statusDetails": "empty"
-    },
+    lots = [
+        {
+            "id": lot_1['id'],
+            "status": "active",
+            "statusDetails": "empty"
+        },
         {
             "id": lot_2['id'],
             "status": "cancelled",
@@ -202,9 +195,9 @@ def test_setStateForLots_return_status_for_lots_and_the_statusDetails_for_lots(h
     ]
 
     payload = payload_setStateForLots(
-        cpid=cpid,
         *lots
     )
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.success['result'] = payload['params']['lots']
 
@@ -223,102 +216,103 @@ def test_setStateForLots_return_status_for_lots_and_the_statusDetails_for_lots(h
 
 
 @pytestrail.case("C17140")
-def test_setStateForLots_tender_not_found_by_cpid(host, port, prepared_cpid, payload_setStateForLots, response,
+def test_setStateForLots_tender_not_found_by_cpid(host, port,
+                                                  prepared_cpid, payload_setStateForLots, response,
                                                   prepare_data, prepared_ev_ocid, prepared_entity_id):
-    lots = [{
+    lot = {
         "id": str(prepared_entity_id()),
         "status": "active",
         "statusDetails": "empty"
-    }]
+    }
 
     payload = payload_setStateForLots(
-        *lots
+        lot
     )
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "VR-10.1.7.1/3",
-        "description": f"Lots '[{payload['params']['lots'][0]['id']}]' do not found."
+        "description": f"Lots '[{lot['id']}]' do not found."
     }]
 
     assert actualresult == response.error
 
 
 @pytestrail.case('C17141')
-@pytest.mark.parametrize("value", ["", "4to-to"])
+@pytest.mark.parametrize("lot_id", ["", "4to-to"])
 def test_setStateForLots_use_invalid_value_in_lots_array_for_id(host, port, response, prepare_data,
                                                                 payload_setStateForLots,
-                                                                value):
-    lots = [{
-        "id": value,
+                                                                lot_id):
+    lot = {
+        "id": lot_id,
         "status": "active",
         "statusDetails": "empty"
-    }]
+    }
 
     payload = payload_setStateForLots(
-        *lots
+        lot
     )
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "DR-4/3",
-        "description": f"Data format mismatch. Expected data format: 'uuid', actual value: '{value}'.",
-        "details": [{
-            "name": f"Lot.id"
-        }]
+        "description": "Data format mismatch."
+                       " Expected data format: 'uuid',"
+                       f" actual value: '{lot_id}'.",
+        "details": [{"name": "Lot.id"}]
     }]
 
     assert actualresult == response.error
 
 
 @pytestrail.case('C17142')
-@pytest.mark.parametrize("value", ["", "4to-to"])
+@pytest.mark.parametrize("status", ["", "4to-to"])
 def test_setStateForLots_use_invalid_value_in_lots_array_for_status(host, port, response, prepare_data,
                                                                     payload_setStateForLots, prepared_entity_id,
-                                                                    value):
-    lots = [{
+                                                                    status):
+    lot = {
         "id": str(prepared_entity_id()),
-        "status": value,
+        "status": status,
         "statusDetails": "empty"
-    }]
+    }
 
     payload = payload_setStateForLots(
-        *lots
+        lot
     )
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "DR-3/3",
-        "description": f"Attribute value mismatch with one of enum expected values. "
-                       f"Expected values: 'active, cancelled, complete', actual value: '{value}'.",
-        "details": [{
-            "name": f"Lot.status"
-        }]
+        "description": "Attribute value mismatch with one of enum expected values. "
+                       "Expected values: 'active, cancelled, complete'"
+                       f" actual value: '{status}'.",
+        "details": [{"name": "Lot.status"}]
     }]
 
     assert actualresult == response.error
 
 
 @pytestrail.case('C17143')
-@pytest.mark.parametrize("value", ["", "4to-to"])
+@pytest.mark.parametrize("status_details", ["", "4to-to"])
 def test_setStateForLots_use_invalid_value_in_lots_array_for_status_details(host, port, response, prepare_data,
                                                                             payload_setStateForLots, prepared_entity_id,
-                                                                            value):
-    lots = [{
+                                                                            status_details):
+    lot = {
         "id": str(prepared_entity_id()),
         "status": "active",
-        "statusDetails": value
-    }]
+        "statusDetails": status_details
+    }
 
     payload = payload_setStateForLots(
-        *lots
+        lot
     )
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "DR-3/3",
         "description": f"Attribute value mismatch with one of enum expected values."
-                       f" Expected values: 'empty', actual value: '{value}'.",
-        "details": [{
-            "name": f"Lot.statusDetails"
-        }]
+                       f" Expected values: 'empty', actual value: '{status_details}'.",
+        "details": [{"name": "Lot.statusDetails"}]
     }]
 
     assert actualresult == response.error
@@ -342,6 +336,7 @@ def test_setStateForLots_use_invalid_value_in_lots_array_for_status_details(host
 def test_setStateForLots_does_not_contains_param(host, port, response, payload_setStateForLots, param):
     payload = payload_setStateForLots()
     del payload['params'][param]
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "RQ-02/3",
@@ -368,16 +363,15 @@ def test_setStateForLots_does_not_contains_param(host, port, response, payload_s
                          ])
 def test_setStateForLots_without_attribute_in_lots_array(host, port, response, payload_setStateForLots, param,
                                                          prepare_data, prepared_entity_id):
-    lots = [{
+    lot = {
         "id": str(prepared_entity_id()),
         "status": "active",
         "statusDetails": "empty"
-    }]
+    }
 
-    payload = payload_setStateForLots(
-        *lots
-    )
+    payload = payload_setStateForLots(lot)
     del payload['params']['lots'][0][param]
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "RQ-02/3",
@@ -387,13 +381,10 @@ def test_setStateForLots_without_attribute_in_lots_array(host, port, response, p
     assert actualresult == response.error
 
 
-
-
-
 @pytestrail.case("C17152")
-def test_setStateForLots_lots_as_empty_array(host, port, response, payload_setStateForLots):
+def test_setStateForLots_lots_as_empty_array(host, port,
+                                             payload_setStateForLots, response):
     payload = payload_setStateForLots()
-
     payload['params']['lots'] = []
 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
@@ -407,53 +398,37 @@ def test_setStateForLots_lots_as_empty_array(host, port, response, payload_setSt
     assert actualresult == response.error
 
 
-@pytestrail.case("C17154")
-def test_setStateForLots_request_does_not_contains_params_in_request(host, port, response, payload_setStateForLots):
-    payload = payload_setStateForLots()
-
-    del payload['params']
-
-    actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
-    response.error['result'] = [{
-        "code": "DR-1/3",
-        "description": "Missing required attribute.",
-        "details": [{
-            "name": "params"
-        }]
-    }]
-
-    assert actualresult == response.error
-
-
 @pytest.mark.parametrize("param, value, description",
                          [
-                             pytest.param("cpid", "ocdst1s2t3-MD1580000000014",
+                             pytest.param("cpid", "",
                                           "Data mismatch to pattern: '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. "
-                                          "Actual value: 'ocdst1s2t3-MD1580000000014'.",
+                                          "Actual value: ''.",
                                           marks=pytestrail.case('C20915'),
                                           id="by cpid"),
 
-                             pytest.param("ocid", "ocds-t1s2t3-MD1580000000014EV1585642217593",
+                             pytest.param("ocid", "",
                                           "Data mismatch to pattern: "
                                           "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'. "
-                                          "Actual value: 'ocds-t1s2t3-MD1580000000014EV1585642217593'.",
+                                          "Actual value: ''.",
                                           marks=pytestrail.case('C20916'),
                                           id=" by ocid")
 
                          ])
-def test_setStateForLots_data_mismatch_to_the_pattern(host, port, response, payload_setStateForLots, param,
-                                                      prepare_data, value, description, prepared_entity_id):
-    lots = [{
+def test_setStateForLots_data_mismatch_to_the_pattern(host, port,
+                                                      param, value, description,
+                                                      prepare_data,
+                                                      payload_setStateForLots,
+                                                      prepared_entity_id,
+                                                      response):
+    lot = {
         "id": str(prepared_entity_id()),
         "status": "active",
         "statusDetails": "empty"
-    }]
+    }
 
-    payload = payload_setStateForLots(
-        *lots
-    )
-
+    payload = payload_setStateForLots(lot)
     payload['params'][param] = value
+
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [{
         "code": "DR-5/3",
