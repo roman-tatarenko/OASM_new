@@ -284,7 +284,7 @@ def test_setStateForLots_use_invalid_value_in_lots_array_for_status(host, port, 
     response.error['result'] = [{
         "code": "DR-3/3",
         "description": "Attribute value mismatch with one of enum expected values. "
-                       "Expected values: 'active, cancelled, complete'"
+                       "Expected values: 'active, cancelled, complete',"
                        f" actual value: '{status}'.",
         "details": [{"name": "Lot.status"}]
     }]
