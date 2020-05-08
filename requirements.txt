@@ -1,8 +1,10 @@
-pytest==5.3.5
+pytest
 requests
 cassandra-driver
-pytest-testrail
+pytest-testrail-e2e
+pytest-sugar
 kafka-python
 psycopg2-binary
-hypothesis
 mimesis
+pytest_check
+toml

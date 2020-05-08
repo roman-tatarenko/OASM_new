@@ -134,6 +134,6 @@ dmypy.json
 /.idea/vcs.xml
 /.idea/workspace.xml
 /.idea/
-/credentials.py
 /testrail.cfg
 /tests/eEducation/
+/config.toml
