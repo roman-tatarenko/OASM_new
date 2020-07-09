@@ -71,3 +71,11 @@ def prepared_insert_revision_amendments(cassandra_session):
     query = 'INSERT INTO amendments (cpid,ocid,id,data) VALUES (?,?,?,?)'
     prepared = cassandra_session.prepare(query)
     return prepared
+
+@pytest.fixture(scope='session')
+def prepared_insert_qualifications(cassandra_session):
+    cassandra_session.set_keyspace('qualification')
+    query = 'INSERT INTO qualifications (cpid,ocid,id,json_data) ' \
+            'VALUES (?,?,?,?)'
+    prepared = cassandra_session.prepare(query)
+    return prepared

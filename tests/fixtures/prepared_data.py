@@ -3441,3 +3441,16 @@ def data_supplier():
             }]
         }]
     }
+
+
+@pytest.fixture(scope='function')
+def data_qualification():
+    return {
+        "id": "QUALIFICATION_ID",
+        "date": "2020-07-08T00:00:35Z",
+        "status": "pending",
+        "statusDetails": "awaiting",
+        "token": "ed8e86b9-82c9-4bcc-ac40-215317afa211",
+        "owner": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "relatedSubmission": "ac463c53-3695-49d7-a67a-bf7b0aec30ae"
+    }

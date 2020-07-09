@@ -97,3 +97,14 @@ def execute_insert_into_evaluation_period(prepared_insert_evaluation_period, cas
         cassandra_session.execute(prepared_insert_evaluation_period, values)
 
     return with_values
+
+
+@pytest.fixture(scope='function')
+def execute_insert_into_qualifications(prepared_insert_qualifications, cassandra_session):
+    def with_values(cpid, ocid, id, json_data):
+        values = (
+            f'{cpid}', f'{ocid}', id, f'{json.dumps(json_data)}'
+        )
+        cassandra_session.execute(prepared_insert_qualifications, values)
+
+    return with_values

@@ -24,6 +24,12 @@ def prepared_ev_ocid(prepared_cpid):
 
 
 @pytest.fixture(scope='function')
+def prepared_tp_ocid(prepared_cpid):
+    oc_id = f"{prepared_cpid}-TP-" + str(int(time.time()) * 1000 + random.randint(1, 100))
+    return oc_id
+
+
+@pytest.fixture(scope='function')
 def prepared_ac_ocid(prepared_cpid):
     oc_id = f"{prepared_cpid}-AC-" + str(int(time.time()) * 1000 + random.randint(1, 100))
     return oc_id

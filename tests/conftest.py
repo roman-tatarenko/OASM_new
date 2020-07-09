@@ -29,7 +29,7 @@ def port():
     @dataclass
     class Port:
         """Ports of Docker containers"""
-        eQualification: int = 9251
+        eQualification: int = 9091
         eEvaluation: int = 9081
         eMDM: int = 9161
         eContracting: int = 9151
