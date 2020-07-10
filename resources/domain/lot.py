@@ -5,7 +5,11 @@ statusDetails = ("empty",)
 
 schema_lot = {
     "id": _("uuid"),
-    "title": "Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Вдали от всех живут они в буквенных домах на берегу Семантика большого языкового океана. Маленький ручеек Даль журчит по всей стране и обеспечивает ее всеми необходимыми правилами. Эта парадигматическая страна, в которой жаренные члены предложения залетают прямо в рот. Даже всемогущая пунктуация не имеет власти над рыбными текстами, ведущими безорфографичный образ жизни.",
+    "title": "Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. "
+             "Вдали от всех живут они в буквенных домах на берегу Семантика большого языкового океана. "
+             "Маленький ручеек Даль журчит по всей стране и обеспечивает ее всеми необходимыми правилами. "
+             "Эта парадигматическая страна, в которой жаренные члены предложения залетают прямо в рот. "
+             "Даже всемогущая пунктуация не имеет власти над рыбными текстами, ведущими безорфографичный образ жизни.",
     "description": "looot",
     "status": _("random.schoice", seq=status, end=1),
     "statusDetails": _("random.schoice", seq=statusDetails, end=1),
@@ -13,6 +17,7 @@ schema_lot = {
         "amount": 10.00,
         "currency": "EUR"
     },
+    "internalId": "Lot1",
     "options": [{
         "hasOptions": False
     }],
@@ -37,23 +42,24 @@ schema_lot = {
                 "country": {
                     "scheme": "iso-alpha2",
                     "id": "MD",
-                    "description": "MOLDOVA",
-                    "uri": "http://reference.iatistandard.org"
+                    "description": "Moldova, Republica",
+                    "uri": "https://www.iso.org"
                 },
                 "region": {
                     "scheme": "CUATM",
-                    "id": "1000000",
-                    "description": "Anenii Noi",
+                    "id": "0101000",
+                    "description": "mun.Chişinău",
                     "uri": "http://statistica.md"
                 },
                 "locality": {
-                    "scheme": "666",
-                    "id": "666",
-                    "description": "666"
+                    "description": "mun.Chişinău",
+                    "id": "002125",
+                    "scheme": "other"
+
                 }
             }
         },
-        "description": ""
+        "description": "description of lot"
     }
 }
 
