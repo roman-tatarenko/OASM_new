@@ -7,16 +7,16 @@ from pytest_testrail.plugin import pytestrail
 
 
 @pytestrail.case('C23060')
-def test_checkAccessToQualification_check_on_service_return_success_in_response_without_result(port, host,
-                                                                                               prepared_cpid,
-                                                                                               prepared_token_entity,
-                                                                                               prepared_owner, response,
-                                                                                               data_tender,
-                                                                                               payload_checkAccessToTender,
-                                                                                               execute_insert_into_qualifications,
-                                                                                               data_qualification,
-                                                                                               prepared_tp_ocid,
-                                                                                               payload_checkAccessToQualification):
+def test_checkAccessToQualification_check_on_service_return_success_in_response(port, host,
+                                                                                prepared_cpid,
+                                                                                prepared_token_entity,
+                                                                                prepared_owner, response,
+                                                                                data_tender,
+                                                                                payload_checkAccessToTender,
+                                                                                execute_insert_into_qualifications,
+                                                                                data_qualification,
+                                                                                prepared_tp_ocid,
+                                                                                payload_checkAccessToQualification):
     qualification_id = str(uuid4())
     cpid = prepared_cpid
     ocid = prepared_tp_ocid
