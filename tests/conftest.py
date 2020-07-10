@@ -20,7 +20,8 @@ pytest_plugins = [
     "tests.eAccess.fixtures.prepared_payload",
     "tests.eRevision.fixtures.prepared_payload",
     "tests.eDossier.fixtures.prepared_payload",
-    "tests.eContracting.fixtures.prepared_payload"
+    "tests.eContracting.fixtures.prepared_payload",
+    "tests.eQualification.fixtures.prepared_payload"
 ]
 
 
