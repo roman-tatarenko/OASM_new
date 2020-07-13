@@ -1,4 +1,5 @@
 from uuid import uuid4
+from resources.domain._ import _
 
 import pytest
 
@@ -20,3 +21,24 @@ def payload_checkAccessToQualification(request_template, prepared_cpid, prepared
         return payload
 
     return _payload_checkAccessToQualification
+
+
+@pytest.fixture(scope='function')
+def payload_checkQualificationState(request_template, prepared_cpid, prepared_tp_ocid, prepared_entity_id):
+    payload = request_template(action='checkQualificationState')
+
+    def _payload_checkQualificationState(cpid=prepared_cpid, ocid=prepared_tp_ocid, operationType=None,
+                                         qualificationId=str(uuid4())):
+        pmd = ("GPA", "TEST_GPA",)
+        country = ("MD",)
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "country": _("random.schoice", seq=country, end=1),
+            "pmd": _("random.schoice", seq=pmd, end=1),
+            "operationType": operationType,
+            "qualificationId": qualificationId
+        }
+        return payload
+
+    return _payload_checkQualificationState
