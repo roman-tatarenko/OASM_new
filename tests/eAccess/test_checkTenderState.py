@@ -337,22 +337,22 @@ def test_checTenderState_without_attribute_in_params_object(prepared_cpid, paylo
 
 @pytest.mark.parametrize("param, value,code, description",
                          [
-                             pytest.param("cpid", False, "DR-5/3", f"Data mismatch to pattern: "
-                                                                   f"'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. "
-                                                                   f"Actual value: 'false'.",
+                             pytest.param("cpid", False, "DR-5/3", "Data mismatch to pattern: "
+                                                                   "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}$'. "
+                                                                   "Actual value: 'false'.",
                                           marks=pytestrail.case('C23095'),
                                           id="cpid ==False"),
-                             pytest.param("ocid", False, "DR-5/3", f"Data mismatch to pattern: "
-                                                                   f"'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-"
-                                                                   f"(AC|EI|EV|FS|NP|PN|TP)-[0-9]{13}$'. "
-                                                                   f"Actual value: 'false'.",
+                             pytest.param("ocid", False, "DR-5/3", "Data mismatch to pattern: "
+                                                                   "'^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-"
+                                                                   "(AC|EI|EV|FS|NP|PN|TP)-[0-9]{13}$'. "
+                                                                   "Actual value: 'false'.",
                                           marks=pytestrail.case('C23096'),
                                           id="ocid == False"),
-                             pytest.param("pmd", 123, "DR-3/3", f"Attribute value mismatch with one of enum expected "
-                                                                f"values. Expected values: 'MV, OT, RT, SV, DA, NP, FA,"
-                                                                f" OP, GPA, TEST_OT, TEST_SV, TEST_RT, TEST_MV, TEST_DA,"
-                                                                f" TEST_NP, TEST_FA, TEST_OP, TEST_GPA', actual value:"
-                                                                f" '123'.",
+                             pytest.param("pmd", 123, "DR-3/3", "Attribute value mismatch with one of enum expected "
+                                                                "values. Expected values: 'MV, OT, RT, SV, DA, NP, FA, "
+                                                                "OP, GPA, TEST_OT, TEST_SV, TEST_RT, TEST_MV, TEST_DA, "
+                                                                "TEST_NP, TEST_FA, TEST_OP, TEST_GPA', "
+                                                                "actual value: '123'.",
                                           marks=pytestrail.case('C23097'),
                                           id="del pmd == 123")
 
@@ -377,5 +377,6 @@ def test_checTenderState_use_invalid_value_in_prarams(prepared_cpid, payload_che
         }]
 
     }]
-
+    print(prepared_cpid)
+    print(json.dumps(actualresult))
     assert actualresult == response.error
