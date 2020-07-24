@@ -72,3 +72,6 @@ def cassandra_session(cluster):
     session = cluster.connect()
     yield session
     session.shutdown()
+
+
+

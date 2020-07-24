@@ -20,7 +20,8 @@ pytest_plugins = [
     "tests.eAccess.fixtures.prepared_payload",
     "tests.eRevision.fixtures.prepared_payload",
     "tests.eDossier.fixtures.prepared_payload",
-    "tests.eContracting.fixtures.prepared_payload"
+    "tests.eContracting.fixtures.prepared_payload",
+    "tests.eQualification.fixtures.prepared_payload"
 ]
 
 
@@ -29,7 +30,7 @@ def port():
     @dataclass
     class Port:
         """Ports of Docker containers"""
-        eQualification: int = 9251
+        eQualification: int = 9091
         eEvaluation: int = 9081
         eMDM: int = 9161
         eContracting: int = 9151
