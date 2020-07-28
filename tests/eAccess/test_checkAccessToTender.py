@@ -120,12 +120,12 @@ def test_eAccess_returns_response_with_status_error_if_request_does_not_contain_
                                           marks=pytestrail.case('C8427'), id="empty string as cpid"),
                              pytest.param("ocid", "", "DR-5/3",
                                           "Data mismatch to pattern:"
-                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN|TP)-[0-9]{13}$'."
                                           " Actual value: ''.",
                                           marks=pytestrail.case('C8428'), id="empty string as ocid"),
                              pytest.param("ocid", "ocds-t1s2t3-MD-1585832251336", "DR-5/3",
                                           "Data mismatch to pattern:"
-                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN)-[0-9]{13}$'."
+                                          " '^[a-z]{4}-[a-z0-9]{6}-[A-Z]{2}-[0-9]{13}-(AC|EI|EV|FS|NP|PN|TP)-[0-9]{13}$'."
                                           " Actual value: 'ocds-t1s2t3-MD-1585832251336'.",
                                           marks=pytestrail.case('C8426'), id="inccorect ocid"),
                              pytest.param("token", "", "DR-4/3",
