@@ -42,3 +42,20 @@ def payload_checkQualificationState(request_template, prepared_cpid, prepared_tp
         return payload
 
     return _payload_checkQualificationState
+
+
+@pytest.fixture(scope='function')
+def payload_doConsideration(request_template, prepared_cpid, prepared_tp_ocid, prepared_entity_id):
+    payload = request_template(action='doConsideration')
+
+    def _payload_doConsideration(cpid=prepared_cpid, ocid=prepared_tp_ocid, id=uuid4()):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid,
+            "qualifications": [{
+                "id": id
+            }]
+        }
+        return payload
+
+    return _payload_doConsideration

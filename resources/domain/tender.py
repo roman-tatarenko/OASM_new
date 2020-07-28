@@ -1,5 +1,6 @@
 from resources.domain.lot import schema_lot
 from resources.domain.person import schema_person, schema_person_GPA
+from resources.domain._ import _
 
 schema_tender={
 	"ocid": "CPID",
@@ -212,7 +213,7 @@ schema_tender={
 		}]
 	}
 }
-
+statusDetails = ["qualification", "qualificationStandstill", ]
 schema_tender_GPA={
 	"ocid": "CPID",
 	"planning": {
@@ -251,7 +252,7 @@ schema_tender_GPA={
 		"title": "title of tender",
 		"description": "desription of tender",
 		"status": "active",
-		"statusDetails": "qualification",
+		"statusDetails": _("random.schoice", seq=statusDetails, end=1),
 		"classification": {
 			"scheme": "CPV",
 			"id": "50100000-6",

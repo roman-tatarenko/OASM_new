@@ -55,7 +55,7 @@ def test_getTenderState_tender_not_found(port, host, param, value, data_tender, 
     actualresult = requests.post(f'{host}:{port.eAccess}/command2', json=payload).json()
     response.error['result'] = [
         {
-            'code': 'VR-10.1.7.1/3',
+            'code': 'VR-10.1.8.1/3',
             'description': f"Tender not found by cpid '{payload['params']['cpid']}' "
                            f"and ocid '{payload['params']['ocid']}'."
         }

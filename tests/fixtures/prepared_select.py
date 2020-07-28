@@ -44,3 +44,9 @@ def prepared_select_access_tender_by_cpid(cassandra_session):
     cassandra_session.set_keyspace('ocds')
     query = 'SELECT * FROM access_tender WHERE cp_id=?'
     return cassandra_session.prepare(query)
+
+@pytest.fixture(scope='session')
+def prepared_select_qualifications_by_cpid(cassandra_session):
+    cassandra_session.set_keyspace('qualification')
+    query = 'SELECT * FROM qualifications WHERE cpid=?'
+    return cassandra_session.prepare(query)

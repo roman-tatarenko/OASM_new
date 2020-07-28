@@ -1,13 +1,9 @@
-import copy
-import json
-import random
-import time
-from datetime import datetime
+
 from uuid import uuid4
 
 import pytest
 import requests
-from mimesis.random import random
+
 from pytest_testrail.plugin import pytestrail
 
 
