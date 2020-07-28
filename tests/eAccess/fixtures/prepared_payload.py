@@ -134,6 +134,9 @@ def payload_checkTenderState(request_template, prepared_cpid, prepared_tp_ocid):
     payload = request_template(action='checkTenderState')
 
     def _paylod_checkTenderState(*args, cpid=prepared_cpid, ocid=prepared_tp_ocid, operationType=None):
+        operationType = ["qualification", "qualificationConsideration", "qualificationProtocol",
+                         "withdrawQualificationProtocol",
+                         "startSecondStage", "applyQualificationProtocol", ]
         pmd = ("GPA", "TEST_GPA",)
         country = ("MD",)
         payload['params'] = {
@@ -141,8 +144,21 @@ def payload_checkTenderState(request_template, prepared_cpid, prepared_tp_ocid):
             "ocid": ocid,
             "pmd": _("random.schoice", seq=pmd, end=1),
             "country": _("random.schoice", seq=country, end=1),
-            "operationType": operationType
+            "operationType": _("random.schoice", seq=operationType, end=1)
         }
         return payload
 
     return _paylod_checkTenderState
+
+@pytest.fixture(scope='function')
+def payload_findAuctions(request_template, prepared_cpid, prepared_tp_ocid):
+    payload = request_template(action='findAuctions')
+
+    def _payload_findAuctions(*args, cpid=prepared_cpid, ocid=prepared_tp_ocid):
+        payload['params'] = {
+            "cpid": cpid,
+            "ocid": ocid
+        }
+        return payload
+
+    return _payload_findAuctions
